@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 
 
 class Forecast:
@@ -43,6 +44,30 @@ class Forecast:
         raise ValueError("invalid zipcode: {}".format(zipcode))
 
 
+    #
+    # hoursForDwmlXmlRoot() and friends
+    #
+
+    @classmethod
+    def timeLayoutDictForDwmlXmlRoot(cls, dwmlElement):
+        """
+        :param dwmlElement: 
+        :return: dict: {layout-key -> [<start-valid-time> datetime instances]}
+        """
+        timeLayoutDict = {}
+        for timeLayoutEle in dwmlElement.findall('data/time-layout'):
+            layoutKey = timeLayoutEle.find('layout-key')
+            startValidTimes = []
+            for startValidTimeEle in timeLayoutEle.findall('start-valid-time'):
+                # e.g., <start-valid-time>2015-01-13T07:00:00-05:00</start-valid-time>. NB: that format is ISO 8601
+                #  EXCEPT for the ':' in the final time zone section (e.g., '-05:00'), so we remove it before parsing
+                startValidTimeTrim = startValidTimeEle.text[:-3] + startValidTimeEle.text[-2:]
+                dt = datetime.strptime(startValidTimeTrim, '%Y-%m-%dT%H:%M:%S%z')
+                startValidTimes.append(dt)
+            timeLayoutDict[layoutKey.text] = startValidTimes
+        return timeLayoutDict
+
+
     @classmethod
     def hoursForDwmlXmlRoot(cls, dwmlElement):
         """
@@ -50,7 +75,8 @@ class Forecast:
         :return: a sequence of Hour instances corresponding to the passed DWML document element
         """
         hours = []
-        
+
         # TODO
-        
+
         return hours
+
