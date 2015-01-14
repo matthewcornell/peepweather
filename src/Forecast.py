@@ -57,11 +57,8 @@ class Forecast:
         """
         hours = []
 
-        # TODO:
-        # self.timeLayoutDictFromDwmlXmlRoot(dwmlElement)
-        # self.parameterDictFromDwmlXmlRoot()
-        # etc.
-
+        # TODO: self.parameterSamplesDictFromDwmlXmlRoot(dwmlElement)
+        
         return hours
 
     @classmethod
