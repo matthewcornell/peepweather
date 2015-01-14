@@ -44,12 +44,12 @@ class MyTestCase(unittest.TestCase):
                      '&Submit=Submit'.format(lat=lat, lon=lon)
             forecast = Forecast(zipcode)
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
-    
+
 
     def testXmlToTimeLayoutDict(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
-        timeLayoutDict = Forecast.timeLayoutDictForDwmlXmlRoot(dwmlElement)
+        timeLayoutDict = Forecast.timeLayoutDictFromDwmlXmlRoot(dwmlElement)
         self.assertEqual(2, len(timeLayoutDict))
         self.assertIn("k-p12h-n15-1", timeLayoutDict)
         self.assertIn("k-p3h-n41-2", timeLayoutDict)
@@ -58,18 +58,36 @@ class MyTestCase(unittest.TestCase):
         tlP12 = timeLayoutDict["k-p12h-n15-1"]
         self.assertEqual(15, len(tlP12))
         self.assertTrue(all(map(lambda x: type(x) == datetime.datetime, tlP12)))
-        self.assertEqual(datetime.datetime(2015, 1, 13, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), tlP12[0])
+        self.assertEqual(datetime.datetime(2015, 1, 13, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
+                         tlP12[0])
 
         tlP3 = timeLayoutDict["k-p3h-n41-2"]
         self.assertEqual(41, len(tlP3))
         self.assertTrue(all(map(lambda x: type(x) == datetime.datetime, tlP3)))
-        self.assertEqual(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), tlP3[0])
+        self.assertEqual(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
+                         tlP3[0])
+
+
+    def testXmlToParameterDict(self):
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        dwmlElement = elementTree.getroot()
+        expParamDict = {
+            'temperature': ("k-p3h-n41-2",
+                            [10, 6, 3, 2, 0, 10, 22, 21, 17, 15, 13, 11, 8, 17, 26, 27, 22, 19, 17, 16, 15, 21, 28, 26,
+                             19, 11, 6, 24, 23, 21, 21, 38, 33, 28, 24, 32, 24, 18, 14, 28, 23]),
+            'probability-of-precipitation': ("k-p12h-n15-1", [1, 0, 4, 11, 8, 5, 4, 3, 3, 9, 20, 20, 10, 10, 11]),
+            'wind-speed': ("k-p3h-n41-2",
+                           [3, 3, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 3, 3, 4, 4, 6, 7, 7, 6, 4, 3, 2, 4, 5, 4,
+                            4, 3, 4, 5, 6, 4, 3, 2, 1, 1])
+        }
+        paramDict = Forecast.parameterDictFromDwmlXmlRoot(dwmlElement)
+        self.assertEqual(expParamDict, paramDict)
 
 
     def testXmlToHours(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
-        hours = Forecast.hoursForDwmlXmlRoot(dwmlElement)
+        hours = Forecast.hoursFromDwmlXmlRoot(dwmlElement)
         self.assertEqual(8, len(hours))
         # TODO correct # of hours, check each Hour
         self.fail()

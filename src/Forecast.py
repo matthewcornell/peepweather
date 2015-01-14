@@ -45,14 +45,27 @@ class Forecast:
 
 
     #
-    # hoursForDwmlXmlRoot() and friends
+    # hoursFromDwmlXmlRoot() and friends
     #
 
+
     @classmethod
-    def timeLayoutDictForDwmlXmlRoot(cls, dwmlElement):
+    def hoursFromDwmlXmlRoot(cls, dwmlElement):
         """
-        :param dwmlElement: 
-        :return: dict: {layout-key -> [<start-valid-time> datetime instances]}
+        :param dwmlElement:
+        :return: a sequence of Hour instances corresponding to the passed DWML document element
+        """
+        hours = []
+
+        # TODO. self.timeLayoutDictFromDwmlXmlRoot(dwmlElement), self.parameterDictFromDwmlXmlRoot(), etc.
+
+        return hours
+
+    @classmethod
+    def timeLayoutDictFromDwmlXmlRoot(cls, dwmlElement):
+        """
+        :param dwmlElement:
+        :return: dict: {<layout-key> -> [<start-valid-time> datetime instances]}
         """
         timeLayoutDict = {}
         for timeLayoutEle in dwmlElement.findall('data/time-layout'):
@@ -69,14 +82,30 @@ class Forecast:
 
 
     @classmethod
-    def hoursForDwmlXmlRoot(cls, dwmlElement):
+    def parameterDictFromDwmlXmlRoot(cls, dwmlElement):
         """
         :param dwmlElement:
-        :return: a sequence of Hour instances corresponding to the passed DWML document element
+        :return: dict: {<name> -> (<time-layout>, [int values])}
+        
+        <parameters applicable-location="point1">
+            <temperature type="hourly" units="Fahrenheit" time-layout="k-p3h-n41-2">
+                <name>Temperature</name>
+                <value>10</value>
+                ...
+            <wind-speed type="sustained" units="knots" time-layout="k-p3h-n41-2">
+                <name>Wind Speed</name>
+                <value>3</value>
+                ...
+            <probability-of-precipitation type="12 hour" units="percent" time-layout="k-p12h-n15-1">
+                <name>12 Hourly Probability of Precipitation</name>
+                <value>1</value>
+                ...
+
         """
-        hours = []
-
-        # TODO
-
-        return hours
-
+        paramDict = {}
+        for paramEle in dwmlElement.find('data/parameters'):
+            paramVals = list(map(lambda val: int(val.text), paramEle.findall('value')))
+            timeLayout = paramEle.attrib['time-layout']
+            paramDict[paramEle.tag] = (timeLayout, paramVals)
+        return paramDict
+    
