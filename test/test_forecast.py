@@ -193,26 +193,26 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expDict, paramSamplesDict)
 
 
-def testXmlToHours(self):
-    elementTree = ET.parse('test/test-forecast-data.xml')
-    dwmlElement = elementTree.getroot()
-    hours = Forecast.hoursFromDwmlXmlRoot(dwmlElement)
-    self.assertEqual(8, len(hours))
-    self.fail()
+    def testXmlToHours(self):
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        dwmlElement = elementTree.getroot()
+        hours = Forecast.hoursFromDwmlXmlRoot(dwmlElement)
+        self.assertEqual(8, len(hours))
+        self.fail()
 
 
-def testHours(self):
-    # insert mock for test-forcast-data.xml then make sure getHours() returns same as testXmlToHours()
-    self.fail()
+    def testHours(self):
+        # insert mock for test-forcast-data.xml then make sure getHours() returns same as testXmlToHours()
+        self.fail()
 
 
-def testGetHour(self):
-    self.fail()
+    def testGetHour(self):
+        self.fail()
 
 
-def testSummary(self):
-    self.fail()
+    def testSummary(self):
+        self.fail()
 
 
-def testHourToColor(self):
-    self.fail()
+    def testHourToColor(self):
+        self.fail()
