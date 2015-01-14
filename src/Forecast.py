@@ -57,7 +57,10 @@ class Forecast:
         """
         hours = []
 
-        # TODO. self.timeLayoutDictFromDwmlXmlRoot(dwmlElement), self.parameterDictFromDwmlXmlRoot(), etc.
+        # TODO:
+        # self.timeLayoutDictFromDwmlXmlRoot(dwmlElement)
+        # self.parameterDictFromDwmlXmlRoot()
+        # etc.
 
         return hours
 
@@ -86,21 +89,6 @@ class Forecast:
         """
         :param dwmlElement:
         :return: dict: {<name> -> (<time-layout>, [int values])}
-        
-        <parameters applicable-location="point1">
-            <temperature type="hourly" units="Fahrenheit" time-layout="k-p3h-n41-2">
-                <name>Temperature</name>
-                <value>10</value>
-                ...
-            <wind-speed type="sustained" units="knots" time-layout="k-p3h-n41-2">
-                <name>Wind Speed</name>
-                <value>3</value>
-                ...
-            <probability-of-precipitation type="12 hour" units="percent" time-layout="k-p12h-n15-1">
-                <name>12 Hourly Probability of Precipitation</name>
-                <value>1</value>
-                ...
-
         """
         paramDict = {}
         for paramEle in dwmlElement.find('data/parameters'):
@@ -108,4 +96,19 @@ class Forecast:
             timeLayout = paramEle.attrib['time-layout']
             paramDict[paramEle.tag] = (timeLayout, paramVals)
         return paramDict
-    
+
+
+    @classmethod
+    def parameterSamplesDictFromDwmlXmlRoot(cls, dwmlElement):
+        """
+        :param dwmlElement:
+        :return: dict: {<paramName> -> [(paramVal, paramDatetime)]}
+        """
+        parameterSamplesDict = {}
+        paramDict = cls.parameterDictFromDwmlXmlRoot(dwmlElement)
+        timeLayoutDict = cls.timeLayoutDictFromDwmlXmlRoot(dwmlElement)
+        for paramName, (timeLayoutKey, paramVals) in paramDict.items():
+            timeLayoutDatetimes = timeLayoutDict[timeLayoutKey]
+            paramSamples = list(zip(paramVals, timeLayoutDatetimes))
+            parameterSamplesDict[paramName] = paramSamples
+        return parameterSamplesDict
