@@ -7,11 +7,6 @@ from Hour import Hour
 
 
 class MyTestCase(unittest.TestCase):
-    #
-    # TODO: continue
-    # back end: 01002 -> lat/lon -> .gov -> xml -> Hours
-    # front end: /zip/01002 -> Forecast(01002) -> .getHours() -> layout using getDayOfWeek() and getHourOfDay()
-    #
 
     @classmethod
     def setUpClass(cls):
@@ -244,9 +239,9 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expHours, hours)
 
 
-    def testSummary(self):
+    def testForecastSummary(self):
         self.fail()
 
 
-    def testHourToColor(self):
+    def testHourColor(self):
         self.fail()

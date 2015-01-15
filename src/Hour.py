@@ -1,9 +1,9 @@
 class Hour():
     def __init__(self, datetime, precip=None, temp=None, wind=None):
-        self.datetime = datetime
-        self.precip = precip
-        self.temp = temp
-        self.wind = wind
+        self.datetime = datetime    # from datetime import datetime. time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
+        self.precip = precip        # probability of precipitation: % b/w 0 and 100
+        self.temp = temp            # degrees Fahrenheit
+        self.wind = wind            # MPH
 
 
     def __repr__(self):

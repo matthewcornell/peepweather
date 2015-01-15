@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h2>Forecast for {{ forecast.name }} - {{ forecast.zipcode }} at time</h2>
+
 <ul>
-    <li>Zip code: {{ zip }}</li>
-    <li>Time: {{ time }}</li>
+    {% for hour in forecast.hours %}
+    <li>{{ hour }}</li>
+    {% endfor %}
 </ul>
 
 {% endblock %}

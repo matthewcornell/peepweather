@@ -2,6 +2,9 @@ import csv
 from datetime import datetime
 import functools
 import operator
+import urllib.request
+import xml.etree.ElementTree as ET
+
 from Hour import Hour
 
 
@@ -15,6 +18,13 @@ class Forecast:
         self.zipcode = zipcode
         self.latLon = (lat, lon)
         self.name = name
+
+        # set my hours
+        xmlFile = urllib.request.urlopen(self.weatherDotGovUrl())
+        elementTree = ET.parse(xmlFile)
+        dwmlElement = elementTree.getroot()
+        self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
+
 
     def __repr__(self):
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
@@ -75,11 +85,11 @@ class Forecast:
                             hour.precip = pVal
                         elif pName == 'temperature':
                             hour.temp = pVal
-                        else:       # 'wind-speed'
+                        else:  # 'wind-speed'
                             hour.wind = pVal
 
         # 3) fill in missing data by projecting forward the most recently set value. note that the first item will
-        #  likely have missing values because there are no older items to project from
+        # likely have missing values because there are no older items to project from
         lastPrecipTempWind = (None, None, None)
         for hour in hours:
             precipTempWind = hour.precip, hour.temp, hour.wind
