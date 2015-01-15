@@ -244,10 +244,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expHours, hours)
 
 
-    def testGetHour(self):
-        self.fail()
-
-
     def testSummary(self):
         self.fail()
 
