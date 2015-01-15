@@ -13,6 +13,9 @@ class Forecast:
         self.latLon = (lat, lon)
         self.name = name
 
+    def __str__(self):
+        return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
+
 
     def weatherDotGovUrl(self):
         url = 'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php' \
@@ -56,10 +59,9 @@ class Forecast:
         :return: a sequence of Hour instances corresponding to the passed DWML document element
         """
         hours = []
-
-        # TODO: self.parameterSamplesDictFromDwmlXmlRoot(dwmlElement)
-        
+        # TODO
         return hours
+
 
     @classmethod
     def timeLayoutDictFromDwmlXmlRoot(cls, dwmlElement):
@@ -73,7 +75,7 @@ class Forecast:
             startValidTimes = []
             for startValidTimeEle in timeLayoutEle.findall('start-valid-time'):
                 # e.g., <start-valid-time>2015-01-13T07:00:00-05:00</start-valid-time>. NB: that format is ISO 8601
-                #  EXCEPT for the ':' in the final time zone section (e.g., '-05:00'), so we remove it before parsing
+                # EXCEPT for the ':' in the final time zone section (e.g., '-05:00'), so we remove it before parsing
                 startValidTimeTrim = startValidTimeEle.text[:-3] + startValidTimeEle.text[-2:]
                 dt = datetime.strptime(startValidTimeTrim, '%Y-%m-%dT%H:%M:%S%z')
                 startValidTimes.append(dt)
