@@ -1,1 +1,1 @@
-web: gunicorn rc-weather:app --log-file=-
+web: gunicorn app:app --log-file=-
