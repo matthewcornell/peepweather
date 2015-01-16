@@ -11,5 +11,6 @@ that is 'stoplight' color coded based on how good it appears for activities like
 - index:
     - intro, contact, etc.
     - forms for entering zip, and for entering query
+- overall summary
 - ...
 
