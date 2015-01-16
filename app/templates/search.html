@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2>Zipcode search for: {{ query }}: {{ zipNameTuples | length }} results</h2>
+
+    <ul>
+        {% for zip, name in zipNameTuples %}
+            <li><a href="/zip/{{ zip }}">{{ zip }}</a>, {{ name }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

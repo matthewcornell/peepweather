@@ -1,17 +1,15 @@
-import csv
 from datetime import datetime
 import functools
 import operator
 import urllib.request
 import xml.etree.ElementTree as ET
+import re
 
 from Hour import Hour
+from src import CACHED_ZIP_INFO_TUPLES
 
 
 class Forecast:
-    #
-    # TODO preload zipcode-clean.csv into memory
-    #
 
     def __init__(self, zipcode):
         (lat, lon, name) = self.latLonNameForZipcode(zipcode)
@@ -44,18 +42,35 @@ class Forecast:
         return url
 
 
+    #
+    # zipcode utilities
+    #
+
     @staticmethod
     def latLonNameForZipcode(zipcode):
         """
         :param zipcode:
         :return: looks up and returns information for zipcode as a 3-tuple of the form: (latitude, longitude, name)
         """
-        with open('src/zipcode-clean.csv', 'r') as csvfile:
-            csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
-            for (csv_zipcode, city, state, latitude, longitude, timezone, dst) in csvreader:
-                if csv_zipcode == zipcode:
-                    return latitude, longitude, city + ", " + state
+        for (csv_zipcode, city, state, latitude, longitude) in CACHED_ZIP_INFO_TUPLES:
+            if csv_zipcode == zipcode:
+                return latitude, longitude, city + ", " + state
         raise ValueError("invalid zipcode: {}".format(zipcode))
+
+
+    @classmethod
+    def searchZipcodes(cls, query):
+        """
+        :param query: 
+        :return: a list of 2-tuples containing places matching query. format: (zipcode, name), where name is the same
+        as latLonNameForZipcode()
+        """
+        zipNameTuples = []
+        for (csv_zipcode, city, state, latitude, longitude) in CACHED_ZIP_INFO_TUPLES:
+            name = city + ", " + state
+            if re.search(query, name, re.IGNORECASE):
+                zipNameTuples.append((csv_zipcode, name))
+        return zipNameTuples
 
 
     #

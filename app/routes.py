@@ -13,4 +13,9 @@ def index():
 
 @app.route('/zip/<zipcode>')
 def forecastForZip(zipcode):
-    return render_template("zip.html", forecast=Forecast(zipcode), time=datetime.now())
+    return render_template("forecast.html", forecast=Forecast(zipcode), time=datetime.now())
+
+
+@app.route('/search/<query>')
+def searchZip(query):
+    return render_template("search.html", query=query, zipNameTuples=Forecast.searchZipcodes(query))

@@ -4,6 +4,7 @@ import datetime
 
 from Forecast import Forecast
 from Hour import Hour
+from src import CACHED_ZIP_INFO_TUPLES
 
 
 class MyTestCase(unittest.TestCase):
@@ -237,6 +238,13 @@ class MyTestCase(unittest.TestCase):
         ]
         hours = Forecast.hoursFromDwmlXmlRoot(dwmlElement)
         self.assertEqual(expHours, hours)
+
+
+    def testSearchZipcodes(self):
+        query = 'barro'
+        expZipNameTuples = [("54812", "Barron, WI"), ("54813", "Barronett, WI"), ("99723", "Barrow, AK")]
+        zipNameTuples = Forecast.searchZipcodes(query)
+        self.assertListEqual(expZipNameTuples, zipNameTuples)
 
 
     def testForecastSummary(self):
