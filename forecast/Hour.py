@@ -33,10 +33,16 @@ class Hour():
 
 
     def getDayOfWeek(self):     # compatible with DAY_OF_WEEK_RANGE
+        """
+        :return: same as datetime.weekday() - Monday is 0 and Sunday is 6
+        """
         return self.datetime.weekday()
 
 
     def getHourOfDay(self):     # compatible with HOUR_OF_DAY_RANGE
+        """
+        :return: same as datetime.hour - range(24)
+        """
         return self.datetime.hour
 
 

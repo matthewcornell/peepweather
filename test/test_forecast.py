@@ -193,7 +193,7 @@ class MyTestCase(unittest.TestCase):
     def testXmlToHours(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
-        expHours = [
+        expHoursWithGaps = [
             Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 10, 3),
             Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 6, 3),
             Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 3, 2),
@@ -236,8 +236,8 @@ class MyTestCase(unittest.TestCase):
             Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 28, 1),
             Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 23, 1)
         ]
-        hours = Forecast.hoursFromDwmlXmlRoot(dwmlElement)
-        self.assertEqual(expHours, hours)
+        hoursWithGaps = Forecast.hoursFromDwmlXmlRoot(dwmlElement)
+        self.assertEqual(expHoursWithGaps, hoursWithGaps)
 
 
     def testSearchZipcodes(self):
@@ -266,6 +266,16 @@ class MyTestCase(unittest.TestCase):
         expHour = Hour(datetime.datetime(2015, 1, 14, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 17, 1)   # 'Tue, 01/13, 07:00 PM'
         hour = forecast.getHour(expHour.datetime.weekday(), expHour.datetime.hour)
         self.assertEqual(expHour, hour)
+        
+        # now test that getHour() fills in gaps
+
+        # {% for hourOfDay in HOUR_OF_DAY_RANGE %}            {# each row is an hour of day #}
+        # <tr>
+        # <th style="background-color:white;">{{ hourOfDay }}</th>
+        # {% for dayOfWeek in DAY_OF_WEEK_RANGE %}    {# each column is a day of week #}
+        # {% set hour = forecast.getHour(dayOfWeek, hourOfDay) %}
+
+        self.fail()
 
 
     def testForecastSummary(self):

@@ -66,6 +66,11 @@ class Forecast:
     #
 
     def getHour(self, dayOfWeek, hourOfDay):
+        """
+        :param dayOfWeek: same as datetime.weekday() - Monday is 0 and Sunday is 6
+        :param hourOfDay: same as datetime.hour - range(24)
+        :return: the first Hour in my hours that matches the inputs
+        """
         for hour in self.hours:
             if hour.getDayOfWeek() == dayOfWeek and hour.getHourOfDay() == hourOfDay:
                 return hour
@@ -112,7 +117,9 @@ class Forecast:
     def hoursFromDwmlXmlRoot(cls, dwmlElement):
         """
         :param dwmlElement:
-        :return: a sequence of Hour instances corresponding to the passed DWML document element
+        :return: a sequence of Hour instances corresponding to the passed DWML document element. Note that this list
+        will have gaps between hours because the incoming data itself has gaps, i.e., it's not sampled every hour but
+        (for example) every three or 12 hours. Gaps must be accounted for by callers.
         """
         # 1) build empty Hours with no data based on min and max dates in layoutKeysToStartValidTimes
         timeLayoutDict = cls.timeLayoutDictFromDwmlXmlRoot(dwmlElement)
