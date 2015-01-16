@@ -24,8 +24,10 @@ class Forecast:
         xmlFile = urllib.request.urlopen(self.weatherDotGovUrl())
         elementTree = ET.parse(xmlFile)
         dwmlElement = elementTree.getroot()
-        logger.info('Forecast({}): {}, {}, {} {}, {}'.format(
-            zipcode, (lat, lon), name, self.weatherDotGovUrl(), elementTree, dwmlElement))
+        logMsg = 'Forecast({}): {}, {}, {} {}, {}'.format(
+            zipcode, (lat, lon), name, self.weatherDotGovUrl(), elementTree, dwmlElement)
+        logger.info("logger.info: " + logMsg)
+        print("print:" + logMsg)
         self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
 
 
