@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import render_template
-from Forecast import Forecast
+from forecast.Forecast import Forecast
 
 from app import app
 
@@ -11,7 +11,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/zip/<zipcode>')
+@app.route('/forecast/<zipcode>')
 def forecastForZip(zipcode):
     return render_template("forecast.html", forecast=Forecast(zipcode), time=datetime.now())
 

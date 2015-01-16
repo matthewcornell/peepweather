@@ -45,10 +45,6 @@ class Hour():
             3-tuple of HTML color name strings for precip, temp, and wind based on temporary rules in this method
         """
         # rate each variable separately, then combine
-        precipRating = None
-        tempRating = None
-        windRating = None
-        
         if self.precip < 20:
             precipRating = Rating.Great
         elif self.precip > 40:
@@ -71,7 +67,6 @@ class Hour():
             windRating = Rating.Marginal
 
         # combine ratings to get a final color
-        color = None
         if precipRating == Rating.Poor or tempRating == Rating.Poor or windRating == Rating.Poor:
             color = 'red'
         elif precipRating == Rating.Marginal or tempRating == Rating.Marginal or windRating == Rating.Marginal:

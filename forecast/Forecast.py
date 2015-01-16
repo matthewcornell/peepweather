@@ -4,13 +4,16 @@ import operator
 import urllib.request
 import xml.etree.ElementTree as ET
 import re
+import logging
 
 from forecast.Hour import Hour
 from forecast import CACHED_ZIP_INFO_TUPLES
 
 
-class Forecast:
+logger = logging.getLogger(__name__)
 
+
+class Forecast:
     def __init__(self, zipcode):
         (lat, lon, name) = self.latLonNameForZipcode(zipcode)
         self.zipcode = zipcode
@@ -21,6 +24,8 @@ class Forecast:
         xmlFile = urllib.request.urlopen(self.weatherDotGovUrl())
         elementTree = ET.parse(xmlFile)
         dwmlElement = elementTree.getroot()
+        logger.info('Forecast({}): {}, {}, {} {}, {}'.format(
+            zipcode, (lat, lon), name, self.weatherDotGovUrl(), elementTree, dwmlElement))
         self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
 
 
