@@ -256,8 +256,16 @@ class MyTestCase(unittest.TestCase):
         # test 2/2: error input. patch constructor:
         elementTree = ET.parse('test/test-forecast-error-response.xml')
         forecast = Forecast('01002', elementTree)
-        expErrorStr = b'<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
+        expErrorStr = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
         self.assertEqual(expErrorStr, forecast.error)
+        
+    
+    def testGetHour(self):
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        forecast = Forecast('01002', elementTree)
+        expHour = Hour(datetime.datetime(2015, 1, 14, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 17, 1)   # 'Tue, 01/13, 07:00 PM'
+        hour = forecast.getHour(expHour.datetime.weekday(), expHour.datetime.hour)
+        self.assertEqual(expHour, hour)
 
 
     def testForecastSummary(self):

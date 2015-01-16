@@ -4,6 +4,29 @@
 
     <h2>Forecast for {{ forecast.name }} - {{ forecast.zipcode }} at {{ time.strftime('%a, %m/%d, %I:%M %p') }}</h2>
 
-    Calendar format is not yet implemented. Sorry!
+    <table style="background-color:black;" border="0" cellspacing="1" cellpadding="8" width="10">
+        <tr style="background-color:white;" border="0" cellpadding="8" cellspacing="1" width="10">
+            <td></td>
+            <th>S</th>
+            <th>M</th>
+            <th>T</th>
+            <th>W</th>
+            <th>T</th>
+            <th>F</th>
+            <th>S</th>
+        </tr>
+        {% for hourOfDay in HOUR_OF_DAY_RANGE %}            {# each row is an hour of day #}
+            <tr>
+                <th style="background-color:white;">{{ hourOfDay }}</th>
+                {% for dayOfWeek in DAY_OF_WEEK_RANGE %}    {# each column is a day of week #}
+                    {% set hour = forecast.getHour(dayOfWeek, hourOfDay) %}
+                    {% set color = hour.color() %}
+                    <td style="background-color: {{ color }};" title="${hour}">
+
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+    </table>
 
 {% endblock %}

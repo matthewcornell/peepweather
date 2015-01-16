@@ -33,11 +33,11 @@ class Forecast:
         logMsg = 'Forecast({}): {}, {}, {} {}, {}'.format(
             zipcode, (lat, lon), name, self.weatherDotGovUrl(), elementTree, dwmlElement)
         logger.info("logger.info: " + logMsg)
-        print("print:" + logMsg)
+        print("(print): " + logMsg)
         
         if dwmlElement.tag == 'error':
             self.error = True
-            self.error = ET.tostring(dwmlElement.find('pre'), encoding='unicode')
+            self.error = ET.tostring(dwmlElement.find('pre'), encoding='unicode')   # "xml", "html" or "text" (default xml)
             logger.error("error getting data for zipcode {}: {}".format(zipcode, self.error))
         else:
             self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
@@ -59,6 +59,17 @@ class Forecast:
               '&wspd=wspd' \
               '&Submit=Submit'.format(lat=self.latLon[0], lon=self.latLon[1])
         return url
+
+
+    #
+    # Hours search
+    #
+
+    def getHour(self, dayOfWeek, hourOfDay):
+        for hour in self.hours:
+            if hour.getDayOfWeek() == dayOfWeek and hour.getHourOfDay() == hourOfDay:
+                return hour
+        return Hour()   # missing hour
 
 
     #
