@@ -1,0 +1,16 @@
+<error>
+    <h2>ERROR</h2>
+    <pre>
+        <problem>No data were found using the following input:</problem>
+        <product>time-series</product>
+        <startTime>2015-01-14T18:13:00</startTime>
+        <endTime>2017-01-15T18:13:00</endTime>
+        <Unit>e</Unit>
+        <latitudeLongitudes>
+            24.859832,-168.021815
+        </latitudeLongitudes>
+        <NDFDparameters>
+            temp pop12 wspd
+        </NDFDparameters>
+    </pre>
+</error>
