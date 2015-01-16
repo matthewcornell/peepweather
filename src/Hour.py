@@ -1,3 +1,8 @@
+# pseudo enum per http://stackoverflow.com/questions/36932/how-can-i-represent-an-enum-in-python
+class Rating:
+    Poor, Marginal, Great = range(0, 3)
+    
+
 class Hour():
     def __init__(self, datetime, precip=None, temp=None, wind=None):
         self.datetime = datetime    # from datetime import datetime. time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
@@ -21,3 +26,58 @@ class Hour():
 
     def __hash__(self):
         return hash(self.key())
+
+
+    #
+    # TODO temporary, untested
+    # TODO instead of a color, return a Rating enum value, and let the css map to colors
+    # Awesome!: https://en.wikipedia.org/wiki/Miscellaneous_Symbols , e.g., U+2600 / &#9728; for 'Black sun with rays'
+    #
+    # Q: where does &blacksquare; come from? aha:
+    # https://code.google.com/p/doctype-mirror/source/browse/BlacksquareCharacterEntity.wiki?repo=wiki&r=043f3193936e69f951d7fe19f78a0cbdd2ed526b&spec=svn.wiki.c717498c6a9e256495b8d098dc575f787acc0b7d
+    # https://code.google.com/p/doctype-mirror/wiki/CharacterEntities
+    # https://html.spec.whatwg.org/multipage/syntax.html#named-character-references , 
+    # http://www.w3.org/TR/html4/sgml/entities.html
+    #
+    def color(self):
+        """
+        :return: an html color string based on my weather settings.
+            3-tuple of HTML color name strings for precip, temp, and wind based on temporary rules in this method
+        """
+        # rate each variable separately, then combine
+        precipRating = None
+        tempRating = None
+        windRating = None
+        
+        if self.precip < 20:
+            precipRating = Rating.Great
+        elif self.precip > 40:
+            precipRating = Rating.Poor
+        else:
+            precipRating = Rating.Marginal
+
+        if self.temp < 30 or self.temp > 80:
+            tempRating = Rating.Poor
+        elif 55 < self.temp < 75:
+            tempRating = Rating.Great
+        else:
+            tempRating = Rating.Marginal
+
+        if self.wind < 5:
+            windRating = Rating.Great
+        elif self.wind > 10:
+            windRating = Rating.Poor
+        else:
+            windRating = Rating.Marginal
+
+        # combine ratings to get a final color
+        color = None
+        if precipRating == Rating.Poor or tempRating == Rating.Poor or windRating == Rating.Poor:
+            color = 'red'
+        elif precipRating == Rating.Marginal or tempRating == Rating.Marginal or windRating == Rating.Marginal:
+            color = 'yellow'
+        else:
+            color = 'green'
+
+        return color
+    
