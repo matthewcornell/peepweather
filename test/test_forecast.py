@@ -2,9 +2,8 @@ import xml.etree.ElementTree as ET
 import unittest
 import datetime
 
-from Forecast import Forecast
-from Hour import Hour
-from src import CACHED_ZIP_INFO_TUPLES
+from forecast.Forecast import Forecast
+from forecast.Hour import Hour
 
 
 class MyTestCase(unittest.TestCase):

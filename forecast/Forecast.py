@@ -5,8 +5,8 @@ import urllib.request
 import xml.etree.ElementTree as ET
 import re
 
-from Hour import Hour
-from src import CACHED_ZIP_INFO_TUPLES
+from forecast.Hour import Hour
+from forecast import CACHED_ZIP_INFO_TUPLES
 
 
 class Forecast:

@@ -6,7 +6,7 @@ def makeZipInfoTuples():
     :return: a list of 5-tuples of the form: (csv_zipcode, city, state, latitude, longitude)
     """
     zipInfoTuples = []
-    with open('src/zipcode-clean.csv', 'r') as csvfile:
+    with open('forecast/zipcode-clean.csv', 'r') as csvfile:
         csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
         for (csv_zipcode, city, state, latitude, longitude, timezone, dst) in csvreader:
             zipInfoTuples.append((csv_zipcode, city, state, latitude, longitude))
