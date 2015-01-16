@@ -1,4 +1,3 @@
-import urllib.request
 import xml.etree.ElementTree as ET
 import unittest
 import datetime
@@ -8,7 +7,6 @@ from forecast.Hour import Hour
 
 
 class MyTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -17,8 +15,9 @@ class MyTestCase(unittest.TestCase):
 
 
     def testForecastInstantiateLatLonName(self):
+        elementTree = ET.parse('test/test-forecast-data.xml')
         for zipcode, (lat, lon, name) in self.zipToLatLonName.items():
-            forecast = Forecast(zipcode)
+            forecast = Forecast(zipcode, elementTree)
             self.assertEqual(zipcode, forecast.zipcode)
             self.assertEqual((lat, lon), forecast.latLon)
             self.assertEqual(name, forecast.name)
@@ -39,7 +38,8 @@ class MyTestCase(unittest.TestCase):
                      '&pop12=pop12' \
                      '&wspd=wspd' \
                      '&Submit=Submit'.format(lat=lat, lon=lon)
-            forecast = Forecast(zipcode)
+            elementTree = ET.parse('test/test-forecast-data.xml')
+            forecast = Forecast(zipcode, elementTree)
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
 
 
@@ -245,27 +245,19 @@ class MyTestCase(unittest.TestCase):
         expZipNameTuples = [("54812", "Barron, WI"), ("54813", "Barronett, WI"), ("99723", "Barrow, AK")]
         zipNameTuples = Forecast.searchZipcodes(query)
         self.assertListEqual(expZipNameTuples, zipNameTuples)
-        
-        
-    def testBadZip(self):
-        # http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php?whichClient=NDFDgen&lat=24.859832&lon=-168.021815&product=time-series&Unit=e&temp=temp&pop12=pop12&wspd=wspd&Submit=Submit
-        # errorXmlFile = 'test/test-forecast-error-response.xml'
-        # elementTree = ET.parse(errorXmlFile)
 
+
+    def testBadZip(self):
         # test 1/2: valid input. patch constructor:
-        #   getXmlDataForZip() returns ET.parse(validXmlFile)   # test-forecast-data.xml
-        forecast = Forecast('01002')
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        forecast = Forecast('01002', elementTree)
         self.assertFalse(forecast.error)
-        self.assertEqual([], forecast.hours)
 
         # test 2/2: error input. patch constructor:
-        #   getXmlDataForZip() returns ET.parse(errorXmlFile)   # test-forecast-error-response.xml
-        forecast = Forecast('01002')
-        self.assertTrue(forecast.error)
-        self.assertEqual([], forecast.hours)
-        # maybe test:
-        # expErrorHtml = b'<pre><problem>No data were found using the following input:</problem>\n<product>time-series</product>\n<startTime>2015-01-14T19:14:00 </startTime>\n<endTime>2017-01-15T19:14:00</endTime>\n<Unit>e</Unit>\n<latitudeLongitudes>\n24.859832,-168.021815 </latitudeLongitudes><NDFDparameters>\ntemp pop12 wspd </NDFDparameters></pre>'
-        # expErrorHtml = b'No data were found using the following input:\ntime-series\n2015-01-14T19:18:00 \n2017-01-15T19:18:00\ne\n\n24.859832,-168.021815 \ntemp pop12 wspd '
+        elementTree = ET.parse('test/test-forecast-error-response.xml')
+        forecast = Forecast('01002', elementTree)
+        expErrorStr = b'<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
+        self.assertEqual(expErrorStr, forecast.error)
 
 
     def testForecastSummary(self):

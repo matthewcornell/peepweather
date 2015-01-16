@@ -14,16 +14,21 @@ logger = logging.getLogger(__name__)
 
 
 class Forecast:
-    def __init__(self, zipcode):
+    def __init__(self, zipcode, elementTree=None):
+        """
+        :param zipcode: str zip code to get forecast for
+        :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
+        :return:
+        """
         (lat, lon, name) = self.latLonNameForZipcode(zipcode)
         self.zipcode = zipcode
         self.latLon = (lat, lon)
         self.name = name
         self.error = False
 
-        # set my hours
-        httpResponse = self.getXmlDataForZip()
-        elementTree = ET.parse(httpResponse)
+        if not elementTree:
+            httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
+            elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
         logMsg = 'Forecast({}): {}, {}, {} {}, {}'.format(
             zipcode, (lat, lon), name, self.weatherDotGovUrl(), elementTree, dwmlElement)
@@ -31,30 +36,14 @@ class Forecast:
         print("print:" + logMsg)
         
         if dwmlElement.tag == 'error':
-            # httpResponse, elementTree, dwmlElement, dwmlElement.attrib:
-            # <http.client.HTTPResponse object at 0x102c99710> <xml.etree.ElementTree.ElementTree object at 0x102c992d0> <Element 'error' at 0x102c923c0> {}
-            # children:
-            #   <Element 'h2' at 0x102c92368>
-            #   <Element 'pre' at 0x102c92470>
-            self.hours = []
             self.error = True
-            preElement = dwmlElement.find('pre')
-            errorHtml = ET.tostring(preElement, method='text')
-            print('yy', preElement, errorHtml)
+            self.error = ET.tostring(dwmlElement.find('pre'))
         else:
             self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
 
 
     def __repr__(self):
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
-
-
-    def getXmlDataForZip(self):
-        """
-        a separate method to enable mocking
-        :return: an HTTPResponse for my weatherDotGovUrl()
-        """
-        return urllib.request.urlopen(self.weatherDotGovUrl())
 
 
     def weatherDotGovUrl(self):
