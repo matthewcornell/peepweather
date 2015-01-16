@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2>Forecast for {{ forecast.name }} - {{ forecast.zipcode }} at {{ time.strftime('%a, %m/%d, %I:%M %p') }}</h2>
+
+    Error getting forecast: <pre> {{ forecast.error }} </pre>
+
+{% endblock %}

@@ -19,10 +19,13 @@ def forecastForZip(zipcode):
     :return:
     """
     formatType = request.args.get('format', 'list')    # to access parameters submitted in the URL (?key=value). TODO change to 'calendar' when implemented
-    if formatType == 'list':
-        return render_template("forecast.html", forecast=Forecast(zipcode), time=datetime.now())
+    forecast = Forecast(zipcode)
+    if forecast.error:
+        return render_template("forecast-error.html", forecast=forecast, time=datetime.now())
+    elif formatType == 'list':
+        return render_template("forecast-list.html", forecast=forecast, time=datetime.now())
     elif formatType == 'calendar':
-        return "calendar format type unimplemented"     # TODO
+        return render_template("forecast-calendar.html", forecast=forecast, time=datetime.now())
     else:
         return "invalid format type. must be either 'calendar' or 'list'"   # TODO
 
