@@ -37,7 +37,8 @@ class Forecast:
         
         if dwmlElement.tag == 'error':
             self.error = True
-            self.error = ET.tostring(dwmlElement.find('pre'))
+            self.error = ET.tostring(dwmlElement.find('pre'), encoding='unicode')
+            logger.error("error getting data for zipcode {}: {}".format(zipcode, self.error))
         else:
             self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
 
