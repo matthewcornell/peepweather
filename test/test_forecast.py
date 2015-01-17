@@ -276,13 +276,14 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree)
         calendarHeader = forecast.calendarHeaderRow()
-        self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M'], calendarHeader)
-        
-        forecast.hours[0].datetime += datetime.timedelta(days=1)   # should push the header forward one day
-        calendarHeader = forecast.calendarHeaderRow()
-        self.assertEqual(['W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
+        self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
 
-    
+        elementTree = ET.parse('test/test-forecast-only-seven-days.xml')
+        forecast = Forecast('01002', elementTree)
+        calendarHeader = forecast.calendarHeaderRow()
+        self.assertEqual(['S', 'S', 'M', 'T', 'W', 'T', 'F'], calendarHeader)
+
+
     def testHoursAsCalendarRows(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree)

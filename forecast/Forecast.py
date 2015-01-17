@@ -231,10 +231,12 @@ class Forecast:
 
     def calendarHeaderRow(self):
         dayOfWeekNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-        day0hour0dt = self.hours[0].datetime
-        datetimeMidnightDay0 = datetime.datetime(day0hour0dt.year, day0hour0dt.month, day0hour0dt.day, 0)
-        weekday = datetimeMidnightDay0.weekday()  # Monday is 0, Sunday is 6
-        return dayOfWeekNames[weekday:] + dayOfWeekNames[:weekday]
+        oldestHour = self.hours[0]
+        newestHour = self.hours[-1]
+        numDays = 1 + (newestHour.datetime - oldestHour.datetime).days
+        weekday = oldestHour.datetime.weekday()
+        headerRow = (dayOfWeekNames * 3)[weekday:weekday + numDays] # 3 is magic. at least good enough for 8 days of forecast data
+        return headerRow
 
 
     def hoursAsCalendarRows(self):
@@ -278,7 +280,6 @@ class Forecast:
         # rows
         allHours = headMissingHours + self.hours + tailMissingHours
         numDays = 1 + (newestHour.datetime - oldestHour.datetime).days
-        print('yy', oldestHour, newestHour, numDays)
         calendarRows = []
         for hourNum in range(24):           # calendar row
             hourRow = []

@@ -62,7 +62,7 @@ class Hour():
             3-tuple of HTML color name strings for precip, temp, and wind based on temporary rules in this method
         """
         # missing hour special case
-        if not self.datetime:
+        if not self.precip:
             return 'white'
 
         # rate each variable separately, then combine
