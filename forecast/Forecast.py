@@ -34,10 +34,11 @@ class Forecast:
             zipcode, (lat, lon), name, self.weatherDotGovUrl(), elementTree, dwmlElement)
         logger.info("logger.info: " + logMsg)
         print("(print): " + logMsg)
-        
+
         if dwmlElement.tag == 'error':
             self.error = True
-            self.error = ET.tostring(dwmlElement.find('pre'), encoding='unicode')   # "xml", "html" or "text" (default xml)
+            self.error = ET.tostring(dwmlElement.find('pre'),
+                                     encoding='unicode')  # "xml", "html" or "text" (default xml)
             logger.error("error getting data for zipcode {}: {}".format(zipcode, self.error))
         else:
             self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
@@ -188,20 +189,40 @@ class Forecast:
             timeLayout = paramEle.attrib['time-layout']
             paramDict[paramEle.tag] = (timeLayout, paramVals)
         return paramDict
-    
-    
+
+
     #
     # calendar layout methods
     #
 
 
+    def datetimeMidnightDay0(self):
+        datetimeHour0 = self.hours[0].datetime
+        return datetime(datetimeHour0.year, datetimeHour0.month, datetimeHour0.day, 0)
+
+
     def calendarHeaderRow(self):
-        return ['F', 'S', 'S', 'M', 'T', 'W', 'T']
+        dayOfWeekNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+        datetimeMidnightDay0 = self.datetimeMidnightDay0()
+        weekday = datetimeMidnightDay0.weekday()  # Monday is 0, Sunday is 6
+        return dayOfWeekNames[weekday:] + dayOfWeekNames[:weekday]
 
 
     def hoursAsCalendarRows(self):
+        """
+        Helper method used by views to lay out my hours in a calendar-like view.
+        
+        :return: conceptually returns a table where there are 24 rows correspond to hours of the day (0 through 23),
+        and 8 columns corresponding to the days of the week. Each column is the Hour for that combination of hourOfDay
+        and dayOfWeek. (Note that we have 8 columns and not 7 because a 7-day forecast will very likely 'overflow' into
+        an eighth day. Not having 7 is OK because the display is not a weekly calendar; it's a tabular display that's
+        extended into the future as far necessary. If 14 day forecasts become available then we will have 15 columns,
+        and so forth.)
+        
+        Format: a list of 24 8-tuples containing day-of-the-week Hours.
+        """
         hoursAsCalRows = []
         for hour in range(24):
-            hoursAsCalRows.append([hour] + [None] * 8)
+            hoursAsCalRows.append([None] * 8)
         return hoursAsCalRows
 

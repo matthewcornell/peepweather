@@ -264,10 +264,11 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree)
         calendarHeader = forecast.calendarHeaderRow()
-        self.assertEqual(['F', 'S', 'S', 'M', 'T', 'W', 'T'], calendarHeader)
+        self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M'], calendarHeader)
         
         forecast.hours[0].datetime += datetime.timedelta(days=1)   # should push the header forward one day
-        self.assertEqual(['S', 'S', 'M', 'T', 'W', 'T', 'F'], calendarHeader)
+        calendarHeader = forecast.calendarHeaderRow()
+        self.assertEqual(['W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
 
     
     def testHoursAsCalendarRows(self):
@@ -278,19 +279,18 @@ class MyTestCase(unittest.TestCase):
         # test structure
         self.assertEqual(24, len(actCaledarRows))  # one row for each hour of the day
         for row in actCaledarRows:
-            self.assertEqual(9, len(row))
+            self.assertEqual(8, len(row))
 
         # make expected rows to compare just datetimes - will ensure that gaps have been filled
         missingHours = [(hour, 0) for hour in range(19)] + [(hour, 7) for hour in range(20, 24)]    # (hour, day)
 
         oneHour = datetime.timedelta(hours=1)
         oneDay = datetime.timedelta(days=1)
-        datetimeHour0 = forecast.hours[0].datetime
-        datetimeMidnightDay0 = datetime.datetime(datetimeHour0.year, datetimeHour0.month, datetimeHour0.day, 0)
+        datetimeMidnightDay0 = forecast.datetimeMidnightDay0()
         expCaledarRows = []
         for hour in range(24):      # calendar row
             hourRow = [hour]        # row header
-            for day in range(8):    # calendar column. NB: we use 8 not 7 because of possible overflow (all hours won't fit neatly in 7). this is OK, though, because the display is not a weekly calendar. we push out the the right as many days as we have forecast information for. might be 14 some day, who knows
+            for day in range(8):    # calendar column
                 if (hour, day) in missingHours: # (row, col)
                     hourDatetime = None
                 else:

@@ -20,11 +20,8 @@
                 <th style="background-color:white;">{{ hourOfDay }}</th>
                 {% for dayOfWeek in DAY_OF_WEEK_RANGE %}    {# each column is a day of week #}
                     {% set hour = forecast.getHour(dayOfWeek, hourOfDay) %}
-                    {% set color = hour.color() %}
-                    <td style="background-color: {{ color }};" title="${hour}">
-
+                    <td style="background-color: {{ hour.color() }};" title="${hour}">
                 {% endfor %}
-
             </tr>
         {% endfor %}
     </table>
