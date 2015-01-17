@@ -6,7 +6,6 @@ that is 'stoplight' color coded based on how good it appears for activities like
 
 ### To Do
 
-- implement calendar layout instead of current list layout
 - filter out according to daylight (don't show if dusk or night)
 - index:
     - intro, contact, etc.
@@ -16,5 +15,5 @@ that is 'stoplight' color coded based on how good it appears for activities like
 - geolocation!
 - change Hour.color() to give numerical rating to each variable, then sum to get final. any red would have to override
   result, though
+- make pretty :-)
 - ...
-
