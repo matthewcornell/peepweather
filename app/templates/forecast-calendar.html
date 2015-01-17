@@ -14,12 +14,13 @@
             <th>T</th>
             <th>F</th>
             <th>S</th>
+            <th>S</th>
         </tr>
-        {% for hourOfDay in HOUR_OF_DAY_RANGE %}            {# each row is an hour of day #}
+        {% for hourOfDayTuple in forecast.hoursAsCalendarRows() %}  {# each row is an hour of day #}
             <tr>
-                <th style="background-color:white;">{{ hourOfDay }}</th>
-                {% for dayOfWeek in DAY_OF_WEEK_RANGE %}    {# each column is a day of week #}
-                    {% set hour = forecast.getHour(dayOfWeek, hourOfDay) %}
+                <th style="background-color:white;">{{ loop.index0 }}</th>
+                {% for dayOfWeekHour in hourOfDayTuple %}           {# each ele/column is a day of week #}
+                    {% set hour = forecast.getHour(dayOfWeekHour, hourOfDayTuple) %}
                     <td style="background-color: {{ hour.color() }};" title="${hour}">
                 {% endfor %}
             </tr>

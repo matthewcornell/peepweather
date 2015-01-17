@@ -287,7 +287,7 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree)
         actCaledarRows = forecast.hoursAsCalendarRows()
-        
+
         # test structure
         self.assertEqual(24, len(actCaledarRows))  # one row for each hour of the day
         for row in actCaledarRows:
@@ -300,6 +300,22 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(hoursWithNoGaps, flattenedCaledarHours[19:-4])
         self.assertTrue(all(map(lambda hour : hour.precip is None, flattenedCaledarHours[:19])))
         self.assertTrue(all(map(lambda hour : hour.precip is None, flattenedCaledarHours[-4:])))
+        
+        # spot check a few rows
+        expRow1 = [Hour(datetime.datetime(2015, 1, 13, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), None, None, None),
+                   Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 3, 2),
+                   Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 13, 2),
+                   Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 17, 3),
+                   Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 3, 11, 4),
+                   Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 9, 21, 5),
+                   Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 28, 4),
+                   Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 18, 3)]
+        self.assertEqual(expRow1, actCaledarRows[1])
+
+
+    def testHoursAsCalendarRowsPerfectAlignment(self):
+        # the case where there are no missing hours at the start and/or end. will probably cause hoursAsCalendarRows() to fail
+        self.fail()
 
 
     def testHourColor(self):

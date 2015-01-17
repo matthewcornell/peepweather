@@ -260,8 +260,8 @@ class Forecast:
 
         currDatetime = oldestHour.datetime
         while currDatetime.hour != 0:
-            headMissingHours.append(Hour(currDatetime))
             currDatetime -= oneHour
+            headMissingHours.append(Hour(currDatetime))
         headMissingHours.sort()
         
         # create tailMissingHours by working forward from the newest hour to hour 23
@@ -270,8 +270,8 @@ class Forecast:
         
         currDatetime = newestHour.datetime
         while currDatetime.hour != 23:
-            tailMissingHours.append(Hour(currDatetime))
             currDatetime += oneHour
+            tailMissingHours.append(Hour(currDatetime))
         tailMissingHours.sort()
 
         # rows
@@ -280,6 +280,7 @@ class Forecast:
         for hourNum in range(24):  # calendar row
             hourRow = []
             for dayNum in range(8):  # calendar column
-                hourRow.append(allHours[hourNum + (24 * dayNum)])
+                hour = allHours[hourNum + (24 * dayNum)]
+                hourRow.append(hour)
             calendarRows.append(hourRow)
         return calendarRows

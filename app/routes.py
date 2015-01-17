@@ -26,8 +26,7 @@ def forecastForZip(zipcode):
     elif formatType == 'list':
         return render_template("forecast-list.html", forecast=forecast, time=datetime.now())
     elif formatType == 'calendar':
-        return render_template("forecast-calendar.html", forecast=forecast, time=datetime.now(),
-                               HOUR_OF_DAY_RANGE=Hour.HOUR_OF_DAY_RANGE, DAY_OF_WEEK_RANGE=Hour.DAY_OF_WEEK_RANGE)
+        return render_template("forecast-calendar.html", forecast=forecast, time=datetime.now())
     else:
         return "invalid format type. must be either 'calendar' or 'list'"   # TODO
 
