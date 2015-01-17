@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import functools
 import operator
 import urllib.request
@@ -30,18 +30,12 @@ class Forecast:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
             elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
-        logMsg = 'Forecast({}): {}, {}, {} {}, {}'.format(
-            zipcode, (lat, lon), name, self.weatherDotGovUrl(), elementTree, dwmlElement)
-        logger.info("logger.info: " + logMsg)
-        print("(print): " + logMsg)
-
         if dwmlElement.tag == 'error':
             self.error = True
-            self.error = ET.tostring(dwmlElement.find('pre'),
-                                     encoding='unicode')  # "xml", "html" or "text" (default xml)
+            self.error = ET.tostring(dwmlElement.find('pre'), encoding='unicode')   # "xml", "html" or "text" (default xml)
             logger.error("error getting data for zipcode {}: {}".format(zipcode, self.error))
         else:
-            self.hours = self.hoursFromDwmlXmlRoot(dwmlElement)
+            self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
 
 
     def __repr__(self):
@@ -94,26 +88,63 @@ class Forecast:
 
 
     #
-    # hoursFromDwmlXmlRoot() and friends
+    # hoursWithNoGapsFromXml() and friends
     #
 
 
     @classmethod
-    def hoursFromDwmlXmlRoot(cls, dwmlElement):
+    def hoursWithNoGapsFromXml(cls, dwmlElement):
+        """
+        Takes the output from hoursWithGapsFromXml() and interpolates missing hoursWithGaps to create a finished list
+        of Hours that starts at the first hour in hoursWithGapsFromXml() and finishes with the last.
+
+        :return: a list of Hours starting with the earliest hour in hoursWithGaps and ending with the last,
+        where all even hoursWithGaps are represented 
+        """
+        oneHour = datetime.timedelta(hours=1)
+        hoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement)
+        oldestHour = hoursWithGaps[0]
+        newestHour = hoursWithGaps[-1]
+        
+        hoursWithNoGaps = []
+        currDatetime = oldestHour.datetime
+        prevFoundHour = oldestHour
+        while currDatetime <= newestHour.datetime:
+            foundHour = Forecast.findHourForDatetime(currDatetime, hoursWithGaps)
+            if not foundHour:
+                foundHour = Hour(currDatetime, prevFoundHour.precip, prevFoundHour.temp, prevFoundHour.wind)
+            hoursWithNoGaps.append(foundHour)
+            prevFoundHour = foundHour
+            currDatetime += oneHour
+        return hoursWithNoGaps
+    
+    
+    @classmethod
+    def findHourForDatetime(cls, theDatetime, hoursWithGaps):
+        for hour in hoursWithGaps:
+            if hour.datetime == theDatetime:
+                return hour
+        return None
+
+
+    @classmethod
+    def hoursWithGapsFromXml(cls, dwmlElement):
         """
         :param dwmlElement:
-        :return: a sequence of Hour instances corresponding to the passed DWML document element. Note that this list
-        will have gaps between hours because the incoming data itself has gaps, i.e., it's not sampled every hour but
-        (for example) every three or 12 hours. Gaps must be accounted for by callers.
+        :return: a sequence of Hour instances corresponding to the passed DWML document element. 
+        Note that this list will have gaps between hours because the incoming data itself has gaps, i.e., 
+        it's not sampled every hour but (for example) every three or 12 hours. Gaps must be accounted for by callers. 
+        Because the forecast data's samples are not the same for all parameters, we need to interpolate missing 
+        values by using the most recently seen ones. 
         """
         # 1) build empty Hours with no data based on min and max dates in layoutKeysToStartValidTimes
-        timeLayoutDict = cls.timeLayoutDictFromDwmlXmlRoot(dwmlElement)
+        timeLayoutDict = cls.timeLayoutDictFromXml(dwmlElement)
         uniqueDatetimes = set(functools.reduce(operator.add, timeLayoutDict.values()))
         hours = list(map(lambda dt: Hour(dt), sorted(uniqueDatetimes)))
 
         # 2) iterate over weather data and plug into corresponding hour. NB: will leave gaps, i.e., some Hours will not
         # have all three values set
-        paramSamplesDict = cls.parameterSamplesDictFromDwmlXmlRoot(dwmlElement)
+        paramSamplesDict = cls.parameterSamplesDictFromXml(dwmlElement)
         for pName, pVals in paramSamplesDict.items():
             for pVal, pDt in pVals:
                 for hour in hours:
@@ -142,7 +173,7 @@ class Forecast:
 
 
     @classmethod
-    def timeLayoutDictFromDwmlXmlRoot(cls, dwmlElement):
+    def timeLayoutDictFromXml(cls, dwmlElement):
         """
         :param dwmlElement:
         :return: dict: {<layout-key> -> [<start-valid-time> datetime instances]}
@@ -155,21 +186,21 @@ class Forecast:
                 # e.g., <start-valid-time>2015-01-13T07:00:00-05:00</start-valid-time>. NB: that format is ISO 8601
                 # EXCEPT for the ':' in the final time zone section (e.g., '-05:00'), so we remove it before parsing
                 startValidTimeTrim = startValidTimeEle.text[:-3] + startValidTimeEle.text[-2:]
-                dt = datetime.strptime(startValidTimeTrim, '%Y-%m-%dT%H:%M:%S%z')
+                dt = datetime.datetime.strptime(startValidTimeTrim, '%Y-%m-%dT%H:%M:%S%z')
                 startValidTimes.append(dt)
             timeLayoutDict[layoutKey.text] = startValidTimes
         return timeLayoutDict
 
 
     @classmethod
-    def parameterSamplesDictFromDwmlXmlRoot(cls, dwmlElement):
+    def parameterSamplesDictFromXml(cls, dwmlElement):
         """
         :param dwmlElement:
         :return: dict: {<paramName> -> [(paramVal, paramDatetime)]}
         """
         parameterSamplesDict = {}
-        paramDict = cls.parameterDictFromDwmlXmlRoot(dwmlElement)
-        timeLayoutDict = cls.timeLayoutDictFromDwmlXmlRoot(dwmlElement)
+        paramDict = cls.parameterDictFromXml(dwmlElement)
+        timeLayoutDict = cls.timeLayoutDictFromXml(dwmlElement)
         for paramName, (timeLayoutKey, paramVals) in paramDict.items():
             timeLayoutDatetimes = timeLayoutDict[timeLayoutKey]
             paramSamples = list(zip(paramVals, timeLayoutDatetimes))
@@ -178,7 +209,7 @@ class Forecast:
 
 
     @classmethod
-    def parameterDictFromDwmlXmlRoot(cls, dwmlElement):
+    def parameterDictFromXml(cls, dwmlElement):
         """
         :param dwmlElement:
         :return: dict: {<name> -> (<time-layout>, [int values])}
@@ -198,7 +229,7 @@ class Forecast:
 
     def datetimeMidnightDay0(self):
         datetimeHour0 = self.hours[0].datetime
-        return datetime(datetimeHour0.year, datetimeHour0.month, datetimeHour0.day, 0)
+        return datetime.datetime(datetimeHour0.year, datetimeHour0.month, datetimeHour0.day, 0)
 
 
     def calendarHeaderRow(self):
@@ -212,17 +243,42 @@ class Forecast:
         """
         Helper method used by views to lay out my hours in a calendar-like view.
         
-        :return: conceptually returns a table where there are 24 rows correspond to hours of the day (0 through 23),
-        and 8 columns corresponding to the days of the week. Each column is the Hour for that combination of hourOfDay
-        and dayOfWeek. (Note that we have 8 columns and not 7 because a 7-day forecast will very likely 'overflow' into
-        an eighth day. Not having 7 is OK because the display is not a weekly calendar; it's a tabular display that's
-        extended into the future as far necessary. If 14 day forecasts become available then we will have 15 columns,
-        and so forth.)
-        
-        Format: a list of 24 8-tuples containing day-of-the-week Hours.
+        :return: Format: a list of 24 8-tuples containing day-of-the-week Hours. Conceptually returns a table where 
+        there are 24 rows correspond to hours of the day (0 through 23), and 8 columns corresponding to the days of 
+        the week. Each column is the Hour for that combination of hourOfDay and dayOfWeek. (Note that we have 8 
+        columns and not 7 because a 7-day forecast will very likely 'overflow' into an eighth day. Not having 7 is OK 
+        because the display is not a weekly calendar; it's a tabular display that's extended into the future as far 
+        necessary. If 14 day forecasts become available then we will have 15 columns, and so forth.) To get a table 
+        with no missing Hours, we have to interpolate from the most recently seen Hour, similar to what 
+        hoursWithGapsFromXml() does.
         """
-        hoursAsCalRows = []
-        for hour in range(24):
-            hoursAsCalRows.append([None] * 8)
-        return hoursAsCalRows
+        oneHour = datetime.timedelta(hours=1)
+        oneDay = datetime.timedelta(days=1)
+        datetimeMidnightDay0 = self.datetimeMidnightDay0()
+        lastSeenHour = None
+        calendarRows = []
+        for hourNum in range(24):       # calendar row (hour of day)
+            hourRow = []
+            for dayNum in range(8):     # calendar column (day of week). 0 is first day in forecast, 7 is last
+                hourDateTime = datetimeMidnightDay0 + (oneDay * dayNum) + (oneHour * hourNum)
+                matchingHour = self.getHourForHourAndDayNumbers(hourNum, dayNum)
+                if not lastSeenHour:
+                    if not matchingHour:        # haven't seen first sample yet. use missing hour
+                        matchingHour = Hour()
+                    else:                       # first sample seen
+                        lastSeenHour = matchingHour
+                else:   # yes lastSeenHour
+                    if not matchingHour:        # gap. interpolate from last seen
+                        matchingHour = Hour(hourDateTime, lastSeenHour.precip, lastSeenHour.temp, lastSeenHour.wind)
+                    else:                       # new sample. check whether last sample in all hours
+                        if self.isLastSample(matchingHour):
+                            lastSeenHour = None
+                        else:
+                            lastSeenHour = matchingHour
+                hourRow.append(matchingHour)
+            calendarRows.append(hourRow)
+        return calendarRows
 
+
+    def isLastSample(self, hour):
+        return hour == self.hours[0]

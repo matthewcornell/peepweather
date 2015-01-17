@@ -13,5 +13,8 @@ that is 'stoplight' color coded based on how good it appears for activities like
     - forms for entering zip, and for entering query
     - eventually including a form to set color ranges for parameters
 - overall summary
+- geolocation!
+- change Hour.color() to give numerical rating to each variable, then sum to get final. any red would have to override
+  result, though
 - ...
 

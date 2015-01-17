@@ -1,15 +1,16 @@
-# pseudo enum per http://stackoverflow.com/questions/36932/how-can-i-represent-an-enum-in-python
+from functools import total_ordering
+
+
 class Rating:
+    # pseudo enum per http://stackoverflow.com/questions/36932/how-can-i-represent-an-enum-in-python
     Poor, Marginal, Great = range(0, 3)
 
 
+@total_ordering
 class Hour():
-    DAY_OF_WEEK_RANGE = range(0, 7)     # Su..Sa. compatible with Date.getDay(). TODO Enum?
-    HOUR_OF_DAY_RANGE = range(8, 21)    # daytime range - 8a to 8p. compatible with Date.getHours(). TODO Enum?
-
 
     def __init__(self, datetime=None, precip=None, temp=None, wind=None):
-        self.datetime = datetime    # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored. NB: a datetime of None represents a "missing" hour as returned by Forecast.getHour()
+        self.datetime = datetime    # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored. NB: a datetime of None represents a 'missing' hour as returned by Forecast.getHour()
         self.precip = precip        # probability of precipitation: % b/w 0 and 100
         self.temp = temp            # degrees Fahrenheit
         self.wind = wind            # MPH
@@ -30,20 +31,10 @@ class Hour():
 
     def __hash__(self):
         return hash(self.key())
-
-
-    def getDayOfWeek(self):     # compatible with DAY_OF_WEEK_RANGE
-        """
-        :return: same as datetime.weekday() - Monday is 0 and Sunday is 6
-        """
-        return self.datetime.weekday()
-
-
-    def getHourOfDay(self):     # compatible with HOUR_OF_DAY_RANGE
-        """
-        :return: same as datetime.hour - range(24)
-        """
-        return self.datetime.hour
+    
+    
+    def __lt__(self, other):
+        return self.datetime < other.datetime
 
 
     #
