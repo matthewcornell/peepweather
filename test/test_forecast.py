@@ -311,6 +311,17 @@ class MyTestCase(unittest.TestCase):
                    Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 28, 4),
                    Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 18, 3)]
         self.assertEqual(expRow1, actCaledarRows[1])
+        
+        
+    def testHoursAsCalendarRowsStructure(self):
+        fileRowCount = {'test/test-forecast-data.xml': 8, 'test/test-forecast-only-seven-days.xml': 7}
+        for xmlFileName, expRowCount in fileRowCount.items():
+            elementTree = ET.parse(xmlFileName)
+            forecast = Forecast('01002', elementTree)
+            actCaledarRows = forecast.hoursAsCalendarRows()
+            self.assertEqual(24, len(actCaledarRows))
+            for row in actCaledarRows:
+                self.assertEqual(expRowCount, len(row))
 
 
     def testHoursAsCalendarRowsPerfectAlignment(self):

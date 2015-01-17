@@ -28,6 +28,7 @@ class Forecast:
 
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
+            logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(self.zipcode, datetime.datetime.now(),  self.latLon, self.name, self.weatherDotGovUrl()))
             elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
         if dwmlElement.tag == 'error':
@@ -276,10 +277,12 @@ class Forecast:
 
         # rows
         allHours = headMissingHours + self.hours + tailMissingHours
+        numDays = 1 + (newestHour.datetime - oldestHour.datetime).days
+        print('yy', oldestHour, newestHour, numDays)
         calendarRows = []
-        for hourNum in range(24):  # calendar row
+        for hourNum in range(24):           # calendar row
             hourRow = []
-            for dayNum in range(8):  # calendar column
+            for dayNum in range(numDays):   # calendar column
                 hour = allHours[hourNum + (24 * dayNum)]
                 hourRow.append(hour)
             calendarRows.append(hourRow)
