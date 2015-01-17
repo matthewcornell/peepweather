@@ -62,22 +62,6 @@ class Forecast:
 
 
     #
-    # Hours search
-    #
-
-    def getHour(self, dayOfWeek, hourOfDay):
-        """
-        :param dayOfWeek: same as datetime.weekday() - Monday is 0 and Sunday is 6
-        :param hourOfDay: same as datetime.hour - range(24)
-        :return: the first Hour in my hours that matches the inputs
-        """
-        for hour in self.hours:
-            if hour.getDayOfWeek() == dayOfWeek and hour.getHourOfDay() == hourOfDay:
-                return hour
-        return Hour()   # missing hour
-
-
-    #
     # zipcode utilities
     #
 
@@ -204,3 +188,20 @@ class Forecast:
             timeLayout = paramEle.attrib['time-layout']
             paramDict[paramEle.tag] = (timeLayout, paramVals)
         return paramDict
+    
+    
+    #
+    # calendar layout methods
+    #
+
+
+    def calendarHeaderRow(self):
+        return ['F', 'S', 'S', 'M', 'T', 'W', 'T']
+
+
+    def hoursAsCalendarRows(self):
+        hoursAsCalRows = []
+        for hour in range(24):
+            hoursAsCalRows.append([hour] + [None] * 8)
+        return hoursAsCalRows
+

@@ -259,28 +259,57 @@ class MyTestCase(unittest.TestCase):
         expErrorStr = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
         self.assertEqual(expErrorStr, forecast.error)
         
-    
-    def testGetHour(self):
+        
+    def testColumnHeaderRow(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree)
-        expHour = Hour(datetime.datetime(2015, 1, 14, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 17, 1)   # 'Tue, 01/13, 07:00 PM'
-        hour = forecast.getHour(expHour.datetime.weekday(), expHour.datetime.hour)
-        self.assertEqual(expHour, hour)
+        calendarHeader = forecast.calendarHeaderRow()
+        self.assertEqual(['F', 'S', 'S', 'M', 'T', 'W', 'T'], calendarHeader)
         
-        # now test that getHour() fills in gaps
+        forecast.hours[0].datetime += datetime.timedelta(days=1)   # should push the header forward one day
+        self.assertEqual(['S', 'S', 'M', 'T', 'W', 'T', 'F'], calendarHeader)
 
-        # {% for hourOfDay in HOUR_OF_DAY_RANGE %}            {# each row is an hour of day #}
-        # <tr>
-        # <th style="background-color:white;">{{ hourOfDay }}</th>
-        # {% for dayOfWeek in DAY_OF_WEEK_RANGE %}    {# each column is a day of week #}
-        # {% set hour = forecast.getHour(dayOfWeek, hourOfDay) %}
+    
+    def testHoursAsCalendarRows(self):
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        forecast = Forecast('01002', elementTree)
+        actCaledarRows = forecast.hoursAsCalendarRows()
+        
+        # test structure
+        self.assertEqual(24, len(actCaledarRows))  # one row for each hour of the day
+        for row in actCaledarRows:
+            self.assertEqual(9, len(row))
 
-        self.fail()
+        # make expected rows to compare just datetimes - will ensure that gaps have been filled
+        missingHours = [(hour, 0) for hour in range(19)] + [(hour, 7) for hour in range(20, 24)]    # (hour, day)
 
+        oneHour = datetime.timedelta(hours=1)
+        oneDay = datetime.timedelta(days=1)
+        datetimeHour0 = forecast.hours[0].datetime
+        datetimeMidnightDay0 = datetime.datetime(datetimeHour0.year, datetimeHour0.month, datetimeHour0.day, 0)
+        expCaledarRows = []
+        for hour in range(24):      # calendar row
+            hourRow = [hour]        # row header
+            for day in range(8):    # calendar column. NB: we use 8 not 7 because of possible overflow (all hours won't fit neatly in 7). this is OK, though, because the display is not a weekly calendar. we push out the the right as many days as we have forecast information for. might be 14 some day, who knows
+                if (hour, day) in missingHours: # (row, col)
+                    hourDatetime = None
+                else:
+                    hourDatetime = datetimeMidnightDay0 + (oneDay * day) + (oneHour * hour)
+                # hourRow.append((hour, day))
+                # hourRow.append(Hour(hourDatetime))
+                # hourRow.append(str(hourDatetime))
+                hourRow.append(hourDatetime.strftime('%a, %m/%d, %I:%M %p') if hourDatetime else None)
+            expCaledarRows.append(hourRow)
+        print('xx', expCaledarRows, actCaledarRows, sep='\n')
+        self.assertEqual(expCaledarRows, actCaledarRows)
 
-    def testForecastSummary(self):
+        # spot check some filled values
         self.fail()
 
 
     def testHourColor(self):
+        self.fail()
+
+
+    def testForecastSummary(self):
         self.fail()
