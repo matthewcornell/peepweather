@@ -28,7 +28,7 @@ class Forecast:
 
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
-            logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(self.zipcode, datetime.datetime.now(),  self.latLon, self.name, self.weatherDotGovUrl()))
+            print('Forecast({}) @ {}: {}, {} -> {}: '.format(self.zipcode, datetime.datetime.now(),  self.latLon, self.name, self.weatherDotGovUrl()))
             elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
         if dwmlElement.tag == 'error':
@@ -288,3 +288,11 @@ class Forecast:
                 hourRow.append(hour)
             calendarRows.append(hourRow)
         return calendarRows
+
+
+    @staticmethod
+    def isDaylightHour(hour):
+        """
+        :return: True if hour is a daylight hour. TODO: this is a very rough initial hack to limit hours shown. doesn't handle timezone, ...
+        """
+        return 7 < hour < 19

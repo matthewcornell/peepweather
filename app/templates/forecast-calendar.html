@@ -14,12 +14,14 @@
 
         </tr>
         {% for hourOfDayHours in forecast.hoursAsCalendarRows() %}  {# each row is an hour of day #}
-            <tr>
-                <th style="background-color:white;">{{ loop.index0 }}</th>
-                {% for dayOfWeekHour in hourOfDayHours %}           {# each ele/column is a day of week #}
-                    <td style="background-color: {{ dayOfWeekHour.color() }};" title="${hour}">
-                {% endfor %}
-            </tr>
+            {% if forecast.isDaylightHour(loop.index0) %}
+                <tr>
+                    <th style="background-color:white;">{{ loop.index0 }}</th>
+                    {% for dayOfWeekHour in hourOfDayHours %}           {# each ele/column is a day of week #}
+                        <td style="background-color: {{ dayOfWeekHour.color() }};" title="${hour}">
+                    {% endfor %}
+                </tr>
+            {% endif %}
         {% endfor %}
     </table>
 

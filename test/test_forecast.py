@@ -323,6 +323,12 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(24, len(actCaledarRows))
             for row in actCaledarRows:
                 self.assertEqual(expRowCount, len(row))
+                
+                
+    def testIsDaylight(self):
+        for hour in range(24):
+            expIsDaylight = 7 < hour < 20
+            self.assertEqual(expIsDaylight, Forecast.isDaylightHour(hour))
 
 
     def testHoursAsCalendarRowsPerfectAlignment(self):
