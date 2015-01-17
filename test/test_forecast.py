@@ -1,6 +1,8 @@
+import functools
 import xml.etree.ElementTree as ET
 import unittest
 import datetime
+import operator
 
 from forecast.Forecast import Forecast
 from forecast.Hour import Hour
@@ -229,7 +231,7 @@ class MyTestCase(unittest.TestCase):
         currDatetime = oldestDatetime
         while currDatetime <= newestDatetime:
             expHoursWithNoGaps.append(Hour(currDatetime))
-            currDatetime = currDatetime + oneHour
+            currDatetime += oneHour
         self.assertTrue(len(expHoursWithNoGaps), len(actHoursWithNoGaps))
         
         for (expHour, actHour) in zip(expHoursWithNoGaps, actHoursWithNoGaps):
@@ -257,7 +259,6 @@ class MyTestCase(unittest.TestCase):
         h5 = self.copyOfHourPlusOne(h4)
         h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 23, 1)
         exph0Idx = 162
-        print('xx', expHoursWithNoGaps, actHoursWithNoGaps, sep='\n')
         self.assertEqual([h0, h1, h2, h3, h4, h5, h6], actHoursWithNoGaps[exph0Idx:exph0Idx + 7])
 
         
@@ -291,26 +292,14 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(24, len(actCaledarRows))  # one row for each hour of the day
         for row in actCaledarRows:
             self.assertEqual(8, len(row))
-
-        # make expected rows to compare just datetimes - will ensure that gaps have been filled
-        missingHours = [(hour, 0) for hour in range(19)] + [(hour, 7) for hour in range(20, 24)]    # (hour, day)
-        oneHour = datetime.timedelta(hours=1)
-        oneDay = datetime.timedelta(days=1)
-        datetimeMidnightDay0 = forecast.datetimeMidnightDay0()
-        expCaledarRows = []
-        for hourNum in range(24):       # calendar row
-            hourRow = [hourNum]         # row header
-            for dayNum in range(8):     # calendar column
-                if (hourNum, dayNum) in missingHours: # (row, col)
-                    hourDatetime = None
-                else:
-                    hourDatetime = datetimeMidnightDay0 + (oneDay * dayNum) + (oneHour * hourNum)
-                hourRow.append(Hour(hourDatetime))
-            expCaledarRows.append(hourRow)
-        self.assertEqual(expCaledarRows, actCaledarRows)
-
-        # TODO spot check some filled values
-        self.fail()
+        
+        # flatten the table and compare to hours with no gaps. the first 18 and the last 4 are missing Hours
+        hoursWithNoGaps = forecast.hours
+        flattenedCaledarHours = list(functools.reduce(operator.add, actCaledarRows))
+        flattenedCaledarHours.sort()
+        self.assertEqual(hoursWithNoGaps, flattenedCaledarHours[19:-4])
+        self.assertTrue(all(map(lambda hour : hour.precip is None, flattenedCaledarHours[:19])))
+        self.assertTrue(all(map(lambda hour : hour.precip is None, flattenedCaledarHours[-4:])))
 
 
     def testHourColor(self):

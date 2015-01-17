@@ -32,7 +32,8 @@ class Forecast:
         dwmlElement = elementTree.getroot()
         if dwmlElement.tag == 'error':
             self.error = True
-            self.error = ET.tostring(dwmlElement.find('pre'), encoding='unicode')   # "xml", "html" or "text" (default xml)
+            self.error = ET.tostring(dwmlElement.find('pre'),
+                                     encoding='unicode')  # "xml", "html" or "text" (default xml)
             logger.error("error getting data for zipcode {}: {}".format(zipcode, self.error))
         else:
             self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
@@ -105,7 +106,7 @@ class Forecast:
         hoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement)
         oldestHour = hoursWithGaps[0]
         newestHour = hoursWithGaps[-1]
-        
+
         hoursWithNoGaps = []
         currDatetime = oldestHour.datetime
         prevFoundHour = oldestHour
@@ -117,8 +118,8 @@ class Forecast:
             prevFoundHour = foundHour
             currDatetime += oneHour
         return hoursWithNoGaps
-    
-    
+
+
     @classmethod
     def findHourForDatetime(cls, theDatetime, hoursWithGaps):
         for hour in hoursWithGaps:
@@ -227,14 +228,10 @@ class Forecast:
     #
 
 
-    def datetimeMidnightDay0(self):
-        datetimeHour0 = self.hours[0].datetime
-        return datetime.datetime(datetimeHour0.year, datetimeHour0.month, datetimeHour0.day, 0)
-
-
     def calendarHeaderRow(self):
         dayOfWeekNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-        datetimeMidnightDay0 = self.datetimeMidnightDay0()
+        day0hour0dt = self.hours[0].datetime
+        datetimeMidnightDay0 = datetime.datetime(day0hour0dt.year, day0hour0dt.month, day0hour0dt.day, 0)
         weekday = datetimeMidnightDay0.weekday()  # Monday is 0, Sunday is 6
         return dayOfWeekNames[weekday:] + dayOfWeekNames[:weekday]
 
@@ -252,33 +249,37 @@ class Forecast:
         with no missing Hours, we have to interpolate from the most recently seen Hour, similar to what 
         hoursWithGapsFromXml() does.
         """
+        # since we have my hours, which has no gaps, all we need to do is create missing Hours from the start of the 
+        # first day (hour 0) to newest sampled hour - call them the head ones, and create missing Hours from the
+        #  oldest sampled hour to the end of that last day (hour 23) - call them the tail
         oneHour = datetime.timedelta(hours=1)
-        oneDay = datetime.timedelta(days=1)
-        datetimeMidnightDay0 = self.datetimeMidnightDay0()
-        lastSeenHour = None
+
+        # create headMissingHours by working backward from the oldest hour to hour 0
+        headMissingHours = []
+        oldestHour = self.hours[0]
+
+        currDatetime = oldestHour.datetime
+        while currDatetime.hour != 0:
+            headMissingHours.append(Hour(currDatetime))
+            currDatetime -= oneHour
+        headMissingHours.sort()
+        
+        # create tailMissingHours by working forward from the newest hour to hour 23
+        tailMissingHours = []
+        newestHour = self.hours[-1]
+        
+        currDatetime = newestHour.datetime
+        while currDatetime.hour != 23:
+            tailMissingHours.append(Hour(currDatetime))
+            currDatetime += oneHour
+        tailMissingHours.sort()
+
+        # rows
+        allHours = headMissingHours + self.hours + tailMissingHours
         calendarRows = []
-        for hourNum in range(24):       # calendar row (hour of day)
+        for hourNum in range(24):  # calendar row
             hourRow = []
-            for dayNum in range(8):     # calendar column (day of week). 0 is first day in forecast, 7 is last
-                hourDateTime = datetimeMidnightDay0 + (oneDay * dayNum) + (oneHour * hourNum)
-                matchingHour = self.getHourForHourAndDayNumbers(hourNum, dayNum)
-                if not lastSeenHour:
-                    if not matchingHour:        # haven't seen first sample yet. use missing hour
-                        matchingHour = Hour()
-                    else:                       # first sample seen
-                        lastSeenHour = matchingHour
-                else:   # yes lastSeenHour
-                    if not matchingHour:        # gap. interpolate from last seen
-                        matchingHour = Hour(hourDateTime, lastSeenHour.precip, lastSeenHour.temp, lastSeenHour.wind)
-                    else:                       # new sample. check whether last sample in all hours
-                        if self.isLastSample(matchingHour):
-                            lastSeenHour = None
-                        else:
-                            lastSeenHour = matchingHour
-                hourRow.append(matchingHour)
+            for dayNum in range(8):  # calendar column
+                hourRow.append(allHours[hourNum + (24 * dayNum)])
             calendarRows.append(hourRow)
         return calendarRows
-
-
-    def isLastSample(self, hour):
-        return hour == self.hours[0]

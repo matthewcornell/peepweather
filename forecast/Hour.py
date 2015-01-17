@@ -9,8 +9,16 @@ class Rating:
 @total_ordering
 class Hour():
 
-    def __init__(self, datetime=None, precip=None, temp=None, wind=None):
-        self.datetime = datetime    # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored. NB: a datetime of None represents a 'missing' hour as returned by Forecast.getHour()
+    def __init__(self, datetime, precip=None, temp=None, wind=None):
+        """
+        pass None for the weather variables to represent missing data, i.e., a 'missing' hour
+        :param datetime: 
+        :param precip: 
+        :param temp: 
+        :param wind: 
+        :return:
+        """
+        self.datetime = datetime    # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
         self.precip = precip        # probability of precipitation: % b/w 0 and 100
         self.temp = temp            # degrees Fahrenheit
         self.wind = wind            # MPH
