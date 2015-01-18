@@ -11,11 +11,31 @@ class Hour():
     # overall desirability rating for an hour, based on above parameter desirabilities:
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
     
-    # from this scheme: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
-    HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#fef0d9',
-                                  H_DES_MED_LOW: '#fdcc8a',
-                                  H_DES_MED_HIGH: '#fc8d59',
-                                  H_DES_HIGH: '#d7301f'}
+    # orig: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
+    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#fef0d9',
+    #                               H_DES_MED_LOW: '#fdcc8a',
+    #                               H_DES_MED_HIGH: '#fc8d59',
+    #                               H_DES_HIGH: '#d7301f'}
+    # reversed: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
+    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#d7301f',
+    #                               H_DES_MED_LOW: '#fc8d59',
+    #                               H_DES_MED_HIGH: '#fdcc8a',
+    #                               H_DES_HIGH: '#fef0d9'}
+    # stoplight:
+    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: 'red',
+    #                               H_DES_MED_LOW: 'greenyellow',
+    #                               H_DES_MED_HIGH: 'green',
+    #                               H_DES_HIGH: 'palegreen'}
+    # # http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
+    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#feedde',
+    #                               H_DES_MED_LOW: '#fdbe85',
+    #                               H_DES_MED_HIGH: '#fd8d3c',
+    #                               H_DES_HIGH: '#d94701'}
+    # reversed: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
+    HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#d94701',
+                                  H_DES_MED_LOW: '#fd8d3c',
+                                  H_DES_MED_HIGH: '#fdbe85',
+                                  H_DES_HIGH: '#feedde'}
     HOUR_MISSING_COLOR = 'white'
 
 
