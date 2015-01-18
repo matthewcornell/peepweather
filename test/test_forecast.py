@@ -388,18 +388,21 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('wind', 100))
 
         # check overall hour desirability. counts: Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH
-        pDesCountsDict = {(1, None, None): Hour.H_DES_LOW,
-                          (2, None, None): Hour.H_DES_LOW,
-                          (3, None, None): Hour.H_DES_LOW,
-                          (None, None, 3): Hour.H_DES_HIGH,
-                          (None, 1, 2): Hour.H_DES_MED_HIGH,
-                          (None, 2, 1): Hour.H_DES_MED_LOW,
+        pDesCountsDict = {(0, 1, 2): Hour.H_DES_LOW,
+                          (2, 0, 1): Hour.H_DES_LOW,
+                          (3, 0, 0): Hour.H_DES_LOW,
+                          (0, 0, 3): Hour.H_DES_HIGH,
+                          (0, 1, 2): Hour.H_DES_MED_HIGH,
+                          (0, 2, 1): Hour.H_DES_MED_LOW,
         }
         for paramDesireTuple, expHourDesire in pDesCountsDict.items():
             self.assertEqual(expHourDesire, Hour.hourDesirabilityForParamDesCounts(*paramDesireTuple))
 
-        with self.assertRaisesRegex(ValueError, 'invalid counts'):
-            Hour.hourDesirabilityForParamDesCounts(None, 2, 2)
+        with self.assertRaisesRegex(ValueError, "counts weren't all numbers"):
+            Hour.hourDesirabilityForParamDesCounts(None, 0, 0)
+
+        with self.assertRaisesRegex(ValueError, "counts didn't add to 3"):
+            Hour.hourDesirabilityForParamDesCounts(2, 2, 2)
             
             
     def testHourColor(self):
@@ -418,14 +421,13 @@ class MyTestCase(unittest.TestCase):
         # elif hDesMedCount == 2 and hDesHighCount == 1:   # if there are two mediums then overall is med-low
 
         # finally, test color()! tuple: (precip, temp, wind)
-        paramToColorDict = {(100, 75, 0): Hour.colorForHourDesirability(Hour.H_DES_LOW),        # precip low
+        paramToColorDict = {(100, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_LOW),        # precip low
                             (20, 40, 0): Hour.colorForHourDesirability(Hour.H_DES_MED_LOW),     # precip med, temp med, wind high
-                            (20, 75, 0): Hour.colorForHourDesirability(Hour.H_DES_MED_HIGH),    # precip med, temp high, wind high
-                            (0, 75, 0): Hour.colorForHourDesirability(Hour.H_DES_HIGH),         # all high
+                            (20, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_MED_HIGH),    # precip med, temp high, wind high
+                            (0, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_HIGH),         # all high
         }
         for precipTempWindTuple, expColor in paramToColorDict.items():
             hour = Hour(None, *precipTempWindTuple)
-            print('zz', expColor, hour, expColor, '=?', hour.color())
             self.assertEqual(expColor, hour.color())
 
 

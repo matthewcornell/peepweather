@@ -31,14 +31,17 @@ class Forecast:
 
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
-            print('Forecast({}) @ {}: {}, {} -> {}: '.format(self.zipcode, datetime.datetime.now(),  self.latLon, self.name, self.weatherDotGovUrl()))
+            print('Forecast({}) @ {}: {}, {} -> {}: '.format(self.zipcode, datetime.datetime.now(), self.latLon,
+                                                             self.name,
+                                                             self.weatherDotGovUrl()))
             elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
         if dwmlElement.tag == 'error':
             self.error = True
             self.error = ET.tostring(dwmlElement.find('pre'),
                                      encoding='unicode')  # "xml", "html" or "text" (default xml)
-            logger.error("error getting data for zipcode {}: {}".format(zipcode, self.error))
+            logger.error(
+                "error getting data for zipcode {}\nurl: \t{}\nerror: {}".format(zipcode, self.weatherDotGovUrl(), self.error))
         else:
             self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
 
