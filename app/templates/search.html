@@ -2,11 +2,15 @@
 
 {% block content %}
 
-    <h2>Zipcode search for: {{ query }}: {{ zipNameTuples | length }} results</h2>
+    <h2>Zipcode search for: {{ query }}: {{ zipNameLatLonTuples | length }} results</h2>
 
     <ul>
-        {% for zip, name in zipNameTuples %}
-            <li><a href="/forecast/{{ zip }}">{{ zip }}</a>, {{ name }}</li>
+        {% for zip, name, lat, lon in zipNameLatLonTuples %}
+            <li><a href="/forecast/{{ zip }}">{{ zip }}</a> - {{ name }} -
+                <span style="color:darkgray;">
+                    <a href="https://www.google.com/maps/place/{{ lat }},{{ lon }}">{{ lat }}, {{ lon }}</a>
+                </span>
+            </li>
         {% endfor %}
     </ul>
 

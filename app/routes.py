@@ -19,7 +19,7 @@ def forecastForZip(zipcode):
     (the default) or 'list
     :return:
     """
-    formatType = request.args.get('format', 'list')    # to access parameters submitted in the URL (?key=value). TODO change to 'calendar' when implemented
+    formatType = request.args.get('format', 'calendar')    # to access parameters submitted in the URL (?key=value)
     forecast = Forecast(zipcode)
     if forecast.error:
         return render_template("forecast-error.html", forecast=forecast, time=datetime.now())
@@ -33,4 +33,4 @@ def forecastForZip(zipcode):
 
 @app.route('/search/<query>')
 def searchZip(query):
-    return render_template("search.html", query=query, zipNameTuples=Forecast.searchZipcodes(query))
+    return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))

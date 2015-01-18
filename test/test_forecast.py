@@ -44,9 +44,11 @@ class MyTestCase(unittest.TestCase):
 
     def testSearchZipcodes(self):
         query = 'barro'
-        expZipNameTuples = [("54812", "Barron, WI"), ("54813", "Barronett, WI"), ("99723", "Barrow, AK")]
-        zipNameTuples = Forecast.searchZipcodes(query)
-        self.assertListEqual(expZipNameTuples, zipNameTuples)
+        expZipNameLatLonTuples = [("54812", "Barron, WI", "45.39701", "-91.86337"),
+                                  ("54813", "Barronett, WI", "45.646145", "-92.01923"),
+                                  ("99723", "Barrow, AK", "71.299525", "-156.74891")]
+        zipNameLatLonTuples = Forecast.searchZipcodes(query)
+        self.assertListEqual(expZipNameLatLonTuples, zipNameLatLonTuples)
 
 
     def testBadZip(self):
@@ -221,22 +223,22 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
         actHoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement)
-        
+
         # test every hour is represented from oldest to newest with no gaps, ignoring weather values
         oneHour = datetime.timedelta(hours=1)
         oldestDatetime = actHoursWithNoGaps[0].datetime
         newestDatetime = actHoursWithNoGaps[-1].datetime
-        
+
         expHoursWithNoGaps = []     # will not include weather valuess, just the correct on-the-hour datetime
         currDatetime = oldestDatetime
         while currDatetime <= newestDatetime:
             expHoursWithNoGaps.append(Hour(currDatetime))
             currDatetime += oneHour
         self.assertTrue(len(expHoursWithNoGaps), len(actHoursWithNoGaps))
-        
+
         for (expHour, actHour) in zip(expHoursWithNoGaps, actHoursWithNoGaps):
             self.assertEqual(expHour.datetime, actHour.datetime)
-        
+
         # spot-check some interpolated weather values
         h0 = Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 10, 3)
         h1 = self.copyOfHourPlusOne(h0)
@@ -261,7 +263,7 @@ class MyTestCase(unittest.TestCase):
         exph0Idx = 162
         self.assertEqual([h0, h1, h2, h3, h4, h5, h6], actHoursWithNoGaps[exph0Idx:exph0Idx + 7])
 
-        
+
     def testHours(self):
         # make sure hours with no gaps is saved in constructor
         elementTree = ET.parse('test/test-forecast-data.xml')
@@ -270,8 +272,8 @@ class MyTestCase(unittest.TestCase):
         hoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement)
         forecast = Forecast('01002', elementTree)
         self.assertEqual(hoursWithNoGaps, forecast.hours)
-        
-        
+
+
     def testColumnHeaderRow(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree)
@@ -293,7 +295,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(24, len(actCaledarRows))  # one row for each hour of the day
         for row in actCaledarRows:
             self.assertEqual(8, len(row))
-        
+
         # flatten the table and compare to hours with no gaps. the first 18 and the last 4 are missing Hours
         hoursWithNoGaps = forecast.hours
         flattenedCaledarHours = list(functools.reduce(operator.add, actCaledarRows))
@@ -301,7 +303,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(hoursWithNoGaps, flattenedCaledarHours[19:-4])
         self.assertTrue(all(map(lambda hour : hour.precip is None, flattenedCaledarHours[:19])))
         self.assertTrue(all(map(lambda hour : hour.precip is None, flattenedCaledarHours[-4:])))
-        
+
         # spot check a few rows
         expRow1 = [Hour(datetime.datetime(2015, 1, 13, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), None, None, None),
                    Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 3, 2),
@@ -312,8 +314,8 @@ class MyTestCase(unittest.TestCase):
                    Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 28, 4),
                    Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 18, 3)]
         self.assertEqual(expRow1, actCaledarRows[1])
-        
-        
+
+
     def testHoursAsCalendarRowsStructure(self):
         fileRowCount = {'test/test-forecast-data.xml': 8, 'test/test-forecast-only-seven-days.xml': 7}
         for xmlFileName, expRowCount in fileRowCount.items():
@@ -323,11 +325,11 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(24, len(actCaledarRows))
             for row in actCaledarRows:
                 self.assertEqual(expRowCount, len(row))
-                
-                
+
+
     def testIsDaylight(self):
         for hour in range(24):
-            expIsDaylight = 7 < hour < 20
+            expIsDaylight = 7 < hour < 19
             self.assertEqual(expIsDaylight, Forecast.isDaylightHour(hour))
 
 
