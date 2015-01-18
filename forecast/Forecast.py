@@ -14,6 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 class Forecast:
+    """
+    Computes a forecast based on a zip code using http://www.nws.noaa.gov/ndfd/technical.htm as a sequence of Hours.
+    """
     def __init__(self, zipcode, elementTree=None):
         """
         :param zipcode: str zip code to get forecast for

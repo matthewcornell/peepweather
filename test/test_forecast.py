@@ -338,8 +338,95 @@ class MyTestCase(unittest.TestCase):
         self.fail()
 
 
+    def testHourColorDesirabilities(self):
+        # steps:
+        # 1. assign DESIRABILITY of each parameter into THREE categories:
+        #    P_DES_LOW, P_DES_MED, P_DES_HIGH
+        #
+        # 2. combine the three parameters' three desirabilities into an overall desirability in FOUR categories:
+        #    H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH
+        #
+        # 3. assign colors accordingly
+        
+        # check individual variable ranges. P_DES_LOW, P_DES_MED, P_DES_HIGH. basically we're checking each step's center and transitions
+        with self.assertRaisesRegex(ValueError, 'invalid parameter: None'):
+            Hour.paramDesirabilityForValue(None, 0)
+
+        # precip
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('precip', 0))
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('precip', 5))
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('precip', 10))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('precip', 11))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('precip', 20))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('precip', 30))
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('precip', 31))
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('precip', 100))
+
+        # temp
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', -100))
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', 32))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 33))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 40))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 41))
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('temp', 42))
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('temp', 50))
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('temp', 70))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 71))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 80))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 85))
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', 86))
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', 100))
+
+        # wind
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('wind', 0))
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('wind', 5))
+        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('wind', 8))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('wind', 9))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('wind', 10))
+        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('wind', 12))
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('wind', 13))
+        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('wind', 100))
+
+        # check overall hour desirability. counts: Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH
+        pDesCountsDict = {(1, None, None): Hour.H_DES_LOW,
+                          (2, None, None): Hour.H_DES_LOW,
+                          (3, None, None): Hour.H_DES_LOW,
+                          (None, None, 3): Hour.H_DES_HIGH,
+                          (None, 1, 2): Hour.H_DES_MED_HIGH,
+                          (None, 2, 1): Hour.H_DES_MED_LOW,
+        }
+        for paramDesireTuple, expHourDesire in pDesCountsDict.items():
+            self.assertEqual(expHourDesire, Hour.hourDesirabilityForParamDesCounts(*paramDesireTuple))
+
+        with self.assertRaisesRegex(ValueError, 'invalid counts'):
+            Hour.hourDesirabilityForParamDesCounts(None, 2, 2)
+            
+            
     def testHourColor(self):
-        self.fail()
+        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_LOW], Hour.colorForHourDesirability(Hour.H_DES_LOW))
+        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_MED_LOW], Hour.colorForHourDesirability(Hour.H_DES_MED_LOW))
+        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_MED_HIGH], Hour.colorForHourDesirability(Hour.H_DES_MED_HIGH))
+        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_HIGH], Hour.colorForHourDesirability(Hour.H_DES_HIGH))
+        
+        # precip: [0, 10]: Hour.P_DES_HIGH    [11, 30]: Hour.P_DES_MED    [31, ...]: Hour.P_DES_LOW
+        # temp: [..., 32]: Hour.P_DES_LOW    [33, 41]: Hour.P_DES_MED    [42, 70] Hour.P_DES_HIGH    [71, 85]: Hour.P_DES_MED    [86, ...]: Hour.P_DES_LOW
+        # wind:   [0,  8]: Hour.P_DES_HIGH    [ 9, 12]: Hour.P_DES_MED    [13, ...]: Hour.P_DES_LOW
+
+        # if hDesLowCount:            # if any are low then overall is low
+        # elif hDesHighCount == 3:    # if all three are high then overall is high
+        # elif hDesMedCount == 1 and hDesHighCount == 2:  # if there are two highs then overall is med-high
+        # elif hDesMedCount == 2 and hDesHighCount == 1:   # if there are two mediums then overall is med-low
+
+        # finally, test color()! tuple: (precip, temp, wind)
+        paramToColorDict = {(100, 75, 0): Hour.colorForHourDesirability(Hour.H_DES_LOW),        # precip low
+                            (20, 40, 0): Hour.colorForHourDesirability(Hour.H_DES_MED_LOW),     # precip med, temp med, wind high
+                            (20, 75, 0): Hour.colorForHourDesirability(Hour.H_DES_MED_HIGH),    # precip med, temp high, wind high
+                            (0, 75, 0): Hour.colorForHourDesirability(Hour.H_DES_HIGH),         # all high
+        }
+        for precipTempWindTuple, expColor in paramToColorDict.items():
+            hour = Hour(None, *precipTempWindTuple)
+            print('zz', expColor, hour, expColor, '=?', hour.color())
+            self.assertEqual(expColor, hour.color())
 
 
     def testForecastSummary(self):
