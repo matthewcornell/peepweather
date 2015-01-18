@@ -329,7 +329,7 @@ class MyTestCase(unittest.TestCase):
 
     def testIsDaylight(self):
         for hour in range(24):
-            expIsDaylight = 7 < hour < 19
+            expIsDaylight = 7 < hour < 21
             self.assertEqual(expIsDaylight, Forecast.isDaylightHour(hour))
 
 

@@ -237,6 +237,17 @@ class Forecast:
         weekday = oldestHour.datetime.weekday()
         headerRow = (dayOfWeekNames * 3)[weekday:weekday + numDays] # 3 is magic. at least good enough for 8 days of forecast data
         return headerRow
+    
+    
+    def rowHeadingForHour(self, hourOfDay):
+        """
+        :param hourOfDay: 0 through 23
+        :return: AM/PM version of hour
+        """
+        if hourOfDay < 13:
+            return '{}'.format(hourOfDay)
+        else:
+            return '{}p'.format(hourOfDay - 12)
 
 
     def hoursAsCalendarRows(self):
@@ -295,4 +306,4 @@ class Forecast:
         """
         :return: True if hour is a daylight hour. TODO: this is a very rough initial hack to limit hours shown. doesn't handle timezone, ...
         """
-        return 7 < hour < 19
+        return 7 < hour < 21

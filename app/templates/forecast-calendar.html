@@ -16,7 +16,7 @@
         {% for hourOfDayHours in forecast.hoursAsCalendarRows() %}  {# each row is an hour of day #}
             {% if forecast.isDaylightHour(loop.index0) %}
                 <tr>
-                    <th style="background-color:white;">{{ loop.index0 }}</th>
+                    <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for dayOfWeekHour in hourOfDayHours %}           {# each ele/column is a day of week #}
                         <td style="background-color: {{ dayOfWeekHour.color() }};" title="{{ dayOfWeekHour }}">
                     {% endfor %}

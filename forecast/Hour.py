@@ -30,7 +30,8 @@ class Hour():
 
 
     def __str__(self):
-        return self.datetime.strftime('%a, %m/%d, %I:%M %p')
+        return '{} | {}°F, {} MPH, {}%'.format(
+            self.datetime.strftime('%a %m/%d %H:%M'), self.temp, self.wind, self.precip)
 
 
     def key(self):
@@ -50,8 +51,7 @@ class Hour():
 
 
     #
-    # TODO temporary, untested
-    # TODO instead of a color, return a Rating enum value, and let the css map to colors
+    # TODO instead of a color, return a Rating enum value, and let the css map to colors?
     # Awesome!: https://en.wikipedia.org/wiki/Miscellaneous_Symbols , e.g., U+2600 / &#9728; for 'Black sun with rays'
     #
     # Q: where does &blacksquare; come from? aha:
@@ -62,11 +62,10 @@ class Hour():
     #
     def color(self):
         """
-        :return: an html color string based on my weather settings.
-            3-tuple of HTML color name strings for precip, temp, and wind based on temporary rules in this method
+        :return: an html color string based on my weather settings
         """
         # missing hour special case
-        if not self.precip:
+        if self.precip is None:
             return 'white'
 
         # rate each variable separately, then combine
