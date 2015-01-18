@@ -29,6 +29,10 @@ class Hour():
                                            self.precip, self.temp, self.wind)
 
 
+    def __str__(self):
+        return self.datetime.strftime('%a, %m/%d, %I:%M %p')
+
+
     def key(self):
         return self.datetime, self.precip, self.temp, self.wind
 

@@ -18,7 +18,7 @@
                 <tr>
                     <th style="background-color:white;">{{ loop.index0 }}</th>
                     {% for dayOfWeekHour in hourOfDayHours %}           {# each ele/column is a day of week #}
-                        <td style="background-color: {{ dayOfWeekHour.color() }};" title="${hour}">
+                        <td style="background-color: {{ dayOfWeekHour.color() }};" title="{{ dayOfWeekHour }}">
                     {% endfor %}
                 </tr>
             {% endif %}
