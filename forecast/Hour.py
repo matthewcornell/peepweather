@@ -11,42 +11,21 @@ class Hour():
     # overall desirability rating for an hour, based on above parameter desirabilities:
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
     
-    # orig: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
-    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#fef0d9',
-    #                               H_DES_MED_LOW: '#fdcc8a',
-    #                               H_DES_MED_HIGH: '#fc8d59',
-    #                               H_DES_HIGH: '#d7301f'}
-    # reversed: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
-    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#d7301f',
-    #                               H_DES_MED_LOW: '#fc8d59',
-    #                               H_DES_MED_HIGH: '#fdcc8a',
-    #                               H_DES_HIGH: '#fef0d9'}
-    # stoplight:
-    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: 'red',
-    #                               H_DES_MED_LOW: 'greenyellow',
-    #                               H_DES_MED_HIGH: 'green',
-    #                               H_DES_HIGH: 'palegreen'}
-    # # http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
-    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#feedde',
-    #                               H_DES_MED_LOW: '#fdbe85',
-    #                               H_DES_MED_HIGH: '#fd8d3c',
-    #                               H_DES_HIGH: '#d94701'}
-    # reversed: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
+    # color definitions
     HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#d94701',
                                   H_DES_MED_LOW: '#fd8d3c',
                                   H_DES_MED_HIGH: '#fdbe85',
                                   H_DES_HIGH: '#feedde'}
     HOUR_MISSING_COLOR = 'white'
+    COLOR_SEQ_HIGH_TO_LOW = [HOUR_DESIRABILITY_TO_COLOR[H_DES_HIGH],
+                             HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_HIGH],
+                             HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_LOW],
+                             HOUR_DESIRABILITY_TO_COLOR[H_DES_LOW]] # for views
 
 
     def __init__(self, datetime, precip=None, temp=None, wind=None):
         """
-        pass None for the weather parameters to represent missing data, i.e., a 'missing' hour
-        :param datetime: 
-        :param precip: 
-        :param temp: 
-        :param wind: 
-        :return:
+        Pass None for the weather parameters to represent missing data, i.e., a 'missing' hour.
         """
         self.datetime = datetime  # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
         self.precip = precip  # probability of precipitation percent: integers range(101). TODO couldn't find docs about range end
@@ -155,7 +134,7 @@ class Hour():
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter . for now uses the following ranges to decide:
 
             precip: [0, 10]: Hour.P_DES_HIGH    [11, 30]: Hour.P_DES_MED    [31, ...]: Hour.P_DES_LOW
-            temp: [..., 32]: Hour.P_DES_LOW    [33, 41]: Hour.P_DES_MED    [42, 70] Hour.P_DES_HIGH    [71, 85]: Hour.P_DES_MED    [86, ...]: Hour.P_DES_LOW
+            temp: [..., 32]: Hour.P_DES_LOW    [33, 41]: Hour.P_DES_MED    [42, 70]: Hour.P_DES_HIGH    [71, 85]: Hour.P_DES_MED    [86, ...]: Hour.P_DES_LOW
             wind:   [0,  8]: Hour.P_DES_HIGH    [ 9, 12]: Hour.P_DES_MED    [13, ...]: Hour.P_DES_LOW
         """
         if paramName not in ['precip', 'temp', 'wind']:

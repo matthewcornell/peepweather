@@ -24,6 +24,7 @@ Basically I need some folks to take a look and tell me what they think :-)
 
 
 # To Do
+- change color key to pull values from code
 
 ## Features
 - geolocation?
@@ -34,8 +35,7 @@ Basically I need some folks to take a look and tell me what they think :-)
 
 ## Appearance
 - professional design and style!
-- show color key on list and cal pages
-- show why color chosen - tooltip?
+- show why color chosen - tooltip? list?
 - page titles include name
 - about page - this readme file?
 - debug link to data URL (lat, lon)

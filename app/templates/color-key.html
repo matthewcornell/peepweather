@@ -1,0 +1,50 @@
+<h2>Color key</h2>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Color</th>
+        <th>Desirability for flying</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr>
+        <td style="background-color:{{ colorKeyHighToLow[0] }};"></td>
+        <td>High</td>
+    </tr>
+
+    <tr>
+        <td style="background-color:{{ colorKeyHighToLow[1] }};"></td>
+        <td>Medium-high</td>
+    </tr>
+
+    <tr>
+        <td style="background-color:{{ colorKeyHighToLow[2] }};"></td>
+        <td>Medium-low</td>
+    </tr>
+
+    <tr>
+        <td style="background-color:{{ colorKeyHighToLow[3] }};"></td>
+        <td>Low</td>
+    </tr>
+
+    <tr>
+        <td style="background-color:white;"></td>
+        <td colspan=2>No data available</td>
+    </tr>
+
+    </tbody>
+</table>
+
+<h2>Color calculation</h2>
+Each hour's color is determined by evaluating each weather parameter individually to get one of three desirability
+ratings - Low, Medium, and High - based on simple equation. Here's a nerdy description of how that's decided, based on
+ranges:
+
+<pre>
+    precip: [0, 10]: High   [11, 30]: Medium  [31, ...]: Low
+    temp:   [..., 32]: Low  [33, 41]: Medium  [42, 70]: High  [71, 85]: Medium    [86, ...]: Low
+    wind:   [0,  8]: High   [ 9, 12]: Medium  [13, ...]: Low
+</pre>
+
+xx
