@@ -1,17 +1,27 @@
 {% extends "base.html" %}
+{% block title %}Zipcode search for: {{ query }}{% endblock %}
 
 {% block content %}
 
     <h2>Zipcode search for: {{ query }}: {{ zipNameLatLonTuples | length }} results</h2>
 
-    <ul>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Zipcode</th>
+            <th>Name</th>
+            <th>Lat/Lon</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for zip, name, lat, lon in zipNameLatLonTuples %}
-            <li><a href="/forecast/{{ zip }}">{{ zip }}</a> - {{ name }} -
-                <span style="color:darkgray;">
-                    <a href="https://www.google.com/maps/place/{{ lat }},{{ lon }}">{{ lat }}, {{ lon }}</a>
-                </span>
-            </li>
+            <tr>
+                <td><a href="/forecast/{{ zip }}">{{ zip }}</a></td>
+                <td>{{ name }}</td>
+                <td><a href="https://www.google.com/maps/place/{{ lat }},{{ lon }}">{{ lat }}, {{ lon }}</a></td>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
 
 {% endblock %}

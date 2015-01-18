@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}Forecast for {{ forecast.name }} - {{ forecast.zipcode }}{% endblock %}
 
 {% block content %}
 
@@ -26,5 +27,6 @@
     </table>
 
     {% include 'color-key.html' %}
+    {% include 'forecast-footer.html' %}
 
 {% endblock %}

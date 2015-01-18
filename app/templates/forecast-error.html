@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% block title %}Error getting forecast for {{ forecast.name }} - {{ forecast.zipcode }}{% endblock %}
 
 {% block content %}
 
-    <h2>Forecast for {{ forecast.name }} - {{ forecast.zipcode }} at {{ time.strftime('%a, %m/%d, %I:%M %p') }}</h2>
-
-    Error getting forecast: <pre> {{ forecast.error }} </pre>
+    <h2>Error getting Forecast for {{ forecast.name }} - {{ forecast.zipcode }} at {{ time.strftime('%a, %m/%d, %I:%M %p') }}</h2>
+    The error message was:
+    <pre> {{ forecast.error }} </pre>
 
 {% endblock %}
