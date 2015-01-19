@@ -6,14 +6,11 @@
 
     <h2>Forecast for {{ forecast.name }} - {{ forecast.zipcode }} at {{ time.strftime('%a, %m/%d, %I:%M %p') }}</h2>
 
-    <ul style="font-family: monospace">
-        {% for hour in forecast.hours %}
-            <li><span style="color:darkgray;">{{ hour.datetime.strftime('%a %m/%d %H:%M') }}</span>
-                <span style="color:{{ hour.color() }}"> &block; </span>
-                {{ hour.temp }}°F, {{ hour.wind }} MPH, {{ hour.precip }}%
-            </li>
-        {% endfor %}
-    </ul>
+    <span style="font-family: monospace">
+    {% for hour in forecast.hours %}
+        <span style="color:{{ hour.color() }}"> &block; </span> {{ hour.detailString() }}<br/>
+    {% endfor %}
+    </span>
 
     {% include 'color-key.html' %}
 

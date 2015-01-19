@@ -6,6 +6,8 @@
 
     <h2>Forecast for {{ forecast.name }} - {{ forecast.zipcode }} at {{ time.strftime('%a, %m/%d, %I:%M %p') }}</h2>
 
+    <img src="{{ url_for('static', filename='_MG_5049.jpg') }}" width="50%" height="50%" align="right">
+
     <table style="background-color:black; font-size: small" border="0" cellspacing="1" cellpadding="8" width="10">
         <tr style="background-color:white;" border="0" cellpadding="8" cellspacing="1" width="10">
             {# first column blank for row/hour header #}
@@ -20,7 +22,7 @@
                 <tr>
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for dayOfWeekHour in hourOfDayHours %}           {# each ele/column is a day of week #}
-                        <td style="background-color: {{ dayOfWeekHour.color() }};" title="{{ dayOfWeekHour }}">
+                        <td style="background-color: {{ dayOfWeekHour.color() }};" title="{{ dayOfWeekHour.detailString()}}">
                     {% endfor %}
                 </tr>
             {% endif %}

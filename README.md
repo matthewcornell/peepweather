@@ -15,7 +15,4 @@ the hourly analysis-to-color algorithm.
 - BIG: improve hourly analysis algorithm
 
 - overall summary
-- a randomly-selected image on the right?
-- decide a nice color pallete
 - do smarter daylight calculation? (don't show if dusk or night)
-- show why color chosen - tooltip? list?

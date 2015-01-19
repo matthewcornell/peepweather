@@ -12,19 +12,6 @@ class Hour():
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
     
     # color definitions
-
-    # OK http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
-    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#d94701',
-    #                               H_DES_MED_LOW: '#fd8d3c',
-    #                               H_DES_MED_HIGH: '#fdbe85',
-    #                               H_DES_HIGH: '#feedde'}
-
-    # OK - reversed http://colorbrewer2.org/?type=diverging&scheme=RdYlGn&n=4
-    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#1a9641',
-    #                               H_DES_MED_LOW: '#a6d96a',
-    #                               H_DES_MED_HIGH: '#fdae61',
-    #                               H_DES_HIGH: '#d7191c'}
-
     # BEST - tweaked version of: https://en.wikipedia.org/wiki/Homeland_Security_Advisory_System#Threat_level_changes)
     HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#EC3E40',
                                   H_DES_MED_LOW: '#FF9B2B',
@@ -70,8 +57,23 @@ class Hour():
 
 
     def __str__(self):
-        return '{} | {}%, {}°F, {} MPH'.format(
-            self.datetime.strftime('%a %m/%d %H:%M') if self.datetime else "time?", self.precip, self.temp, self.wind)
+        if self.precip is None:
+            return '{} | no data'.format(self.datetime.strftime('%a %m/%d %H:%M'))
+        else:
+            return '{} | {}%, {}°F, {} MPH'.format(
+                self.datetime.strftime('%a %m/%d %H:%M') if self.datetime else "time?", self.precip, self.temp, self.wind)
+    
+    
+    def detailString(self):
+        if self.precip is None:
+            return str(self)
+        else:
+            desirabilityToChar = {Hour.P_DES_HIGH: 'H', Hour.P_DES_MED: 'M', Hour.P_DES_LOW: 'L', }
+            return '{} | {}% ({}), {}°F ({}), {} MPH ({})'.format(
+                self.datetime.strftime('%a %m/%d %H:%M') if self.datetime else "time?",
+                self.precip, desirabilityToChar[Hour.paramDesirabilityForValue('precip', self.precip)],
+                self.temp, desirabilityToChar[Hour.paramDesirabilityForValue('temp', self.temp)],
+                self.wind, desirabilityToChar[Hour.paramDesirabilityForValue('wind', self.wind)])
 
 
     #
