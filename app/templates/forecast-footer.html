@@ -3,5 +3,5 @@
     <li><a href="/forecast/{{ forecast.zipcode }}?format=list">list format</a></li>
     <li><a href="http://forecast.weather.gov/MapClick.php?lat={{ forecast.latLon[0]}}&lon={{ forecast.latLon[1]}}&site=all&smap=1">weather.gov 7-day forecast</a></li>
     <li><a href="http://forecast.weather.gov/MapClick.php?w0=t&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w13u=0&w16u=1&w17u=1&AheadHour=0&Submit=Submit&FcstType=graphical&textField1={{ forecast.latLon[0]}}&textField2={{ forecast.latLon[1]}}&site=all&unit=0&dd=0&bw=0">weather.gov 7-day forecast graph</a></li>
-    <li><a href="{{ self.weatherDotGovUrl }}">source data</a></li>
+    <li><a href="{{ forecast.weatherDotGovUrl() }}">source data</a></li>
 </ul>

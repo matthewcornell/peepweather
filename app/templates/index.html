@@ -28,8 +28,29 @@
 
     <p> Feel free to <a href="http://www.matthewcornell.org/contact/">contact me</a> to ask questions or offer
         constructive comments. Thanks for visiting! -- matt
-
     </p>
+
+
+    <h2>Get forecast</h2>
+
+    <form method="POST" action="{{ url_for('doZipSubmit') }}">
+        <label for="zipcode-id">Zipcode: </label>
+        <input id="zipcode-id" type="text" name="zip_form_value">
+        <input type="submit" value="Go!">
+    </form>
+
+    {% if invalidZipcode %}
+        <span style="color: red">Invalid zipcode: {{ invalidZipcode }}</span>
+    {% endif %}
+    
+
+    <h2>Search for zipcodes</h2>
+
+    <form method="POST" action="{{ url_for('doZipSearchSubmit') }}">
+        <label for="query-id">Query: </label>
+        <input id="query-id" type="text" name="query_form_value">
+        <input type="submit" value="Search">
+    </form>
 
     {% include 'color-key.html' %}
 

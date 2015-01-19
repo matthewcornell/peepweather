@@ -24,12 +24,13 @@ Basically I need some folks to take a look and tell me what they think :-)
 
 
 # To Do
+- Flask best practice: url_for(route_name, **kwargs) should be used to generate urls for your handlers.
+  It takes as first parameter the function name and as keyword args any needed parameters to generate the url.
 - ...
 
 
 ## Features
 - geolocation?
-- forms for entering zip, and for entering query
 - eventually a form to specify color ranges for parameters
 - do smarter daylight calculation (don't show if dusk or night)?
 - overall summary
@@ -37,5 +38,4 @@ Basically I need some folks to take a look and tell me what they think :-)
 ## Appearance
 - professional design and style!
 - show why color chosen - tooltip? list?
-- page titles include name
 - about page - this readme file?

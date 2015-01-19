@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 
 from forecast.Hour import Hour
 from forecast.Forecast import Forecast
@@ -37,3 +37,25 @@ def forecastForZip(zipcode):
 @app.route('/search/<query>')
 def searchZip(query):
     return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))
+
+
+#
+# forms
+#
+
+@app.route('/doZipSubmit', methods=['POST'])
+def doZipSubmit():
+    zipVal = request.form.get('zip_form_value', None)
+    try:
+        Forecast.latLonNameForZipcode(zipVal)
+        return redirect(url_for('forecastForZip', zipcode=zipVal))
+    except ValueError:
+        return render_template("index.html", invalidZipcode=zipVal, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+
+
+@app.route('/doZipSearchSubmit', methods=['POST'])
+def doZipSearchSubmit():
+    queryVal = request.form.get('query_form_value', None)
+    return redirect(url_for('searchZip', query=queryVal))
+
+
