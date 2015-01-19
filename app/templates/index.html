@@ -1,5 +1,28 @@
 {% extends "base.html" %}
+
 {% block title %}Welcome to the RC Weather App!{% endblock %}
+
+{#{% block javascript %}#}
+{##}
+{#    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>#}
+{#    <script>#}
+{#        jQuery(window).ready(function () {#}
+{#            jQuery("#init_geo_button").click(initiate_geolocation);#}
+{#        });#}
+{##}
+{#        function initiate_geolocation() {#}
+{#            navigator.geolocation.getCurrentPosition(handle_geolocation_query);#}
+{#            // TODO: update a status text area#}
+{#        }#}
+{##}
+{#        function handle_geolocation_query(position) {#}
+{#            jQuery('#lat-id').val(position.coords.latitude);#}
+{#            jQuery('#lon-id').val(position.coords.longitude);#}
+{#        }#}
+{#    </script>#}
+{##}
+{#{% endblock %}#}
+
 
 {% block content %}
 
@@ -33,6 +56,14 @@
 
     <h2>Get forecast</h2>
 
+{#    <form method="POST" action="{{ url_for('doLatLonSubmit') }}">#}
+{#        <label for="lat-id">Latitude: </label>#}
+{#        <input id="lat-id" type="text" name="lat_form_value"><br>#}
+{#        <label for="lon-id">Longitude: </label>#}
+{#        <input id="lon-id" type="text" name="lon_form_value"><br>#}
+{#        <button id="init_geo_button">Use my location</button> <input type="submit" value="Go!">#}
+{#    </form>#}
+{#    <br>#}
     <form method="POST" action="{{ url_for('doZipSubmit') }}">
         <label for="zipcode-id">Zipcode: </label>
         <input id="zipcode-id" type="text" name="zip_form_value">
@@ -42,9 +73,9 @@
     {% if invalidZipcode %}
         <span style="color: red">Invalid zipcode: {{ invalidZipcode }}</span>
     {% endif %}
-    
 
-    <h2>Search for zipcodes</h2>
+
+    <h2>Search for zip codes</h2>
 
     <form method="POST" action="{{ url_for('doZipSearchSubmit') }}">
         <label for="query-id">Query: </label>
