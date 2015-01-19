@@ -14,7 +14,5 @@ the hourly analysis-to-color algorithm.
 
 - BIG: improve hourly analysis algorithm
 
-- change URL scheme to:
-   /forecast?zip=01002
 - overall summary
 - do smarter daylight calculation? (don't show if dusk or night)
