@@ -42,15 +42,6 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
 
 
-    def testSearchZipcodes(self):
-        query = 'barro'
-        expZipNameLatLonTuples = [("54812", "Barron, WI", "45.39701", "-91.86337"),
-                                  ("54813", "Barronett, WI", "45.646145", "-92.01923"),
-                                  ("99723", "Barrow, AK", "71.299525", "-156.74891")]
-        zipNameLatLonTuples = Forecast.searchZipcodes(query)
-        self.assertListEqual(expZipNameLatLonTuples, zipNameLatLonTuples)
-
-
     def testBadZip(self):
         # test 1/2: valid input. patch constructor:
         elementTree = ET.parse('test/test-forecast-data.xml')
