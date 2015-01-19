@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Forecast for {{ forecast.name }} - {{ forecast.zipcode }}{% endblock %}
+{% block navLocation %} > {{ forecast.zipcode }}{% endblock %}
 
 {% block content %}
 

@@ -1,4 +1,5 @@
 <h2>Color key</h2>
+
 <table border="1">
     <thead>
     <tr>
@@ -36,11 +37,18 @@
     </tbody>
 </table>
 
+
 <h2>Color calculation</h2>
-Each hour's color is determined by assessing each weather parameter individually (percent of precipitation,
-temperature, and wind speed), to get one of three desirability ratings - Low, Medium, and High - based on a simple
-equation. Here is a nerdy description of how that's decided, based on ranges. Below that is a more human-friendly
-translation:
+
+<p>Each hour's color is chosen in three steps: First, each weather parameter is assessed individually (percent of
+precipitation, temperature, and wind speed) to get one of three desirability ratings - Low, Medium, and High - based 
+on a simple set of ranges. Second, those three ratings are combined to get one of four overall desirability ratings
+for the hour itself - Low, Medium-Low, Medium-High, and High. Finally, the overall desirability rating is mapped to
+a color. (Click <a href="{{ url_for('forecastForZip', zipcode=forecast.zipcode, format='list') }}">here</a> if you
+want to see details about each hour as a list.)
+</p>
+
+<p>Following is a nerdy description of how that's decided, based on ranges.</p>
 
 <pre>
     precip: [0, 10]: High   [11, 30]: Medium  [31, ...]: Low
@@ -48,13 +56,13 @@ translation:
     wind:   [0,  8]: High   [ 9, 12]: Medium  [13, ...]: Low
 </pre>
 
+Here is an English translation of these ranges:
+
 <ul>
-    <li><em>Percent of precipitation</em>: If the % is between 0 and 10% (inclusive) then the desirability is High. If the % is
-        between 11% and 30% then desirability is Medium, and anything above 31% has a Low desirability.
-    </li>
-    <li><em>Temperature</em>: Anything up to 32°F has a Low desirability, 33°F to 41°F is Medium, temperatues between 42°F
-        and 70°F are considered High desirability, then the desirability goes back down as the temperatures are higher.
-    </li>
+    <li><em>Percent of precipitation</em>: If the % is between 0 and 10% (inclusive) then the desirability is High. If
+        the % is between 11% and 30% then desirability is Medium, and anything above 31% has a Low desirability. </li>
+    <li><em>Temperature</em>: Anything up to 32°F has a Low desirability, 33°F to 41°F is Medium, temperatues between
+        42°F and 70°F are considered High desirability, then the desirability goes back down as the temperatures are
+        higher.</li>
     <li><em>Wind</em>: Like percent of precipitation, the wind has three ranges, where lower is better.</li>
-    
 </ul>
