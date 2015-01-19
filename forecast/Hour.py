@@ -12,10 +12,25 @@ class Hour():
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
     
     # color definitions
-    HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#d94701',
-                                  H_DES_MED_LOW: '#fd8d3c',
-                                  H_DES_MED_HIGH: '#fdbe85',
-                                  H_DES_HIGH: '#feedde'}
+
+    # OK http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
+    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#d94701',
+    #                               H_DES_MED_LOW: '#fd8d3c',
+    #                               H_DES_MED_HIGH: '#fdbe85',
+    #                               H_DES_HIGH: '#feedde'}
+
+    # OK - reversed http://colorbrewer2.org/?type=diverging&scheme=RdYlGn&n=4
+    # HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#1a9641',
+    #                               H_DES_MED_LOW: '#a6d96a',
+    #                               H_DES_MED_HIGH: '#fdae61',
+    #                               H_DES_HIGH: '#d7191c'}
+
+    # BEST - tweaked version of: https://en.wikipedia.org/wiki/Homeland_Security_Advisory_System#Threat_level_changes)
+    HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#EC3E40',
+                                  H_DES_MED_LOW: '#FF9B2B',
+                                  H_DES_MED_HIGH: 'yellow',
+                                  H_DES_HIGH: 'limegreen'}
+
     HOUR_MISSING_COLOR = 'white'
     COLOR_SEQ_HIGH_TO_LOW = [HOUR_DESIRABILITY_TO_COLOR[H_DES_HIGH],
                              HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_HIGH],
