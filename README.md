@@ -6,12 +6,12 @@ Obviously the two big factors in how useful this app is are 1) quality of underl
 the hourly analysis-to-color algorithm.
 
 
-# bugs
+# Bugs
 - https://rc-weather.herokuapp.com/forecast/09003 -> Internal Server Error
 - images stretch based on window size :-O
 
 
-# features
+# Features
 - colors:
     - confusing whether orange or yellow is better. Not sure how to address this. Maybe add a little green to that yellow,
       and a little more red to that orange?
@@ -32,8 +32,9 @@ the hourly analysis-to-color algorithm.
     - Use a picture/icon :-)
 - see below: Referenced apps/sites
 - rethink layout/squares?
-    - Have long term squares, with users able to set their thresholds for bad, acceptable and great flying days, and then
-      have a short term meteogram for double checking nearer the time.
+    - have long term squares, with users able to set their thresholds for bad, acceptable and great flying days, and
+      then have a short term meteogram for double checking nearer the time.
+    - show every three hours instead of one? After all, that's the most frequent update of data
 - show a sunny/overcast/rain/snow icon in the hour square like http://www.alessioatzeni.com/meteocons/res/img/screen.png
 - more parameters? 1. Wind 2. Rain (or snow) 3. Temperature
 - temperature
@@ -54,8 +55,8 @@ the hourly analysis-to-color algorithm.
 
 
 # Above includes suggestions and comments from forum postings on 2015-01-19
-[Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!](http://helifreak.com/showthread.php?p=6307025#post6307025)
-[RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!](http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR)
+- [Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!](http://helifreak.com/showthread.php?p=6307025#post6307025)
+- [RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!](http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR)
 
 
 ## Technical
