@@ -13,7 +13,7 @@
     </p>
 
     <p>
-        <img src="{{ url_for('static', filename='EFLU4380_b0.jpg') }}" width="40%" height="40%" align="right">
+        <img src="{{ url_for('static', filename='EFLU4380_b0.jpg') }}" style="width:340px;" align="right">
         Because the weather is a major factor, I thought showing a simple color-coded hourly
         forecast would be useful. The table on this site has columns representing days of the week and has rows for
         hours of the day. Each cell is an hour whose color is determined by a simple algorithm that takes into account
@@ -42,5 +42,13 @@
         <span style="color: red">Invalid zipcode: {{ invalidZipcode }}</span>
     {% endif %}
 
+
+    <h2>Search zip codes</h2>
+
+    <form method="POST" action="{{ url_for('doZipSearchSubmit') }}">
+        <label for="query-id">Query: </label>
+        <input id="query-id" type="text" name="query_form_value">
+        <input type="submit" value="Search">
+    </form>
 
 {% endblock %}

@@ -80,6 +80,21 @@ class Forecast:
         raise ValueError("invalid zipcode: {}".format(zipcode))
 
 
+    @classmethod
+    def searchZipcodes(cls, query):
+        """
+        :param query: 
+        :return: a list of 4-tuples containing places matching query. format: (zipcode, name, latitude, longitude),
+        where name is the same as latLonNameForZipcode()
+        """
+        zipNameTuples = []
+        for (csv_zipcode, city, state, latitude, longitude) in CACHED_ZIP_INFO_TUPLES:
+            name = city + ", " + state
+            if re.search(query, name, re.IGNORECASE):
+                zipNameTuples.append((csv_zipcode, name, latitude, longitude))
+        return zipNameTuples
+
+
     #
     # hoursWithNoGapsFromXml() and friends
     #

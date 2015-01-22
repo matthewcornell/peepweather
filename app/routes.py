@@ -34,6 +34,11 @@ def forecastForZip(zipcode):
         return "invalid format type. must be either 'calendar' or 'list'"  # TODO
 
 
+@app.route('/search/<query>')
+def searchZip(query):
+    return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))
+
+
 #
 # forms
 #
@@ -48,3 +53,7 @@ def doZipSubmit():
         return render_template("index.html", invalidZipcode=zipVal, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
 
 
+@app.route('/doZipSearchSubmit', methods=['POST'])
+def doZipSearchSubmit():
+    queryVal = request.form.get('query_form_value', None)
+    return redirect(url_for('searchZip', query=queryVal))
