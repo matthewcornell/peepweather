@@ -63,6 +63,10 @@ the hourly analysis-to-color algorithm.
 - No login is required since this can be stored in a cookie
 
 
+## Site design ideas
+- [Windalert](http://www.windalert.com/)
+
+
 ## Referenced apps/sites
 - ! [ETSU Observatory Clear Sky Chart](http://cleardarksky.com/c/ETSUObTNkey.html?1)
 - [WindAlert iOS App] (https://itunes.apple.com/us/app/windalert/id317992025?mt=8)
