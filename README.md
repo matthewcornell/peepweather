@@ -7,16 +7,16 @@ the hourly analysis-to-color algorithm.
 
 
 # Bugs
+- time display doesn't localize to zip code :-) ex: at 2015-01-22 10.47a: https://rc-weather.herokuapp.com/forecast/77001
+  says: "Forecast for Houston, TX - 77001 at Thu, 01/22, 03:47 PM". It's currently using whatever 'now' means on the
+  heroku server
 - https://rc-weather.herokuapp.com/forecast/09003 -> Internal Server Error
 - images stretch based on window size :-O
 
 
-# Features
-- colors:
-    - confusing whether orange or yellow is better. Not sure how to address this. Maybe add a little green to that yellow,
-      and a little more red to that orange?
-    - colorblind
-    - a gradient of each color to indicate really low wind (0-3,3-6,6-9), etc. that way we can really know a 1mph day vs 9 mph day?
+# Feature Requests: Active
+- add a link to this page, say on github? Q: do I want to make the source open?
+- colors: keep stoplight scheme but double-check color blind safety, maybe tweak the colors
 - modern appearance
     - mobile-friendly (responsive design)
 - factor in daylight
@@ -52,6 +52,10 @@ the hourly analysis-to-color algorithm.
     - the integrate it with the existing android/iOS calendars (shade the background of your calendar's hourly blocks
       with flying condition colors). could see my actual appointments etc while being able to see flying conditions at
       a glance (and schedule everything for red times!)
+
+
+# Feature Requests: Future
+- colors: a gradient of each color to indicate really low wind (0-3,3-6,6-9), etc. that way we can really know a 1mph day vs 9 mph day?
 
 
 # Above includes suggestions and comments from forum postings on 2015-01-19
