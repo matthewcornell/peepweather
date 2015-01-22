@@ -10,82 +10,42 @@ class Hour():
     # overall desirability rating for an hour, based on above parameter desirabilities:
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
 
-    # color definitions: experiments!
-    HOUR_DESIRABILITY_TO_COLOR_LIST = [
-        {H_DES_LOW: '#edf8e9',  # 0 http://colorbrewer2.org/?type=sequential&scheme=Greens&n=4 <- ~ green confusing: is darker > lighter?
-         H_DES_MED_LOW: '#bae4b3',
-         H_DES_MED_HIGH: '74c476',
-         H_DES_HIGH: '238b45'},
-        {H_DES_LOW: '#ec3e40',  # 1 stoplight (current) <- ~ yellow not conceptually close to green
-         H_DES_MED_LOW: '#ff9b2b',
-         H_DES_MED_HIGH: 'yellow',
-         H_DES_HIGH: 'limegreen'},
-        {H_DES_LOW: '#feedde',  # 2 http://colorbrewer2.org/?type=sequential&scheme=Oranges&n=4 <- v best so far? but confusing?: is darker > lighter?
-         H_DES_MED_LOW: '#fdbe85',
-         H_DES_MED_HIGH: '#fd8d3c',
-         H_DES_HIGH: '#d94701'},
-        {H_DES_LOW: '#d94701',  # 3 rev: http://colorbrewer2.org/?type=sequential&scheme=Oranges&n=4 <- x also confusing
-         H_DES_MED_LOW: '#fd8d3c',
-         H_DES_MED_HIGH: '#fdbe85',
-         H_DES_HIGH: '#feedde'},
-        {H_DES_LOW: '#1a9641',  # 4 <- x red s/b bad, not good
-         H_DES_MED_LOW: '#a6d96a',
-         H_DES_MED_HIGH: '#fdae61',
-         H_DES_HIGH: '#d7191c'},
-        {H_DES_LOW: '#fef0d9',  # 5 http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4 <- x same as 2 but cooler
-         H_DES_MED_LOW: '#fdcc8a',
-         H_DES_MED_HIGH: '#fc8d59',
-         H_DES_HIGH: '#d7301f'},
-        {H_DES_LOW: '#d7301f',  # 6 rev: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4 <- x ""
-         H_DES_MED_LOW: '#fc8d59',
-         H_DES_MED_HIGH: '#fdcc8a',
-         H_DES_HIGH: '#fef0d9'},
-        {H_DES_LOW: '#ffffd4',  # 7 http://colorbrewer2.org/?type=sequential&scheme=YlOrBr&n=4 <- x not as good as 2
-         H_DES_MED_LOW: '#fed98e',
-         H_DES_MED_HIGH: '#fe9929',
-         H_DES_HIGH: '#cc4c02'},
-        {H_DES_LOW: '#cc4c02',  # 8 rev: http://colorbrewer2.org/?type=sequential&scheme=YlOrBr&n=4 <- x ""
-         H_DES_MED_LOW: '#fe9929',
-         H_DES_MED_HIGH: '#fed98e',
-         H_DES_HIGH: '#ffffd4'},
-        {H_DES_LOW: 'red',      # 9 <- x
-         H_DES_MED_LOW: 'greenyellow',
-         H_DES_MED_HIGH: 'green',
-         H_DES_HIGH: 'palegreen'},
-        {H_DES_LOW: '#d7191c',  # 10 http://colorbrewer2.org/?type=diverging&scheme=RdYlBu&n=4 <- x sky blue in middle
-         H_DES_MED_LOW: '#fdae61',
-         H_DES_MED_HIGH: '#abd9e9',
-         H_DES_HIGH: '#2c7bb6'},
-        {H_DES_LOW: '#eff3ff',  # 11 http://colorbrewer2.org/?type=sequential&scheme=Blues&n=4 <- ~ x blue is confusing = sky cloudy or clear
-         H_DES_MED_LOW: '#bdd7e7',
-         H_DES_MED_HIGH: '#6baed6',
-         H_DES_HIGH: '#2171b5'},
-        {H_DES_LOW: '#d01c8b',  # 12 http://colorbrewer2.org/?type=diverging&scheme=PiYG&n=4 <- v strange, but not bad
-         H_DES_MED_LOW: '#f1b6da',
-         H_DES_MED_HIGH: '#b8e186',
-         H_DES_HIGH: '#4dac26'},
-        {H_DES_LOW: '#5e3c99',  # 13 http://colorbrewer2.org/?type=diverging&scheme=PuOr&n=4 <- v ""
-         H_DES_MED_LOW: '#b2abd2',
-         H_DES_MED_HIGH: '#fdb863',
-         H_DES_HIGH: '#e66101'},
-        {H_DES_LOW: '#238b45',  # 14 - 0 rev: http://colorbrewer2.org/?type=sequential&scheme=Greens&n=4 <- x also confusing
-         H_DES_MED_LOW: '#74c476',
-         H_DES_MED_HIGH: '#bae4b3',
-         H_DES_HIGH: 'edf8e9'},
-        {H_DES_LOW: '#e31a1c',  # 15 - 1 but w/yellow-green <- x nah
-         H_DES_MED_LOW: '#fd8d3c',
-         H_DES_MED_HIGH: '#ccff33',
-         H_DES_HIGH: '#00ff00'},
-        {H_DES_LOW: '#d7191c',  # 16 http://colorbrewer2.org/?type=diverging&scheme=RdYlGn&n=4 <- ~ eh
-         H_DES_MED_LOW: '#fdae61',
-         H_DES_MED_HIGH: '#a6d96a',
-         H_DES_HIGH: '#1a9641'},
-        {H_DES_LOW: '#2171b5',  # 17 - 11 rev: http://colorbrewer2.org/?type=sequential&scheme=Blues&n=4 <- x blue still confusing
-         H_DES_MED_LOW: '#6baed6',
-         H_DES_MED_HIGH: '#bdd7e7',
-         H_DES_HIGH: '#eff3ff'},
-    ]
-    HOUR_DESIRABILITY_TO_COLOR = HOUR_DESIRABILITY_TO_COLOR_LIST[2]
+    # color definitions
+    HOUR_DESIRABILITY_TO_COLOR_PALETTES = {
+        'stoplight': {H_DES_LOW: '#ec3e40',
+                      H_DES_MED_LOW: '#ff9b2b',
+                      H_DES_MED_HIGH: 'yellow',
+                      H_DES_HIGH: 'limegreen'},
+        'stoplight-2': {H_DES_LOW: '#e31a1c',
+                        H_DES_MED_LOW: '#fd8d3c',
+                        H_DES_MED_HIGH: '#ccff33',
+                        H_DES_HIGH: '#00ff00'},
+        'sequential-orange': {H_DES_LOW: '#feedde',
+                              H_DES_MED_LOW: '#fdbe85',
+                              H_DES_MED_HIGH: '#fd8d3c',
+                              H_DES_HIGH: '#d94701'},
+        'sequential-green': {H_DES_LOW: '#edf8e9',
+                             H_DES_MED_LOW: '#bae4b3',
+                             H_DES_MED_HIGH: '74c476',
+                             H_DES_HIGH: '238b45'},
+        'sequential-blue': {H_DES_LOW: '#eff3ff',
+                            H_DES_MED_LOW: '#bdd7e7',
+                            H_DES_MED_HIGH: '#6baed6',
+                            H_DES_HIGH: '#2171b5'},
+        'divergent-green-purple': {H_DES_LOW: '#d01c8b',
+                                   H_DES_MED_LOW: '#f1b6da',
+                                   H_DES_MED_HIGH: '#b8e186',
+                                   H_DES_HIGH: '#4dac26'},
+        'divergent-orange-purple': {H_DES_LOW: '#5e3c99',
+                                    H_DES_MED_LOW: '#b2abd2',
+                                    H_DES_MED_HIGH: '#fdb863',
+                                    H_DES_HIGH: '#e66101'},
+        'divergent-green-red': {H_DES_LOW: '#d7191c',
+                                H_DES_MED_LOW: '#fdae61',
+                                H_DES_MED_HIGH: '#a6d96a',
+                                H_DES_HIGH: '#1a9641'},
+    }
+    HOUR_DESIRABILITY_TO_COLOR = HOUR_DESIRABILITY_TO_COLOR_PALETTES['stoplight-2']
 
     HOUR_MISSING_COLOR = 'white'
     COLOR_SEQ_HIGH_TO_LOW = [HOUR_DESIRABILITY_TO_COLOR[H_DES_HIGH],
