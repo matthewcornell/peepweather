@@ -15,36 +15,50 @@ the hourly analysis-to-color algorithm.
 
 
 # Feature Requests: Active
-- add a link to this page, say on github? Q: do I want to make the source open?
-- colors: keep stoplight scheme but double-check color blind safety, maybe tweak the colors
+## Essential
 - modern appearance
     - mobile-friendly (responsive design)
-- factor in daylight
-    - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make
+    
+- daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark
+    - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make
+
+- more parameters?
+    - DEC: Apparent Temperature, Wind Speed, PoP12, Sky Cover. maybe for click: Weather Conditions Icons. This would be
+      FOUR parameters, each with three desirability ratings.
+        - Currently we have THREE parameters, three ratings each, and FOUR hourly ratings:
+          CURRENT RULES: L**, MMH, MHH, HHH
+        - If we have FOUR params then we have these FIVE combinations:
+          NEW RULES : L***, MMMH, MMHH, MHHH, HHHH
+        - But is five colors getting out of hand? Which one inner pattern would we toss to keep four? The choice would be
+          arbitrary. However, maybe we could indicate sky cover separately, say by HSV or pattern? Nah - too complicated.
+          DEC: expand to FIVE hourly ratings and colors.
+
 - select your own parameters as to what constitutes a "green block" (No login is required - can store in a cookie)
     - every user should be able to specify what is acceptable in terms of: 1. Wind, 2. Rain (or snow), 3. Temperature
     - edit the "acceptable" values via sliders and then to set priorities by weight
     - simple sliders to adjust thresholds for temp, clouds, and wind preferences
-- factor in overcast. Please consider whether the day is sunny or cloudy. Makes a huge difference in experience
-- click a block to show details
-- overall assessment
-    - Use a picture/icon :-)
-- see below: Referenced apps/sites
-- rethink layout/squares?
-    - have long term squares, with users able to set their thresholds for bad, acceptable and great flying days, and
-      then have a short term meteogram for double checking nearer the time.
-    - show every three hours instead of one? After all, that's the most frequent update of data
-- show a sunny/overcast/rain/snow icon in the hour square like http://www.alessioatzeni.com/meteocons/res/img/screen.png
-- more parameters? 1. Wind 2. Rain (or snow) 3. Temperature
-- temperature
-    - use windchill and heat index calculations instead of temperature
-    - Base the temperature rating on the normal temps for the area of the country
+
 - chosing location
     - add APO zipcodes - http://www.us-zip.org/armed_forces/apo/
     - input GPS coordinates as an option rather than just zip
     - allow city, state. Many times when you are traveling or going out of your local area, you know the town name but
       not the zip code. Saves a step of "looking it up".
+
+
+## Secondary
+- click a block to show details
+
+
+## Maybe or for fun
+- add a link to this page, say on github? Q: do I want to make the source open?
+- overall assessment
+    - Use a picture/icon :-)
+- rethink layout/squares?
+    - have long term squares, with users able to set their thresholds for bad, acceptable and great flying days, and
+      then have a short term meteogram for double checking nearer the time.
+    - show every three hours instead of one? After all, that's the most frequent update of data
+- show a sunny/overcast/rain/snow icon in the hour square like http://www.alessioatzeni.com/meteocons/res/img/screen.png
 - international
 - mobile app
     - widget
