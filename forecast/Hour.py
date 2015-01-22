@@ -10,42 +10,11 @@ class Hour():
     # overall desirability rating for an hour, based on above parameter desirabilities:
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
 
-    # color definitions
-    HOUR_DESIRABILITY_TO_COLOR_PALETTES = {
-        'stoplight': {H_DES_LOW: '#ec3e40',
-                      H_DES_MED_LOW: '#ff9b2b',
-                      H_DES_MED_HIGH: 'yellow',
-                      H_DES_HIGH: 'limegreen'},
-        'stoplight-2': {H_DES_LOW: '#e31a1c',
-                        H_DES_MED_LOW: '#fd8d3c',
-                        H_DES_MED_HIGH: '#ccff33',
-                        H_DES_HIGH: '#00ff00'},
-        'sequential-orange': {H_DES_LOW: '#feedde',
-                              H_DES_MED_LOW: '#fdbe85',
-                              H_DES_MED_HIGH: '#fd8d3c',
-                              H_DES_HIGH: '#d94701'},
-        'sequential-green': {H_DES_LOW: '#edf8e9',
-                             H_DES_MED_LOW: '#bae4b3',
-                             H_DES_MED_HIGH: '74c476',
-                             H_DES_HIGH: '238b45'},
-        'sequential-blue': {H_DES_LOW: '#eff3ff',
-                            H_DES_MED_LOW: '#bdd7e7',
-                            H_DES_MED_HIGH: '#6baed6',
-                            H_DES_HIGH: '#2171b5'},
-        'divergent-green-purple': {H_DES_LOW: '#d01c8b',
-                                   H_DES_MED_LOW: '#f1b6da',
-                                   H_DES_MED_HIGH: '#b8e186',
-                                   H_DES_HIGH: '#4dac26'},
-        'divergent-orange-purple': {H_DES_LOW: '#5e3c99',
-                                    H_DES_MED_LOW: '#b2abd2',
-                                    H_DES_MED_HIGH: '#fdb863',
-                                    H_DES_HIGH: '#e66101'},
-        'divergent-green-red': {H_DES_LOW: '#d7191c',
-                                H_DES_MED_LOW: '#fdae61',
-                                H_DES_MED_HIGH: '#a6d96a',
-                                H_DES_HIGH: '#1a9641'},
-    }
-    HOUR_DESIRABILITY_TO_COLOR = HOUR_DESIRABILITY_TO_COLOR_PALETTES['stoplight-2']
+    # color definitions based on the HSV gradient b/w red and green: http://www.colorhexa.com/ff0000-to-00ff00
+    HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#ff0000',
+                                  H_DES_MED_LOW: '#ffaa00',
+                                  H_DES_MED_HIGH: 'd5ff00',
+                                  H_DES_HIGH: '00ff00'}
 
     HOUR_MISSING_COLOR = 'white'
     COLOR_SEQ_HIGH_TO_LOW = [HOUR_DESIRABILITY_TO_COLOR[H_DES_HIGH],

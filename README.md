@@ -80,6 +80,7 @@ the hourly analysis-to-color algorithm.
 - [Windyty, wind forecast](https://www.windyty.com/spot/location/42.374/-72.518/name/Amherst?surface,wind,now,42.374,-72.264,11)
 - [Aviation Weather Report and Forecast - Wind Speed, Temperature, Wind Direction, Precipitation Forecast](http://www.usairnet.com/cgi-bin/launch/code.cgi?state=TX&sta=KTKI)
 - [meteocons](http://www.alessioatzeni.com/meteocons/res/img/screen.png)
+- [1Weather:Widget Forecast Radar | 1mobile.com] (http://www.1mobile.com/1weather-widget-forecast-radar-336436.html)
 
 
 ## Tagline: "Just look for the green and then go fly!"
