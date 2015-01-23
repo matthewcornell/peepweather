@@ -93,7 +93,7 @@ class Forecast:
         for (csv_zipcode, city, state, latitude, longitude) in CACHED_ZIP_INFO_TUPLES:
             if csv_zipcode == zipcode:
                 return latitude, longitude, city + ", " + state
-        raise ValueError("invalid zipcode: {}".format(zipcode))
+        raise ValueError("couldn't find zipcode: {}".format(zipcode))
 
 
     @classmethod

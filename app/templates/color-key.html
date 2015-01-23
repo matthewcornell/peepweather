@@ -11,22 +11,22 @@
 
     <tr>
         <td style="background-color:{{ colorKeyHighToLow[0] }};"></td>
-        <td>High</td>
+        <td>Great</td>
     </tr>
 
     <tr>
         <td style="background-color:{{ colorKeyHighToLow[1] }};"></td>
-        <td>Medium-high</td>
+        <td>Okay</td>
     </tr>
 
     <tr>
         <td style="background-color:{{ colorKeyHighToLow[2] }};"></td>
-        <td>Medium-low</td>
+        <td>Fair</td>
     </tr>
 
     <tr>
         <td style="background-color:{{ colorKeyHighToLow[3] }};"></td>
-        <td>Low</td>
+        <td>Poor</td>
     </tr>
 
     <tr>
@@ -43,16 +43,16 @@
 <p>Each hour's color is chosen in three steps: First, each weather parameter is assessed individually (percent of
 precipitation, temperature, and wind speed) to get one of three desirability ratings - Low, Medium, and High - based 
 on a simple set of ranges. Second, those three ratings are combined to get one of four overall desirability ratings
-for the hour itself - Low, Medium-Low, Medium-High, and High. Finally, the overall desirability rating is mapped to
+for the hour itself - Poor, Fair, Okay, and Great. Finally, the overall desirability rating is mapped to
 a color.
 </p>
 
 <p>Following is a nerdy description of how that's decided, based on ranges.</p>
 
 <pre>
-    precip: [0, 10]: High   [11, 30]: Medium  [31, ...]: Low
-    temp:   [..., 32]: Low  [33, 41]: Medium  [42, 70]: High  [71, 85]: Medium    [86, ...]: Low
-    wind:   [0,  8]: High   [ 9, 12]: Medium  [13, ...]: Low
+    precip: [0, 10]: High   [11, 30]: Medium   [31,  &gt;]: Low
+    temp:   [&lt;, 32]: Low    [33, 41]: Medium   [42, 70]: High   [71, 85]: Medium   [86, &gt;]: Low
+    wind:   [0,  8]: High   [ 9, 12]: Medium   [13,  &gt;]: Low
 </pre>
 
 Here is an English translation of these ranges:

@@ -17,7 +17,7 @@ class MyTestCase(unittest.TestCase):
         Forecast('01002', elementTree)   # does not raise
 
         # zip bad: not in csv
-        with self.assertRaisesRegex(ValueError, 'invalid zipcode: 99999'):
+        with self.assertRaisesRegex(ValueError, "couldn't find zipcode: 99999"):
             Forecast('99999', elementTree)
 
         # zip bad: None

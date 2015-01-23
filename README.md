@@ -10,7 +10,6 @@ the hourly analysis-to-color algorithm.
 - form validation:
     - zip, lat/lon search: not empty; valid entry
     - search: not empty
-- https://rc-weather.herokuapp.com/forecast/09003 -> Internal Server Error
 
 
 # Feature Requests: Active
