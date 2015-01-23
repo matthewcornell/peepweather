@@ -1,6 +1,6 @@
 ;; -*- mode: outline -*-
 
-Currently we have two kinds of shapes that describe parameter ranges:
+Currently we have two kinds of shapes (functions, really) that describe parameter ranges:
 
 * 1) H-M-L 'steps'
 
@@ -31,6 +31,22 @@ L <- -+           +--->
       v1  v2  v3  v4
 
 characterized by four values: v1 (L-to-M transition), v2 (M-to-H), v3 (H-to-M), and v4 (M-to-L)
+
+
+* Current ranges:
+
+paramSteps = {'precip': (10, 30),   # H-M-L
+              'wind'  : (8, 12),    # H-M-L
+              'temp'  : (32, 41, 70, 85)}   # L-M-H-M-L
+
+
+* Re: open/closed range
+
+Each vN is the value at which the rating changes, but we need to decide whether the point itself indicates the lower or
+higher rating. Taking the curreng ranges above, does a precip of 10 (v1) result in a H or M?
+
+DEC: Thinking of the H-M-L case and considering values starting at 0 and increasing, let's say the change happens upon
+encountering the first point. That is, each point 'bumps' it up or down when reached from the left.
 
 
 * URL

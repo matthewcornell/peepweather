@@ -143,39 +143,30 @@ class Hour():
     @classmethod
     def paramDesirabilityForValue(cls, paramName, value):
         """
-        Gives a rating for a particular parameter value.
+        Gives a rating for a particular parameter value using the current ranges.
 
         :param paramName: one of ['precip', 'temp', 'wind']
         :param value: the parameter's value
-        :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter . for now uses the following ranges to decide:
-
-            precip: [0, 10]: Hour.P_DES_HIGH    [11, 30]: Hour.P_DES_MED    [31, ...]: Hour.P_DES_LOW
-            temp: [..., 32]: Hour.P_DES_LOW    [33, 41]: Hour.P_DES_MED    [42, 70]: Hour.P_DES_HIGH    [71, 85]: Hour.P_DES_MED    [86, ...]: Hour.P_DES_LOW
-            wind:   [0,  8]: Hour.P_DES_HIGH    [ 9, 12]: Hour.P_DES_MED    [13, ...]: Hour.P_DES_LOW
+        :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
-        if paramName not in ['precip', 'temp', 'wind']:
+        paramSteps = {'precip': (10, 30),   # H-M-L
+                      'wind'  : (8, 12),    # H-M-L
+                      'temp'  : (32, 41, 70, 85)}   # L-M-H-M-L
+        if paramName not in paramSteps.keys():
             raise ValueError("invalid parameter: {}".format(paramName))
-
-        if paramName == 'precip':
-            if value <= 10:
+        
+        paramStep = paramSteps[paramName]
+        if len(paramStep) == 2: # H-M-L
+            if value < paramStep[0]:
                 return Hour.P_DES_HIGH
-            elif value >= 31:
+            elif value >= paramStep[1]:
                 return Hour.P_DES_LOW
             else:
                 return Hour.P_DES_MED
-        # temp
-        elif paramName == 'temp':
-            if value <= 32 or value >= 86:
+        else:   # L-M-H-M-L
+            if value < paramStep[0] or value >= paramStep[3]:
                 return Hour.P_DES_LOW
-            elif 33 <= value <= 41 or 71 <= value <= 85:
-                return Hour.P_DES_MED
-            else:
+            elif paramStep[1] <= value < paramStep[2]:
                 return Hour.P_DES_HIGH
-        # wind
-        else:
-            if value <= 8:
-                return Hour.P_DES_HIGH
-            elif value >= 13:
-                return Hour.P_DES_LOW
             else:
                 return Hour.P_DES_MED

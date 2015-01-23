@@ -355,7 +355,7 @@ class MyTestCase(unittest.TestCase):
 
 
     def testHourColorDesirabilities(self):
-        # steps:
+        # recall steps:
         # 1. assign DESIRABILITY of each parameter into THREE categories:
         #    P_DES_LOW, P_DES_MED, P_DES_HIGH
         #
@@ -368,40 +368,36 @@ class MyTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'invalid parameter: None'):
             Hour.paramDesirabilityForValue(None, 0)
 
-        # precip
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('precip', 0))
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('precip', 5))
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('precip', 10))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('precip', 11))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('precip', 20))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('precip', 30))
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('precip', 31))
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('precip', 100))
-
-        # temp
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', -100))
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', 32))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 33))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 40))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 41))
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('temp', 42))
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('temp', 50))
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('temp', 70))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 71))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 80))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('temp', 85))
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', 86))
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('temp', 100))
-
-        # wind
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('wind', 0))
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('wind', 5))
-        self.assertEqual(Hour.P_DES_HIGH, Hour.paramDesirabilityForValue('wind', 8))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('wind', 9))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('wind', 10))
-        self.assertEqual(Hour.P_DES_MED, Hour.paramDesirabilityForValue('wind', 12))
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('wind', 13))
-        self.assertEqual(Hour.P_DES_LOW, Hour.paramDesirabilityForValue('wind', 100))
+        expParamValRatings = {
+            'precip': [(0, Hour.P_DES_HIGH),
+                       (9, Hour.P_DES_HIGH),
+                       (10, Hour.P_DES_MED),
+                       (29, Hour.P_DES_MED),
+                       (30, Hour.P_DES_LOW),
+                       (100, Hour.P_DES_LOW),
+            ],
+            'wind': [(0, Hour.P_DES_HIGH),
+                     (7, Hour.P_DES_HIGH),
+                     (8, Hour.P_DES_MED),
+                     (11, Hour.P_DES_MED),
+                     (12, Hour.P_DES_LOW),
+                     (100, Hour.P_DES_LOW),
+            ],
+            'temp': [(-100, Hour.P_DES_LOW),
+                     (31, Hour.P_DES_LOW),
+                     (32, Hour.P_DES_MED),
+                     (40, Hour.P_DES_MED),
+                     (41, Hour.P_DES_HIGH),
+                     (69, Hour.P_DES_HIGH),
+                     (70, Hour.P_DES_MED),
+                     (84, Hour.P_DES_MED),
+                     (85, Hour.P_DES_LOW),
+                     (100, Hour.P_DES_LOW),
+            ],
+        }
+        for paramName, expParamValRatings in expParamValRatings.items():
+            for paramval, expParamRating in expParamValRatings:
+                self.assertEqual(expParamRating, Hour.paramDesirabilityForValue(paramName, paramval))
 
         # check overall hour desirability. counts: Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH
         pDesCountsDict = {(0, 1, 2): Hour.H_DES_LOW,
@@ -426,15 +422,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_MED_LOW], Hour.colorForHourDesirability(Hour.H_DES_MED_LOW))
         self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_MED_HIGH], Hour.colorForHourDesirability(Hour.H_DES_MED_HIGH))
         self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_HIGH], Hour.colorForHourDesirability(Hour.H_DES_HIGH))
-        
-        # precip: [0, 10]: Hour.P_DES_HIGH    [11, 30]: Hour.P_DES_MED    [31, ...]: Hour.P_DES_LOW
-        # temp: [..., 32]: Hour.P_DES_LOW    [33, 41]: Hour.P_DES_MED    [42, 70] Hour.P_DES_HIGH    [71, 85]: Hour.P_DES_MED    [86, ...]: Hour.P_DES_LOW
-        # wind:   [0,  8]: Hour.P_DES_HIGH    [ 9, 12]: Hour.P_DES_MED    [13, ...]: Hour.P_DES_LOW
-
-        # if hDesLowCount:            # if any are low then overall is low
-        # elif hDesHighCount == 3:    # if all three are high then overall is high
-        # elif hDesMedCount == 1 and hDesHighCount == 2:  # if there are two highs then overall is med-high
-        # elif hDesMedCount == 2 and hDesHighCount == 1:   # if there are two mediums then overall is med-low
 
         # finally, test color()! tuple: (precip, temp, wind)
         paramToColorDict = {(100, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_LOW),        # precip low
