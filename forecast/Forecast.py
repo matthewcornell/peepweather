@@ -17,37 +17,53 @@ class Forecast:
     """
     Computes a forecast based on a zip code using http://www.nws.noaa.gov/ndfd/technical.htm as a sequence of Hours.
     """
-    def __init__(self, zipcode, elementTree=None):
+    def __init__(self, zipOrLatLon, elementTree=None):
         """
-        :param zipcode: str zip code to get forecast for
+        :param zipOrLatLon: location to get the forecast for. either a zip code string or a 2-tuple of latitude and
+        longitude strings. ex: '01002' or ('42.375370', '-72.519249').
         :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
         :return:
         """
-        (lat, lon, name) = self.latLonNameForZipcode(zipcode)
-        self.zipcode = zipcode
-        self.latLon = (lat, lon)
-        self.name = name
-        self.error = False
-
+        if type(zipOrLatLon) == str:
+            self.zipcode = zipOrLatLon
+            (lat, lon, name) = self.latLonNameForZipcode(zipOrLatLon)
+            self.latLon = (lat, lon)
+            self.name = name
+        elif type(zipOrLatLon) == list and len(zipOrLatLon) == 2 \
+                and type(zipOrLatLon[0]) == str \
+                and type(zipOrLatLon[1]) == str:
+            self.zipcode = None
+            self.latLon = zipOrLatLon
+            self.name = None
+        else:
+            raise ValueError("invalid zipOrLatLon {}".format(zipOrLatLon))
+        
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
-            print('Forecast({}) @ {}: {}, {} -> {}: '.format(self.zipcode, datetime.datetime.now(), self.latLon,
-                                                             self.name,
-                                                             self.weatherDotGovUrl()))
+            print('Forecast({}) @ {}: {}, {} -> {}: '.format(
+                self.zipcode, datetime.datetime.now(), self.latLon, self.name, self.weatherDotGovUrl()))
             elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
         if dwmlElement.tag == 'error':
-            self.error = True
-            self.error = ET.tostring(dwmlElement.find('pre'),
-                                     encoding='unicode')  # "xml", "html" or "text" (default xml)
+            errorString = ET.tostring(dwmlElement.find('pre'), encoding='unicode')  # "xml", "html" or "text" (default xml)
             logger.error(
-                "error getting data for zipcode {}\nurl: \t{}\nerror: {}".format(zipcode, self.weatherDotGovUrl(), self.error))
-        else:
-            self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
+                "error getting data for zipOrLatLon {}\nurl: \t{}\nerror: {}".format(
+                    zipOrLatLon, self.weatherDotGovUrl(), errorString))
+            raise ValueError(errorString)
+
+        # no error
+        self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
 
 
     def __repr__(self):
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
+    
+    
+    def location(self):
+        if self.name and self.zipcode:
+            return '{} ({})'.format(self.zipcode, self.name)
+        else:
+            return '{}, {}'.format(self.latLon[0], self.latLon[1])
 
 
     def weatherDotGovUrl(self):

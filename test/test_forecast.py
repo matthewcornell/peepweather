@@ -9,6 +9,37 @@ from forecast.Hour import Hour
 
 
 class MyTestCase(unittest.TestCase):
+    
+    def testForecastConstructorArg(self):
+        elementTree = ET.parse('test/test-forecast-data.xml')
+
+        # zip good: has an entry in the csv file
+        Forecast('01002', elementTree)   # does not raise
+
+        # zip bad: not in csv
+        with self.assertRaisesRegex(ValueError, 'invalid zipcode: 99999'):
+            Forecast('99999', elementTree)
+
+        # zip bad: None
+        with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
+            Forecast(None, elementTree)
+
+        # latLon good: valid format
+        Forecast(['42.375370', '-72.519249'], elementTree)  # does not raise
+        
+        # latLon bad: invalid formats
+        for zipOrLatLon in [[]], [None], ['42.375370', None], [1, '-72.519249']:
+            with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
+                Forecast(zipOrLatLon, elementTree)
+                
+                
+    def testErrorResponseFromAPI(self):
+        elementTree = ET.parse('test/test-forecast-error-response.xml')
+        expErrorXml = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
+        with self.assertRaisesRegex(ValueError, expErrorXml):
+            Forecast('01002', elementTree)
+
+
     def testForecastInstantiateLatLonName(self):
         zipToLatLonName = {"01002": ("42.377651", "-72.50323", "Amherst, MA"),
                            "92105": ("32.741256", "-117.0951", "San Diego, CA")}
@@ -19,14 +50,13 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual((lat, lon), forecast.latLon)
             self.assertEqual(name, forecast.name)
 
-        with self.assertRaisesRegex(ValueError, 'invalid zipcode: None'):
-            Forecast(None)
-
 
     def testWeatherDotGovUrl(self):
-        zipToLatLonName = {"01002": ("42.377651", "-72.50323", "Amherst, MA"),
-                           "92105": ("32.741256", "-117.0951", "San Diego, CA")}
-        for zipcode, (lat, lon, name) in zipToLatLonName.items():
+        # test zipcode constructor
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        zipToLatLon = {"01002": ("42.377651", "-72.50323"),
+                       "92105": ("32.741256", "-117.0951")}
+        for zipcode, (lat, lon) in zipToLatLon.items():
             expURL = 'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php' \
                      '?whichClient=NDFDgen' \
                      '&lat={lat}' \
@@ -37,23 +67,14 @@ class MyTestCase(unittest.TestCase):
                      '&pop12=pop12' \
                      '&wspd=wspd' \
                      '&Submit=Submit'.format(lat=lat, lon=lon)
-            elementTree = ET.parse('test/test-forecast-data.xml')
+            # test passing zipcode to constructor
             forecast = Forecast(zipcode, elementTree)
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
 
-
-    def testBadZip(self):
-        # test 1/2: valid input. patch constructor:
-        elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', elementTree)
-        self.assertFalse(forecast.error)
-
-        # test 2/2: error input. patch constructor:
-        elementTree = ET.parse('test/test-forecast-error-response.xml')
-        forecast = Forecast('01002', elementTree)
-        expErrorStr = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
-        self.assertEqual(expErrorStr, forecast.error)
-
+            # test passing latLon to constructor
+            forecast = Forecast([lat, lon], elementTree)
+            self.assertEqual(expURL, forecast.weatherDotGovUrl())
+        
 
     def testSearchZipcodes(self):
         query = 'barro'
@@ -333,11 +354,6 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(expIsDaylight, Forecast.isDaylightHour(hour))
 
 
-    def testHoursAsCalendarRowsPerfectAlignment(self):
-        # the case where there are no missing hours at the start and/or end. will probably cause hoursAsCalendarRows() to fail
-        self.fail()
-
-
     def testHourColorDesirabilities(self):
         # steps:
         # 1. assign DESIRABILITY of each parameter into THREE categories:
@@ -429,10 +445,6 @@ class MyTestCase(unittest.TestCase):
         for precipTempWindTuple, expColor in paramToColorDict.items():
             hour = Hour(None, *precipTempWindTuple)
             self.assertEqual(expColor, hour.color())
-
-
-    def testForecastSummary(self):
-        self.fail()
 
 
     def expectedHoursWithGaps(self):

@@ -8,11 +8,8 @@ the hourly analysis-to-color algorithm.
 
 # Bugs
 - form validation:
-    - zip: not empty; chars; all numbers
+    - zip, lat/lon search: not empty; valid entry
     - search: not empty
-- time display doesn't localize to zip code :-) ex: at 2015-01-22 10.47a: https://rc-weather.herokuapp.com/forecast/77001
-  says: "Forecast for Houston, TX - 77001 at Thu, 01/22, 03:47 PM". It's currently using whatever 'now' means on the
-  heroku server
 - https://rc-weather.herokuapp.com/forecast/09003 -> Internal Server Error
 
 
@@ -41,28 +38,16 @@ the hourly analysis-to-color algorithm.
     - edit the "acceptable" values via sliders and then to set priorities by weight
     - simple sliders to adjust thresholds for temp, clouds, and wind preferences
 
-- choosing location
-    - lat/lon. Q: URL?
-      RECALL:
-          https://maps.google.com/maps?q=40.681557,-102.16663&...
-          http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php?whichClient=NDFDgen&lat=42.375370&lon=-72.519249&...
-      YES:
-          /forecast/77001
-          /forecast/42.375370,-72.519249
-      NO: (what other ways to locate a forecast (resource) could there be?):
-          /forecast/zip/77001
-          /forecast/latlon/42.375370,-72.519249
-      NO: (same as first, but more complex):
-          /forecast?zipcode=01002
-          /forecast?lat=42.375370&lon=-72.519249
-    - zip code search. DEC: /search/erst
-
-
-## Secondary
 - click a block to show details
 
 
+## Money :-)
+- paypal donate
+- ads
+
+
 ## Maybe or for fun
+- list/map AMA fields nearby
 - add a link to this page, say on github? Q: do I want to make the source open?
 - overall assessment
     - Use a picture/icon :-)

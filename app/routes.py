@@ -12,30 +12,27 @@ def index():
     return render_template("index.html", colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
 
 
-@app.route('/forecast/<zipcode>')
-def forecastForZip(zipcode):
+@app.route('/forecast/<zipOrLatLon>')
+def forecastForLocation(zipOrLatLon):
     """
-    :param zipcode: zipcode to show the forecast for. the 'format' parameter is optional and can be either 'calendar'
-    (the default) or 'list
+    :param zipOrLatLon: location to get the forecast for. either a zip code string or a comma-separated list of
+    latitude and longitude strings. ex: '01002' or '42.375370,-72.519249'
     :return:
     """
-    formatType = request.args.get('format', 'calendar')  # to access parameters submitted in the URL (?key=value)
-    forecast = Forecast(zipcode)
-    if forecast.error:
-        return render_template("forecast-error.html", forecast=forecast, time=datetime.now(),
+    try:
+        if ',' in zipOrLatLon:
+            zipOrLatLonList = zipOrLatLon.split(',')
+        else:
+            zipOrLatLonList = zipOrLatLon
+        forecast = Forecast(zipOrLatLonList)
+        return render_template("forecast.html", forecast=forecast,
                                colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
-    elif formatType == 'list':
-        return render_template("forecast-list.html", forecast=forecast, time=datetime.now(),
+    except ValueError as ve:
+        return render_template("forecast-error.html", error=ve.args[0],
                                colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
-    elif formatType == 'calendar':
-        return render_template("forecast-calendar.html", forecast=forecast, time=datetime.now(),
-                               colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
-    else:
-        return "invalid format type. must be either 'calendar' or 'list'"  # TODO
-
 
 @app.route('/search/<query>')
-def searchZip(query):
+def searchForZip(query):
     return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))
 
 
@@ -46,14 +43,17 @@ def searchZip(query):
 @app.route('/doZipSubmit', methods=['POST'])
 def doZipSubmit():
     zipVal = request.form.get('zip_form_value', None)
-    try:
-        Forecast.latLonNameForZipcode(zipVal)
-        return redirect(url_for('forecastForZip', zipcode=zipVal))
-    except ValueError:
-        return render_template("index.html", invalidZipcode=zipVal, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+    return redirect(url_for('forecastForLocation', zipOrLatLon=zipVal))
+
+
+@app.route('/doLatLonSubmit', methods=['POST'])
+def doLatLonSubmit():
+    latVal = request.form.get('lat_form_value', None)
+    lonVal = request.form.get('lon_form_value', None)
+    return redirect(url_for('forecastForLocation', zipOrLatLon=latVal + ',' + lonVal))
 
 
 @app.route('/doZipSearchSubmit', methods=['POST'])
 def doZipSearchSubmit():
     queryVal = request.form.get('query_form_value', None)
-    return redirect(url_for('searchZip', query=queryVal))
+    return redirect(url_for('searchForZip', query=queryVal))
