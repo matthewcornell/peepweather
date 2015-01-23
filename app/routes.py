@@ -37,7 +37,10 @@ def searchForZip(query):
 
 @app.route('/parameters/')
 def editParameters():
-    return render_template("parameter-edit.html")
+    precipVals = Hour.PARAM_RANGE_STEPS['precip']
+    windVals = Hour.PARAM_RANGE_STEPS['wind']
+    tempVals = Hour.PARAM_RANGE_STEPS['temp']
+    return render_template("parameter-edit.html", precipVals=precipVals, windVals=windVals, tempVals=tempVals)
 
 
 #
@@ -67,18 +70,21 @@ def doEditParametersSubmit():
     tempV2Val = request.form.get('temp-v2-value', None)
     tempV3Val = request.form.get('temp-v3-value', None)
     tempV4Val = request.form.get('temp-v4-value', None)
-    
-    # TODO validate all are numbers
-    paramRangeSteps = {'precip': (int(precipV1Val), int(precipV2Val)),  # H-M-L
-                       'wind': (int(windV1Val), int(windV2Val)),  # H-M-L
-                       'temp': (int(tempV1Val), int(tempV2Val), int(tempV3Val), int(tempV4Val))}  # L-M-H-M-L
-    
-    print('xx saving', paramRangeSteps)
-    Hour.PARAM_RANGE_STEPS = paramRangeSteps
+    try:
+        paramRangeSteps = {'precip': (int(precipV1Val), int(precipV2Val)),  # H-M-L
+                           'wind': (int(windV1Val), int(windV2Val)),  # H-M-L
+                           'temp': (int(tempV1Val), int(tempV2Val), int(tempV3Val), int(tempV4Val))}  # L-M-H-M-L
+    except ValueError:
+        # TODO flash error, say which was bad
+        return "Error reading form values as integers".format()
 
-    # TODO: flash 'Parameters saved' and then stay on page or go back to ... ?
-    # Q: how to reload current page but passing a value through?
-    return render_template("parameter-edit.html", newParamRangeSteps=paramRangeSteps)
+    print('xx saving', paramRangeSteps)
+    # Hour.PARAM_RANGE_STEPS = paramRangeSteps
+
+    # TODO: flash successful
+    # TODO: Bug: URL says http://127.0.0.1:5000/doEditParametersSubmit
+    # return render_template("parameter-edit.html")
+    return redirect(url_for('editParameters'))
 
 
 @app.route('/doZipSearchSubmit', methods=['POST'])

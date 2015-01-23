@@ -24,9 +24,9 @@ class Hour():
                              HOUR_DESIRABILITY_TO_COLOR[H_DES_LOW]]  # for views
     
     # default ranges (see range-documentation.txt)
-    PARAM_RANGE_STEPS = {'precip': (10, 30),  # H-M-L
-                         'wind': (8, 12),     # H-M-L
-                         'temp': (32, 41, 70, 85)}  # L-M-H-M-L
+    PARAM_RANGE_STEPS = {'precip': [10, 30],  # H-M-L
+                         'wind': [8, 12],     # H-M-L
+                         'temp': [32, 41, 70, 85]}  # L-M-H-M-L
 
 
     def __init__(self, datetime, precip=None, temp=None, wind=None):
