@@ -17,6 +17,9 @@ the hourly analysis-to-color algorithm.
 - check color blind-friendly
 
 - customized parameter ranges - paramDesirabilityForValue(). see range-documentation.txt
+    - come up with good defaults first. BTW, one idea for simple customization for advanced users: Leave the UI out,
+      and just add query parameters for the customizable options. ex:
+      https://rc-weather.herokuapp.com/forecast/97030?min_ideal_temp=40&max_ideal_temp=80&max_ideal_wind=20
 
 - editable parameter weights for combined importance to the final rating - hourDesirabilityForParamDesCounts()
 
@@ -41,7 +44,7 @@ the hourly analysis-to-color algorithm.
 - click a block to show details
 
 
-## Money :-)
+## Money to fund hosting?
 - paypal donate
 - ads
 

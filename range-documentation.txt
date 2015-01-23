@@ -1,8 +1,60 @@
 ;; -*- mode: outline -*-
 
-Currently we have two kinds of shapes (functions, really) that describe parameter ranges:
+* Power user docs (parameter customization for advanced users)
+This page lets you view and edit the weather parameter ranges that combine to determine how each hour is rated.
 
-* 1) H-M-L 'steps'
+The condensed summary is that percent of precipitation and wind speed are broken into three Low, Medium, and High ranges that are identified by two numbers called "v1" and "v2" which mark out the Medium range. Anything below v1 is High desirability and anything above v2 is Low desirability. Temperature is identified by four numbers, v1 through v4, that delineate a "hat" shape where anything below v1 or above v4 is Low desirability, v1-to-v2 and v3-to-v4 are Medium, and v2-to-v3 is the High sweet spot. The edit areas below let you view and change all these values.
+
+Following is the detailed explanation.
+
+
+** Details
+Each hour's color is chosen in three steps: First, each weather parameter (percent of precipitation, temperature, and wind speed) is assessed individually to get one of three desirability ratings - Low, Medium, and High - based on a simple formula. Second, those three ratings are combined to get one of four overall desirability ratings for the hour - Poor, Fair, Okay, and Great. Finally, the overall desirability rating is mapped to a color, such as: Great = green, Okay = yellow, Fair = Orange, and Poor = red.
+
+This means there are two types of functions ( http://en.wikipedia.org/wiki/Function_%28mathematics%29 ) involved: One to convert each of the three parameter values into a Low, Medium, and High rating, and a second one to combine these into a Poor, Fair, Okay, and Great hour rating. Let's call these the Parameter Function and the Hourly Function.
+
+
+** Parameter Function
+On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, or wind speed) into ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH then consider that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher than 10 MPH then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to 10% might be High desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially three step ranges, graphically shown as:
+
+H +--+
+  |  |
+M |  +---+
+  |      |
+L +      +--->
+
+  0  v1  v2
+
+This makes clear that all it takes is two parameter values (called v1 and v2 above) to identify the range. When viewed from left to right, v1 is the High-to-Medium transition, and v2 is the Medium-to-Low transition. In the wind example, v1 = 5 MPH and v2 = 10 MPH. The precipitation example had 10% and 20% for v1 and v2, respectively. In other words, these two numbers identify the 'breaks' where the steps go down from left to right. We call this first type of Parameter Function a "H-M-L" step.
+
+But what about temperature? Well, temperature is different because it has a low range too - it can't be too cold OR too warm, but between those two Low-desirability extremes there are Medium and High values. Our Parameter Function for temperature has this shape:
+
+H         +---+
+          |   |
+M     +---+   +---+
+      |           |
+L <- -+           +--->
+
+      v1  v2  v3  v4
+
+We call this Parameter Function a "L-M-H-M-L" hat, and it is characterized by four values, from left to right: v1 (the L-to-M transition), v2 (Medium-to-High), v3 (High-to-Medium), and v4 (Medium-to-Low). For example, the four values 32, 40, 70, and 85 (all °F) say that anything colder than 32°F or warmer than 85°F are considered Low desirability, Medium is between 32 and 40, and between 70 and 85, and the 40 to 70 sweet spot is High desirability. Simple!
+
+That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly Function.
+
+
+** Hourly Function
+For each hour, once the program uses the Parameter Functions to get Low, Medium, and High values for the three weather parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour rating. Currently this is determined by non-editable rules:
+
+o If any of the three parameters is Low, then the hour is considered Poor.
+o If all are High then the hour is Great.
+o If there are two High ratings and one Medium then the hour is Okay.
+o Otherwise (one High and two Medium) then the hour is Poor.
+
+The weather parameters are treated equally and are not weighted in any way.
+
+
+* Currently we have two kinds of shapes (functions, really) that describe parameter ranges:
+** 1) H-M-L 'steps'
 
 precip: [0, 10]: Hour.P_DES_HIGH    [11, 30]: Hour.P_DES_MED    [31, ...]: Hour.P_DES_LOW
 wind:   [0,  8]: Hour.P_DES_HIGH    [ 9, 12]: Hour.P_DES_MED    [13, ...]: Hour.P_DES_LOW
@@ -18,7 +70,7 @@ L +      +--->
 characterized by two values: v1 (H-to-M transition) and v2 (M-to-L)
 
 
-* 2) L-M-H-M-L 'hat'
+** 2) L-M-H-M-L 'hat'
 
 temp: [..., 32]: Hour.P_DES_LOW    [33, 41]: Hour.P_DES_MED    [42, 70]: Hour.P_DES_HIGH    [71, 85]: Hour.P_DES_MED    [86, ...]: Hour.P_DES_LOW
 
@@ -33,14 +85,14 @@ L <- -+           +--->
 characterized by four values: v1 (L-to-M transition), v2 (M-to-H), v3 (H-to-M), and v4 (M-to-L)
 
 
-* Current ranges:
+** Current ranges:
 
 paramSteps = {'precip': (10, 30),   # H-M-L
               'wind'  : (8, 12),    # H-M-L
               'temp'  : (32, 41, 70, 85)}   # L-M-H-M-L
 
 
-* Re: open/closed range
+** Re: open/closed range
 
 Each vN is the value at which the rating changes, but we need to decide whether the point itself indicates the lower or
 higher rating. Taking the curreng ranges above, does a precip of 10 (v1) result in a H or M?
@@ -49,8 +101,9 @@ DEC: Thinking of the H-M-L case and considering values starting at 0 and increas
 encountering the first point. That is, each point 'bumps' it up or down when reached from the left.
 
 
-* URL
+** URL
 
 DEC: as parameters. A little messy, but common, and worth the tradeoff. ex:
 
 http://127.0.0.1:5000/forecast/09003?wind_steps=8,12&precip_steps=10,30&temp_steps=32,41,70,85
+
