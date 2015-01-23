@@ -50,11 +50,6 @@
     </form>
 
 
-    <h2>Edit parameters</h2>
-
-    Edit weather parameters (wind, temp, etc.) <a href="{{ url_for('editParameters') }}">here</a>.
-
-
     <h2>Search zip codes</h2>
 
     <form method="POST" action="{{ url_for('doZipSearchSubmit') }}">
@@ -63,12 +58,6 @@
 
         <input type="submit" value="Search">
     </form>
-
-    
-    <h2>Color calculation</h2>
-
-    For details on how each hour square's color is calcuated, see the documentation on the 
-    <a href="/parameters/{{ zip }}">Parameter Editor</a> page.
 
 
 {% endblock %}

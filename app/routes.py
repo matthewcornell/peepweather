@@ -35,14 +35,6 @@ def searchForZip(query):
     return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))
 
 
-@app.route('/parameters/')
-def editParameters():
-    precipVals = Hour.PARAM_RANGE_STEPS['precip']
-    windVals = Hour.PARAM_RANGE_STEPS['wind']
-    tempVals = Hour.PARAM_RANGE_STEPS['temp']
-    return render_template("parameter-edit.html", precipVals=precipVals, windVals=windVals, tempVals=tempVals)
-
-
 #
 # forms
 #
@@ -58,35 +50,6 @@ def doLatLonSubmit():
     latVal = request.form.get('lat_form_value', None)
     lonVal = request.form.get('lon_form_value', None)
     return redirect(url_for('forecastForLocation', zipOrLatLon=latVal + ',' + lonVal))
-
-
-@app.route('/doEditParametersSubmit', methods=['POST'])
-def doEditParametersSubmit():
-    print('xx', request.form)
-    isReset = 'reset-submit' in request.form    # o/w 'save-submit'
-    windV1Val = request.form.get('wind-v1-value', None)
-    windV2Val = request.form.get('wind-v2-value', None)
-    precipV1Val = request.form.get('precip-v1-value', None)
-    precipV2Val = request.form.get('precip-v2-value', None)
-    tempV1Val = request.form.get('temp-v1-value', None)
-    tempV2Val = request.form.get('temp-v2-value', None)
-    tempV3Val = request.form.get('temp-v3-value', None)
-    tempV4Val = request.form.get('temp-v4-value', None)
-    if isReset:
-        Hour.PARAM_RANGE_STEPS = Hour.PARAM_RANGE_STEPS_DEFAULT
-    else:
-        try:
-            paramRangeSteps = {'precip': [int(precipV1Val), int(precipV2Val)],  # H-M-L
-                               'wind': [int(windV1Val), int(windV2Val)],  # H-M-L
-                               'temp': [int(tempV1Val), int(tempV2Val), int(tempV3Val), int(tempV4Val)]}  # L-M-H-M-L
-            Hour.PARAM_RANGE_STEPS = paramRangeSteps
-        except ValueError:
-            # TODO flash error, say which was bad. http://flask.pocoo.org/docs/0.10/patterns/flashing/
-            return "Error reading form values as integers".format()
-
-    # TODO: flash successful
-    # TODO: put parameters in URL
-    return redirect(url_for('editParameters'))
 
 
 @app.route('/doZipSearchSubmit', methods=['POST'])
