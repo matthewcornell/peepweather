@@ -17,10 +17,16 @@ class Hour():
                                   H_DES_HIGH: '00ff00'}
 
     HOUR_MISSING_COLOR = 'white'
+    
     COLOR_SEQ_HIGH_TO_LOW = [HOUR_DESIRABILITY_TO_COLOR[H_DES_HIGH],
                              HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_HIGH],
                              HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_LOW],
                              HOUR_DESIRABILITY_TO_COLOR[H_DES_LOW]]  # for views
+    
+    # default ranges (see range-documentation.txt)
+    PARAM_RANGE_STEPS = {'precip': (10, 30),  # H-M-L
+                         'wind': (8, 12),     # H-M-L
+                         'temp': (32, 41, 70, 85)}  # L-M-H-M-L
 
 
     def __init__(self, datetime, precip=None, temp=None, wind=None):
@@ -149,21 +155,18 @@ class Hour():
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
-        paramSteps = {'precip': (10, 30),   # H-M-L
-                      'wind'  : (8, 12),    # H-M-L
-                      'temp'  : (32, 41, 70, 85)}   # L-M-H-M-L
-        if paramName not in paramSteps.keys():
+        if paramName not in Hour.PARAM_RANGE_STEPS.keys():
             raise ValueError("invalid parameter: {}".format(paramName))
-        
-        paramStep = paramSteps[paramName]
-        if len(paramStep) == 2: # H-M-L
+
+        paramStep = Hour.PARAM_RANGE_STEPS[paramName]
+        if len(paramStep) == 2:  # H-M-L
             if value < paramStep[0]:
                 return Hour.P_DES_HIGH
             elif value >= paramStep[1]:
                 return Hour.P_DES_LOW
             else:
                 return Hour.P_DES_MED
-        else:   # L-M-H-M-L
+        else:  # L-M-H-M-L
             if value < paramStep[0] or value >= paramStep[3]:
                 return Hour.P_DES_LOW
             elif paramStep[1] <= value < paramStep[2]:
