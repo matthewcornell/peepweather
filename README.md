@@ -14,6 +14,12 @@ the hourly analysis-to-color algorithm.
 
 # Feature Requests: Active
 ## Essential
+- check color blind-friendly
+
+- customized parameter ranges - paramDesirabilityForValue(). see range-documentation.txt
+
+- editable parameter weights for combined importance to the final rating - hourDesirabilityForParamDesCounts()
+
 - modern appearance
     - mobile-friendly (responsive design)
     
@@ -31,11 +37,6 @@ the hourly analysis-to-color algorithm.
         - But is five colors getting out of hand? Which one inner pattern would we toss to keep four? The choice would be
           arbitrary. However, maybe we could indicate sky cover separately, say by HSV or pattern? Nah - too complicated.
           DEC: expand to FIVE hourly ratings and colors.
-
-- select your own parameters as to what constitutes a "green block" (No login is required - can store in a cookie)
-    - every user should be able to specify what is acceptable in terms of: 1. Wind, 2. Rain (or snow), 3. Temperature
-    - edit the "acceptable" values via sliders and then to set priorities by weight
-    - simple sliders to adjust thresholds for temp, clouds, and wind preferences
 
 - click a block to show details
 

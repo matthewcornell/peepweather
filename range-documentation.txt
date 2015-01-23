@@ -1,0 +1,40 @@
+;; -*- mode: outline -*-
+
+Currently we have two kinds of shapes that describe parameter ranges:
+
+* 1) H-M-L 'steps'
+
+precip: [0, 10]: Hour.P_DES_HIGH    [11, 30]: Hour.P_DES_MED    [31, ...]: Hour.P_DES_LOW
+wind:   [0,  8]: Hour.P_DES_HIGH    [ 9, 12]: Hour.P_DES_MED    [13, ...]: Hour.P_DES_LOW
+
+
+H +--+
+  |  |
+M |  +---+
+  |      |
+L +      +--->
+  0  v1  v2
+
+characterized by two values: v1 (H-to-M transition) and v2 (M-to-L)
+
+
+* 2) L-M-H-M-L 'hat'
+
+temp: [..., 32]: Hour.P_DES_LOW    [33, 41]: Hour.P_DES_MED    [42, 70]: Hour.P_DES_HIGH    [71, 85]: Hour.P_DES_MED    [86, ...]: Hour.P_DES_LOW
+
+
+H         +---+
+          |   |
+M     +---+   +---+
+      |           |
+L <- -+           +--->
+      v1  v2  v3  v4
+
+characterized by four values: v1 (L-to-M transition), v2 (M-to-H), v3 (H-to-M), and v4 (M-to-L)
+
+
+* URL
+
+DEC: as parameters. A little messy, but common, and worth the tradeoff. ex:
+
+http://127.0.0.1:5000/forecast/09003?wind_steps=8,12&precip_steps=10,30&temp_steps=32,41,70,85
