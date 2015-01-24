@@ -22,7 +22,7 @@ def showForecast(zipOrLatLon):
             zipOrLatLonList = zipOrLatLon.split(',')
         else:
             zipOrLatLonList = zipOrLatLon
-        forecast = Forecast(zipOrLatLonList)
+        forecast = Forecast(zipOrLatLonList, Forecast.defaultRangeDict())
         return render_template("forecast.html", forecast=forecast,
                                colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
     except ValueError as ve:

@@ -18,16 +18,17 @@ class Forecast:
     Computes a forecast based on a zip code using http://www.nws.noaa.gov/ndfd/technical.htm as a sequence of Hours.
     """
 
-    # default ranges (see range-documentation.txt)
+    # default ranges (AKA a 'range dict'). see range-documentation.txt for detail
     PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H-M-L
                                  'temp': [32, 41, 70, 85],  # L-M-H-M-L
                                  'wind': [8, 12],  # H-M-L
                                  }
 
-    def __init__(self, zipOrLatLon, elementTree=None):
+    def __init__(self, zipOrLatLon, rangeDict, elementTree=None):
         """
         :param zipOrLatLon: location to get the forecast for. either a zip code string or a 2-tuple of latitude and
         longitude strings. ex: '01002' or ('42.375370', '-72.519249').
+        :param rangeDict: as in PARAM_RANGE_STEPS_DEFAULT, used by Hour.paramDesirabilityForValue()
         :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
         :return:
         """
@@ -59,6 +60,7 @@ class Forecast:
             raise ValueError(errorString)
 
         # no error
+        self.rangeDict = rangeDict
         self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
     
 

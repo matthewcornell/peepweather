@@ -13,30 +13,30 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
 
         # zip good: has an entry in the csv file
-        Forecast('01002', elementTree)  # does not raise
+        Forecast('01002', Forecast.defaultRangeDict(), elementTree)  # does not raise
 
         # zip bad: not in csv
         with self.assertRaisesRegex(ValueError, "couldn't find zipcode: 99999"):
-            Forecast('99999', elementTree)
+            Forecast('99999', Forecast.defaultRangeDict(), elementTree)
 
         # zip bad: None
         with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
-            Forecast(None, elementTree)
+            Forecast(None, Forecast.defaultRangeDict(), elementTree)
 
         # latLon good: valid format
-        Forecast(['42.375370', '-72.519249'], elementTree)  # does not raise
+        Forecast(['42.375370', '-72.519249'], Forecast.defaultRangeDict(), elementTree)  # does not raise
 
         # latLon bad: invalid formats
         for zipOrLatLon in [[]], [None], ['42.375370', None], [1, '-72.519249']:
             with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
-                Forecast(zipOrLatLon, elementTree)
+                Forecast(zipOrLatLon, Forecast.defaultRangeDict(), elementTree)
 
 
     def testErrorResponseFromAPI(self):
         elementTree = ET.parse('test/test-forecast-error-response.xml')
         expErrorXml = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
         with self.assertRaisesRegex(ValueError, expErrorXml):
-            Forecast('01002', elementTree)
+            Forecast('01002', Forecast.defaultRangeDict(), elementTree)
 
 
     def testForecastInstantiateLatLonName(self):
@@ -44,7 +44,7 @@ class MyTestCase(unittest.TestCase):
                            "92105": ("32.741256", "-117.0951", "San Diego, CA")}
         elementTree = ET.parse('test/test-forecast-data.xml')
         for zipcode, (lat, lon, name) in zipToLatLonName.items():
-            forecast = Forecast(zipcode, elementTree)
+            forecast = Forecast(zipcode, Forecast.defaultRangeDict(), elementTree)
             self.assertEqual(zipcode, forecast.zipcode)
             self.assertEqual((lat, lon), forecast.latLon)
             self.assertEqual(name, forecast.name)
@@ -67,11 +67,11 @@ class MyTestCase(unittest.TestCase):
                      '&wspd=wspd' \
                      '&Submit=Submit'.format(lat=lat, lon=lon)
             # test passing zipcode to constructor
-            forecast = Forecast(zipcode, elementTree)
+            forecast = Forecast(zipcode, Forecast.defaultRangeDict(), elementTree)
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
 
             # test passing latLon to constructor
-            forecast = Forecast([lat, lon], elementTree)
+            forecast = Forecast([lat, lon], Forecast.defaultRangeDict(), elementTree)
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
 
 
@@ -295,25 +295,25 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
         hoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement)
-        forecast = Forecast('01002', elementTree)
+        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
         self.assertEqual(hoursWithNoGaps, forecast.hours)
 
 
     def testColumnHeaderRow(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', elementTree)
+        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
         calendarHeader = forecast.calendarHeaderRow()
         self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
 
         elementTree = ET.parse('test/test-forecast-only-seven-days.xml')
-        forecast = Forecast('01002', elementTree)
+        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
         calendarHeader = forecast.calendarHeaderRow()
         self.assertEqual(['S', 'S', 'M', 'T', 'W', 'T', 'F'], calendarHeader)
 
 
     def testHoursAsCalendarRows(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', elementTree)
+        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
         actCaledarRows = forecast.hoursAsCalendarRows()
 
         # test structure
@@ -354,7 +354,7 @@ class MyTestCase(unittest.TestCase):
         fileRowCount = {'test/test-forecast-data.xml': 8, 'test/test-forecast-only-seven-days.xml': 7}
         for xmlFileName, expRowCount in fileRowCount.items():
             elementTree = ET.parse(xmlFileName)
-            forecast = Forecast('01002', elementTree)
+            forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
             actCaledarRows = forecast.hoursAsCalendarRows()
             self.assertEqual(24, len(actCaledarRows))
             for row in actCaledarRows:
