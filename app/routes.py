@@ -5,6 +5,8 @@ from forecast.Forecast import Forecast
 from app import app
 
 
+# ==== routes ====
+
 @app.route('/')
 def index():
     return render_template("index.html", colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
@@ -25,11 +27,11 @@ def showForecast(zipOrLatLon):
             zipOrLatLonList = zipOrLatLon.split(',')
         else:
             zipOrLatLonList = zipOrLatLon
-        
+
         # create rangeDict arg
         rangeDict = Forecast.rangeDictFromUrlQueryParams(
-            request.args['precip_steps'], request.args['temp_steps'], request.args['wind_steps'])
-        
+            request.args.get('precip_steps'), request.args.get('temp_steps'), request.args.get('wind_steps'))
+
         # render the new Forecast!
         forecast = Forecast(zipOrLatLonList, rangeDict)
         return render_template("forecast.html", forecast=forecast,
@@ -44,12 +46,10 @@ def searchForZip(query):
     return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))
 
 
-#
-# forms
-#
+# ==== forms ====
 
-@app.route('/doZipSubmit', methods=['POST'])
-def doZipSubmit():
+@app.route('/submit_zip', methods=['POST'])
+def do_zip_submit():
     zipVal = request.form.get('zip_form_value', None)
     # ex: http://127.0.0.1:5000/forecast/09003?precip_steps=10,30&temp_steps=32,41,70,85&wind_steps=8,12
     precipParam, tempParam, windParam = Forecast.urlQueryParamsForDefaultRanges()
@@ -57,14 +57,14 @@ def doZipSubmit():
                             precip_steps=precipParam, temp_steps=tempParam, wind_steps=windParam))
 
 
-@app.route('/doLatLonSubmit', methods=['POST'])
-def doLatLonSubmit():
+@app.route('/lat_lon_submit', methods=['POST'])
+def do_lat_lon_submit():
     latVal = request.form.get('lat_form_value', None)
     lonVal = request.form.get('lon_form_value', None)
     return redirect(url_for('showForecast', zipOrLatLon=latVal + ',' + lonVal))
 
 
-@app.route('/doZipSearchSubmit', methods=['POST'])
-def doZipSearchSubmit():
+@app.route('/zip_search_submit', methods=['POST'])
+def do_zip_search_submit():
     queryVal = request.form.get('query_form_value', None)
     return redirect(url_for('searchForZip', query=queryVal))

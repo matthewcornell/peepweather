@@ -31,31 +31,27 @@
 
     <h2>Get forecast</h2>
 
-    <form method="POST" action="{{ url_for('doZipSubmit') }}">
+    <form method="POST" action="{{ url_for('do_zip_submit') }}">
         <label for="zip-text">Zipcode: </label>
         <input id="zip-text" type="text" name="zip_form_value">
-
         <input type="submit" value="Go!">
     </form>
 
 
-    <form method="POST" action="{{ url_for('doLatLonSubmit') }}">
+    <form method="POST" action="{{ url_for('do_lat_lon_submit') }}">
         <label for="lat-text">Latitude: </label>
         <input id="lat-text" type="text" name="lat_form_value">
-
         <label for="lon-text">Longitude: </label>
         <input id="lon-text" type="text" name="lon_form_value">
-
         <input type="submit" value="Go!">
     </form>
 
 
     <h2>Search zip codes</h2>
 
-    <form method="POST" action="{{ url_for('doZipSearchSubmit') }}">
+    <form method="POST" action="{{ url_for('do_zip_search_submit') }}">
         <label for="query-text">Query: </label>
         <input id="query-text" type="text" name="query_form_value">
-
         <input type="submit" value="Search">
     </form>
 

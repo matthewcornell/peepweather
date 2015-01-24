@@ -100,10 +100,3 @@ higher rating. Taking the curreng ranges above, does a precip of 10 (v1) result 
 DEC: Thinking of the H-M-L case and considering values starting at 0 and increasing, let's say the change happens upon
 encountering the first point. That is, each point 'bumps' it up or down when reached from the left.
 
-
-** URL
-
-DEC: as parameters. A little messy, but common, and worth the tradeoff. ex:
-
-http://127.0.0.1:5000/forecast/09003?precip_steps=10,30&temp_steps=32,41,70,85&wind_steps=8,12
-
