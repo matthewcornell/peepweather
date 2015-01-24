@@ -17,6 +17,13 @@ class Forecast:
     """
     Computes a forecast based on a zip code using http://www.nws.noaa.gov/ndfd/technical.htm as a sequence of Hours.
     """
+
+    # default ranges (see range-documentation.txt)
+    PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H-M-L
+                                 'temp': [32, 41, 70, 85],  # L-M-H-M-L
+                                 'wind': [8, 12],  # H-M-L
+                                 }
+
     def __init__(self, zipOrLatLon, elementTree=None):
         """
         :param zipOrLatLon: location to get the forecast for. either a zip code string or a 2-tuple of latitude and
@@ -37,7 +44,7 @@ class Forecast:
             self.name = None
         else:
             raise ValueError("invalid zipOrLatLon {}".format(zipOrLatLon))
-        
+
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
             print('Forecast({}) @ {}: {}, {} -> {}: '.format(
@@ -53,12 +60,17 @@ class Forecast:
 
         # no error
         self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
-
+    
 
     def __repr__(self):
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
-    
-    
+
+
+    @classmethod
+    def defaultRangeDict(cls):
+        return Forecast.PARAM_RANGE_STEPS_DEFAULT
+
+
     def location(self):
         if self.name and self.zipcode:
             return '{} ({})'.format(self.zipcode, self.name)
@@ -136,7 +148,7 @@ class Forecast:
         while currDatetime <= newestHour.datetime:
             foundHour = Forecast.findHourForDatetime(currDatetime, hoursWithGaps)
             if not foundHour:
-                foundHour = Hour(currDatetime, prevFoundHour.precip, prevFoundHour.temp, prevFoundHour.wind)
+                foundHour = Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT, prevFoundHour.precip, prevFoundHour.temp, prevFoundHour.wind)
             hoursWithNoGaps.append(foundHour)
             prevFoundHour = foundHour
             currDatetime += oneHour
@@ -164,7 +176,7 @@ class Forecast:
         # 1) build empty Hours with no data based on min and max dates in layoutKeysToStartValidTimes
         timeLayoutDict = cls.timeLayoutDictFromXml(dwmlElement)
         uniqueDatetimes = set(functools.reduce(operator.add, timeLayoutDict.values()))
-        hours = list(map(lambda dt: Hour(dt), sorted(uniqueDatetimes)))
+        hours = list(map(lambda dt: Hour(dt, Forecast.PARAM_RANGE_STEPS_DEFAULT), sorted(uniqueDatetimes)))
 
         # 2) iterate over weather data and plug into corresponding hour. NB: will leave gaps, i.e., some Hours will not
         # have all three values set
@@ -259,8 +271,8 @@ class Forecast:
         weekday = oldestHour.datetime.weekday()
         headerRow = (dayOfWeekNames * 3)[weekday:weekday + numDays] # 3 is magic. at least good enough for 8 days of forecast data
         return headerRow
-    
-    
+
+
     def rowHeadingForHour(self, hourOfDay):
         """
         :param hourOfDay: 0 through 23
@@ -297,17 +309,17 @@ class Forecast:
         currDatetime = oldestHour.datetime
         while currDatetime.hour != 0:
             currDatetime -= oneHour
-            headMissingHours.append(Hour(currDatetime))
+            headMissingHours.append(Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT))
         headMissingHours.sort()
-        
+
         # create tailMissingHours by working forward from the newest hour to hour 23
         tailMissingHours = []
         newestHour = self.hours[-1]
-        
+
         currDatetime = newestHour.datetime
         while currDatetime.hour != 23:
             currDatetime += oneHour
-            tailMissingHours.append(Hour(currDatetime))
+            tailMissingHours.append(Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT))
         tailMissingHours.sort()
 
         # rows

@@ -11,7 +11,7 @@ def index():
 
 
 @app.route('/forecast/<zipOrLatLon>')
-def forecastForLocation(zipOrLatLon):
+def showForecast(zipOrLatLon):
     """
     :param zipOrLatLon: location to get the forecast for. either a zip code string or a comma-separated list of
     latitude and longitude strings. ex: '01002' or '42.375370,-72.519249'
@@ -42,14 +42,14 @@ def searchForZip(query):
 @app.route('/doZipSubmit', methods=['POST'])
 def doZipSubmit():
     zipVal = request.form.get('zip_form_value', None)
-    return redirect(url_for('forecastForLocation', zipOrLatLon=zipVal))
+    return redirect(url_for('showForecast', zipOrLatLon=zipVal))
 
 
 @app.route('/doLatLonSubmit', methods=['POST'])
 def doLatLonSubmit():
     latVal = request.form.get('lat_form_value', None)
     lonVal = request.form.get('lon_form_value', None)
-    return redirect(url_for('forecastForLocation', zipOrLatLon=latVal + ',' + lonVal))
+    return redirect(url_for('showForecast', zipOrLatLon=latVal + ',' + lonVal))
 
 
 @app.route('/doZipSearchSubmit', methods=['POST'])

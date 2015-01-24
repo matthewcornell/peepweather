@@ -23,14 +23,8 @@ class Hour():
                              HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_LOW],
                              HOUR_DESIRABILITY_TO_COLOR[H_DES_LOW]]  # for views
 
-    # default ranges (see range-documentation.txt)
-    PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H-M-L
-                                 'wind': [8, 12],  # H-M-L
-                                 'temp': [32, 41, 70, 85]}  # L-M-H-M-L
-    PARAM_RANGE_STEPS = PARAM_RANGE_STEPS_DEFAULT
 
-
-    def __init__(self, datetime, precip=None, temp=None, wind=None):
+    def __init__(self, datetime, rangeDict, precip=None, temp=None, wind=None):
         """
         Pass None for the weather parameters to represent missing data, i.e., a 'missing' hour.
         """
@@ -38,6 +32,7 @@ class Hour():
         self.precip = precip  # probability of precipitation percent: integers range(101). TODO couldn't find docs about range end
         self.temp = temp  # degrees Fahrenheit: integers (negative and possitive)
         self.wind = wind  # MPH: whole numbers (integers from 0 up)
+        self.rangeDict = rangeDict
 
 
     def key(self):
@@ -96,9 +91,9 @@ class Hour():
         hDesHighCount = 0
         hDesMedCount = 0
         hDesLowCount = 0
-        paramDesirabilities = [Hour.paramDesirabilityForValue('precip', self.precip),
-                               Hour.paramDesirabilityForValue('temp', self.temp),
-                               Hour.paramDesirabilityForValue('wind', self.wind)]
+        paramDesirabilities = [self.paramDesirabilityForValue('precip', self.precip),
+                               self.paramDesirabilityForValue('temp', self.temp),
+                               self.paramDesirabilityForValue('wind', self.wind)]
         for paramDesirability in paramDesirabilities:
             if paramDesirability == Hour.P_DES_LOW:
                 hDesLowCount += 1
@@ -147,8 +142,7 @@ class Hour():
             return Hour.H_DES_MED_LOW
 
 
-    @classmethod
-    def paramDesirabilityForValue(cls, paramName, value):
+    def paramDesirabilityForValue(self, paramName, value):
         """
         Gives a rating for a particular parameter value using the current ranges.
 
@@ -156,10 +150,10 @@ class Hour():
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
-        if paramName not in Hour.PARAM_RANGE_STEPS.keys():
+        if paramName not in self.rangeDict.keys():
             raise ValueError("invalid parameter: {}".format(paramName))
 
-        paramStep = Hour.PARAM_RANGE_STEPS[paramName]
+        paramStep = self.rangeDict[paramName]
         if len(paramStep) == 2:  # H-M-L
             if value < paramStep[0]:
                 return Hour.P_DES_HIGH
