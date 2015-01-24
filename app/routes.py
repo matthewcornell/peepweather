@@ -15,14 +15,23 @@ def showForecast(zipOrLatLon):
     """
     :param zipOrLatLon: location to get the forecast for. either a zip code string or a comma-separated list of
     latitude and longitude strings. ex: '01002' or '42.375370,-72.519249'
+    Query parameters: Three comma-separated lists of integers, as returned by Forecast.urlQueryParamsForDefaultRanges().
+    All three are always required for a forecast: precip_steps, temp_steps, wind_steps.
     :return:
     """
     try:
+        # create zipcode arg
         if ',' in zipOrLatLon:
             zipOrLatLonList = zipOrLatLon.split(',')
         else:
             zipOrLatLonList = zipOrLatLon
-        forecast = Forecast(zipOrLatLonList, Forecast.defaultRangeDict())
+        
+        # create rangeDict arg
+        rangeDict = Forecast.rangeDictFromUrlQueryParams(
+            request.args['precip_steps'], request.args['temp_steps'], request.args['wind_steps'])
+        
+        # render the new Forecast!
+        forecast = Forecast(zipOrLatLonList, rangeDict)
         return render_template("forecast.html", forecast=forecast,
                                colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
     except ValueError as ve:
@@ -42,7 +51,10 @@ def searchForZip(query):
 @app.route('/doZipSubmit', methods=['POST'])
 def doZipSubmit():
     zipVal = request.form.get('zip_form_value', None)
-    return redirect(url_for('showForecast', zipOrLatLon=zipVal))
+    # ex: http://127.0.0.1:5000/forecast/09003?precip_steps=10,30&temp_steps=32,41,70,85&wind_steps=8,12
+    precipParam, tempParam, windParam = Forecast.urlQueryParamsForDefaultRanges()
+    return redirect(url_for('showForecast', zipOrLatLon=zipVal,
+                            precip_steps=precipParam, temp_steps=tempParam, wind_steps=windParam))
 
 
 @app.route('/doLatLonSubmit', methods=['POST'])

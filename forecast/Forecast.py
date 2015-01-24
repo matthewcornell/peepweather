@@ -25,7 +25,7 @@ class Forecast:
     }
 
 
-    def __init__(self, zipOrLatLon, rangeDict, elementTree=None):
+    def __init__(self, zipOrLatLon, rangeDict=None, elementTree=None):
         """
         :param zipOrLatLon: location to get the forecast for. either a zip code string or a 2-tuple of latitude and
         longitude strings. ex: '01002' or ('42.375370', '-72.519249').
@@ -62,17 +62,12 @@ class Forecast:
             raise ValueError(errorString)
 
         # no error
-        self.rangeDict = rangeDict
-        self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
+        self.rangeDict = rangeDict or Forecast.PARAM_RANGE_STEPS_DEFAULT
+        self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement, self.rangeDict)
 
 
     def __repr__(self):
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
-
-
-    @classmethod
-    def defaultRangeDict(cls):
-        return Forecast.PARAM_RANGE_STEPS_DEFAULT
 
 
     def location(self):
@@ -133,7 +128,7 @@ class Forecast:
 
 
     @classmethod
-    def hoursWithNoGapsFromXml(cls, dwmlElement):
+    def hoursWithNoGapsFromXml(cls, dwmlElement, rangeDict):
         """
         Takes the output from hoursWithGapsFromXml() and interpolates missing hoursWithGaps to create a finished list
         of Hours that starts at the first hour in hoursWithGapsFromXml() and finishes with the last.
@@ -142,7 +137,7 @@ class Forecast:
         where all even hoursWithGaps are represented 
         """
         oneHour = datetime.timedelta(hours=1)
-        hoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement)
+        hoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, rangeDict)
         oldestHour = hoursWithGaps[0]
         newestHour = hoursWithGaps[-1]
 
@@ -152,7 +147,7 @@ class Forecast:
         while currDatetime <= newestHour.datetime:
             foundHour = Forecast.findHourForDatetime(currDatetime, hoursWithGaps)
             if not foundHour:
-                foundHour = Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT, prevFoundHour.precip,
+                foundHour = Hour(currDatetime, rangeDict, prevFoundHour.precip,
                                  prevFoundHour.temp, prevFoundHour.wind)
             hoursWithNoGaps.append(foundHour)
             prevFoundHour = foundHour
@@ -169,7 +164,7 @@ class Forecast:
 
 
     @classmethod
-    def hoursWithGapsFromXml(cls, dwmlElement):
+    def hoursWithGapsFromXml(cls, dwmlElement, rangeDict):
         """
         :param dwmlElement:
         :return: a sequence of Hour instances corresponding to the passed DWML document element. 
@@ -181,7 +176,7 @@ class Forecast:
         # 1) build empty Hours with no data based on min and max dates in layoutKeysToStartValidTimes
         timeLayoutDict = cls.timeLayoutDictFromXml(dwmlElement)
         uniqueDatetimes = set(functools.reduce(operator.add, timeLayoutDict.values()))
-        hours = list(map(lambda dt: Hour(dt, Forecast.PARAM_RANGE_STEPS_DEFAULT), sorted(uniqueDatetimes)))
+        hours = list(map(lambda dt: Hour(dt, rangeDict), sorted(uniqueDatetimes)))
 
         # 2) iterate over weather data and plug into corresponding hour. NB: will leave gaps, i.e., some Hours will not
         # have all three values set
@@ -315,7 +310,7 @@ class Forecast:
         currDatetime = oldestHour.datetime
         while currDatetime.hour != 0:
             currDatetime -= oneHour
-            headMissingHours.append(Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT))
+            headMissingHours.append(Hour(currDatetime, self.rangeDict))
         headMissingHours.sort()
 
         # create tailMissingHours by working forward from the newest hour to hour 23
@@ -325,7 +320,7 @@ class Forecast:
         currDatetime = newestHour.datetime
         while currDatetime.hour != 23:
             currDatetime += oneHour
-            tailMissingHours.append(Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT))
+            tailMissingHours.append(Hour(currDatetime, self.rangeDict))
         tailMissingHours.sort()
 
         # rows

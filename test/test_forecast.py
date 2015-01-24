@@ -13,27 +13,39 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
 
         # zip good: has an entry in the csv file
-        Forecast('01002', Forecast.defaultRangeDict(), elementTree)  # does not raise
+        Forecast('01002', elementTree=elementTree)  # does not raise
 
         # zip bad: not in csv
         with self.assertRaisesRegex(ValueError, "couldn't find zipcode: 99999"):
-            Forecast('99999', Forecast.defaultRangeDict(), elementTree)
+            Forecast('99999', elementTree=elementTree)
 
         # zip bad: None
         with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
-            Forecast(None, Forecast.defaultRangeDict(), elementTree)
+            Forecast(None, elementTree=elementTree)
 
         # latLon good: valid format
-        Forecast(['42.375370', '-72.519249'], Forecast.defaultRangeDict(), elementTree)  # does not raise
+        Forecast(['42.375370', '-72.519249'], elementTree=elementTree)  # does not raise
 
         # latLon bad: invalid formats
         for zipOrLatLon in [[]], [None], ['42.375370', None], [1, '-72.519249']:
             with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
-                Forecast(zipOrLatLon, Forecast.defaultRangeDict(), elementTree)
+                Forecast(zipOrLatLon, elementTree=elementTree)
                 
+        # default rangeDict:
+        forecast = Forecast('01002', elementTree=elementTree)
+        self.assertEqual(Forecast.PARAM_RANGE_STEPS_DEFAULT, forecast.rangeDict)
+
+        # custom rangeDict:
+        rangeDict = {'precip': [0, 1],  # H-M-L
+                     'temp': [2, 3, 4, 5],  # L-M-H-M-L
+                     'wind': [6, 7],  # H-M-L
+        }
+        forecast = Forecast('01002', rangeDict=rangeDict, elementTree=elementTree)
+        self.assertEqual(rangeDict, forecast.rangeDict)
+        
                 
     def testForecastUrlQueryParameters(self):
-        # forecast/09003?wind_steps=8,12&precip_steps=10,30&temp_steps=32,41,70,85
+        # ex: http://127.0.0.1:5000/forecast/09003?precip_steps=10,30&temp_steps=32,41,70,85&wind_steps=8,12
         precipParam, tempParam, windParam = Forecast.urlQueryParamsForDefaultRanges()
         self.assertEqual('10,30', precipParam)
         self.assertEqual('32,41,70,85', tempParam)
@@ -57,7 +69,7 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-error-response.xml')
         expErrorXml = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
         with self.assertRaisesRegex(ValueError, expErrorXml):
-            Forecast('01002', Forecast.defaultRangeDict(), elementTree)
+            Forecast('01002', elementTree=elementTree)
 
 
     def testForecastInstantiateLatLonName(self):
@@ -65,7 +77,7 @@ class MyTestCase(unittest.TestCase):
                            "92105": ("32.741256", "-117.0951", "San Diego, CA")}
         elementTree = ET.parse('test/test-forecast-data.xml')
         for zipcode, (lat, lon, name) in zipToLatLonName.items():
-            forecast = Forecast(zipcode, Forecast.defaultRangeDict(), elementTree)
+            forecast = Forecast(zipcode, elementTree=elementTree)
             self.assertEqual(zipcode, forecast.zipcode)
             self.assertEqual((lat, lon), forecast.latLon)
             self.assertEqual(name, forecast.name)
@@ -88,11 +100,11 @@ class MyTestCase(unittest.TestCase):
                      '&wspd=wspd' \
                      '&Submit=Submit'.format(lat=lat, lon=lon)
             # test passing zipcode to constructor
-            forecast = Forecast(zipcode, Forecast.defaultRangeDict(), elementTree)
+            forecast = Forecast(zipcode, elementTree=elementTree)
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
 
             # test passing latLon to constructor
-            forecast = Forecast([lat, lon], Forecast.defaultRangeDict(), elementTree)
+            forecast = Forecast([lat, lon], elementTree=elementTree)
             self.assertEqual(expURL, forecast.weatherDotGovUrl())
 
 
@@ -256,14 +268,14 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
         expHoursWithGaps = self.expectedHoursWithGaps()
-        actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement)
+        actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
         self.assertEqual(expHoursWithGaps, actHoursWithGaps)
 
 
     def testHoursWithNoGaps(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
-        actHoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement)
+        actHoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
 
         # test every hour is represented from oldest to newest with no gaps, ignoring weather values
         oneHour = datetime.timedelta(hours=1)
@@ -273,7 +285,7 @@ class MyTestCase(unittest.TestCase):
         expHoursWithNoGaps = []  # will not include weather valuess, just the correct on-the-hour datetime
         currDatetime = oldestDatetime
         while currDatetime <= newestDatetime:
-            expHoursWithNoGaps.append(Hour(currDatetime, Forecast.defaultRangeDict()))
+            expHoursWithNoGaps.append(Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT))
             currDatetime += oneHour
         self.assertTrue(len(expHoursWithNoGaps), len(actHoursWithNoGaps))
 
@@ -282,31 +294,31 @@ class MyTestCase(unittest.TestCase):
 
         # spot-check some interpolated weather values
         h0 = Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.defaultRangeDict(), 0, 10, 3)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 10, 3)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
         h3 = Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.defaultRangeDict(), 0, 6, 3)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 6, 3)
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[:4])
 
-        h0 = Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.defaultRangeDict(), 5, 19, 3)
+        h0 = Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 19, 3)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
-        h3 = Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.defaultRangeDict(), 5, 17, 3)
+        h3 = Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3)
         exph0Idx = 51
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[exph0Idx:exph0Idx + 4])
 
-        h0 = Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.defaultRangeDict(), 11, 28, 1)
+        h0 = Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 28, 1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
         h3 = self.copyOfHourPlusOne(h2)
         h4 = self.copyOfHourPlusOne(h3)
         h5 = self.copyOfHourPlusOne(h4)
-        h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.defaultRangeDict(), 11, 23, 1)
+        h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 23, 1)
         exph0Idx = 162
         self.assertEqual([h0, h1, h2, h3, h4, h5, h6], actHoursWithNoGaps[exph0Idx:exph0Idx + 7])
 
@@ -315,26 +327,26 @@ class MyTestCase(unittest.TestCase):
         # make sure hours with no gaps is saved in constructor
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
-        hoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement)
-        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
+        hoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
+        forecast = Forecast('01002', elementTree=elementTree)
         self.assertEqual(hoursWithNoGaps, forecast.hours)
 
 
     def testColumnHeaderRow(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
+        forecast = Forecast('01002', elementTree=elementTree)
         calendarHeader = forecast.calendarHeaderRow()
         self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
 
         elementTree = ET.parse('test/test-forecast-only-seven-days.xml')
-        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
+        forecast = Forecast('01002', elementTree=elementTree)
         calendarHeader = forecast.calendarHeaderRow()
         self.assertEqual(['S', 'S', 'M', 'T', 'W', 'T', 'F'], calendarHeader)
 
 
     def testHoursAsCalendarRows(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
+        forecast = Forecast('01002', elementTree=elementTree)
         actCaledarRows = forecast.hoursAsCalendarRows()
 
         # test structure
@@ -353,21 +365,21 @@ class MyTestCase(unittest.TestCase):
         # spot check a few rows
         expRow1 = [
             Hour(datetime.datetime(2015, 1, 13, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), None, None, None),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, None, None, None),
             Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 0, 3, 2),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 3, 2),
             Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 13, 2),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 13, 2),
             Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 5, 17, 3),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3),
             Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 3, 11, 4),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 11, 4),
             Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 9, 21, 5),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 21, 5),
             Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 20, 28, 4),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 28, 4),
             Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 10, 18, 3)]
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 18, 3)]
         self.assertEqual(expRow1, actCaledarRows[1])
 
 
@@ -375,7 +387,7 @@ class MyTestCase(unittest.TestCase):
         fileRowCount = {'test/test-forecast-data.xml': 8, 'test/test-forecast-only-seven-days.xml': 7}
         for xmlFileName, expRowCount in fileRowCount.items():
             elementTree = ET.parse(xmlFileName)
-            forecast = Forecast('01002', Forecast.defaultRangeDict(), elementTree)
+            forecast = Forecast('01002', elementTree=elementTree)
             actCaledarRows = forecast.hoursAsCalendarRows()
             self.assertEqual(24, len(actCaledarRows))
             for row in actCaledarRows:
@@ -426,7 +438,7 @@ class MyTestCase(unittest.TestCase):
         }
         for paramName, expParamValRatings in expParamValRatings.items():
             for paramval, expParamRating in expParamValRatings:
-                hour = Hour(None, Forecast.defaultRangeDict())
+                hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT)
                 self.assertEqual(expParamRating, hour.paramDesirabilityForValue(paramName, paramval))
 
         # check overall hour desirability. counts: Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH
@@ -465,7 +477,7 @@ class MyTestCase(unittest.TestCase):
                             (0, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_HIGH),  # all high
         }
         for precipTempWindTuple, expColor in paramToColorDict.items():
-            hour = Hour(None, Forecast.defaultRangeDict(), *precipTempWindTuple)
+            hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT, *precipTempWindTuple)
             self.assertEqual(expColor, hour.color())
 
 
@@ -473,127 +485,127 @@ class MyTestCase(unittest.TestCase):
         # return expected output for Forecast.hoursWithGapsFromXml()
         expHoursWithGaps = [
             Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 0, 10,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 10,
                  3),
             Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 0, 6,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 6,
                  3),
             Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 0, 3,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 3,
                  2),
             Hour(datetime.datetime(2015, 1, 14, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 0, 2,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 2,
                  2),
             Hour(datetime.datetime(2015, 1, 14, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 0,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 0,
                  1),
             Hour(datetime.datetime(2015, 1, 14, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 10,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 10,
                  1),
             Hour(datetime.datetime(2015, 1, 14, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 22,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 22,
                  1),
             Hour(datetime.datetime(2015, 1, 14, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 21,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 21,
                  1),
             Hour(datetime.datetime(2015, 1, 14, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 17,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 17,
                  1),
             Hour(datetime.datetime(2015, 1, 14, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 15,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 15,
                  2),
             Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 13,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 13,
                  2),
             Hour(datetime.datetime(2015, 1, 15, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 11,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 11,
                  2),
             Hour(datetime.datetime(2015, 1, 15, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 8, 8,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 8,
                  2),
             Hour(datetime.datetime(2015, 1, 15, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 8, 17,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 17,
                  1),
             Hour(datetime.datetime(2015, 1, 15, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 8, 26,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 26,
                  1),
             Hour(datetime.datetime(2015, 1, 15, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 8, 27,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 27,
                  2),
             Hour(datetime.datetime(2015, 1, 15, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 5, 22,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 22,
                  2),
             Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 5, 19,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 19,
                  3),
             Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 5, 17,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17,
                  3),
             Hour(datetime.datetime(2015, 1, 16, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 5, 16,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 16,
                  4),
             Hour(datetime.datetime(2015, 1, 16, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 15,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 15,
                  4),
             Hour(datetime.datetime(2015, 1, 16, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 21,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 21,
                  6),
             Hour(datetime.datetime(2015, 1, 16, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 28,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 28,
                  7),
             Hour(datetime.datetime(2015, 1, 16, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 4, 26,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 26,
                  7),
             Hour(datetime.datetime(2015, 1, 16, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 3, 19,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 19,
                  6),
             Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 3, 11,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 11,
                  4),
             Hour(datetime.datetime(2015, 1, 17, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 3, 6,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 6,
                  3),
             Hour(datetime.datetime(2015, 1, 17, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 3, 24,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 24,
                  2),
             Hour(datetime.datetime(2015, 1, 17, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 9, 23,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 23,
                  4),
             Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 9, 21,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 21,
                  5),
             Hour(datetime.datetime(2015, 1, 18, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 20, 21,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 21,
                  4),
             Hour(datetime.datetime(2015, 1, 18, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 20, 38,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 38,
                  4),
             Hour(datetime.datetime(2015, 1, 18, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 20, 33,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 33,
                  3),
             Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 20, 28,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 28,
                  4),
             Hour(datetime.datetime(2015, 1, 19, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 10, 24,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 24,
                  5),
             Hour(datetime.datetime(2015, 1, 19, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 10, 32,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 32,
                  6),
             Hour(datetime.datetime(2015, 1, 19, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 10, 24,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 24,
                  4),
             Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 10, 18,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 18,
                  3),
             Hour(datetime.datetime(2015, 1, 20, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 14,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 14,
                  2),
             Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 28,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 28,
                  1),
             Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.defaultRangeDict(), 11, 23,
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 23,
                  1)
         ]
         return expHoursWithGaps
@@ -601,4 +613,4 @@ class MyTestCase(unittest.TestCase):
 
     def copyOfHourPlusOne(self, hour):
         oneHour = datetime.timedelta(hours=1)
-        return Hour(hour.datetime + oneHour, Forecast.defaultRangeDict(), hour.precip, hour.temp, hour.wind)
+        return Hour(hour.datetime + oneHour, Forecast.PARAM_RANGE_STEPS_DEFAULT, hour.precip, hour.temp, hour.wind)
