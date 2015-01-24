@@ -30,6 +30,27 @@ class MyTestCase(unittest.TestCase):
         for zipOrLatLon in [[]], [None], ['42.375370', None], [1, '-72.519249']:
             with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
                 Forecast(zipOrLatLon, Forecast.defaultRangeDict(), elementTree)
+                
+                
+    def testForecastUrlQueryParameters(self):
+        # forecast/09003?wind_steps=8,12&precip_steps=10,30&temp_steps=32,41,70,85
+        precipParam, tempParam, windParam = Forecast.urlQueryParamsForDefaultRanges()
+        self.assertEqual('10,30', precipParam)
+        self.assertEqual('32,41,70,85', tempParam)
+        self.assertEqual('8,12', windParam)        
+
+        rangeDict = Forecast.rangeDictFromUrlQueryParams('10,30', '32,41,70,85', '8,12')
+        self.assertEqual(Forecast.PARAM_RANGE_STEPS_DEFAULT, rangeDict)
+        
+        # test invalid syntax
+        for badPrecipParam in [None, '', '10 30', '10,x']:
+            with self.assertRaisesRegex(ValueError, ''):
+                Forecast.rangeDictFromUrlQueryParams(badPrecipParam, '32,41,70,85', '8,12')
+                
+        # test number of params
+        for badPrecipParam in ['10', '10,20,30']:   # s/b 2
+            with self.assertRaisesRegex(ValueError, 'wrong number of range ints'):
+                Forecast.rangeDictFromUrlQueryParams(badPrecipParam, '32,41,70,85', '8,12')
 
 
     def testErrorResponseFromAPI(self):

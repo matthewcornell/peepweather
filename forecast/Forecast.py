@@ -22,7 +22,8 @@ class Forecast:
     PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H-M-L
                                  'temp': [32, 41, 70, 85],  # L-M-H-M-L
                                  'wind': [8, 12],  # H-M-L
-                                 }
+    }
+
 
     def __init__(self, zipOrLatLon, rangeDict, elementTree=None):
         """
@@ -53,7 +54,8 @@ class Forecast:
             elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
         if dwmlElement.tag == 'error':
-            errorString = ET.tostring(dwmlElement.find('pre'), encoding='unicode')  # "xml", "html" or "text" (default xml)
+            errorString = ET.tostring(dwmlElement.find('pre'),
+                                      encoding='unicode')  # "xml", "html" or "text" (default xml)
             logger.error(
                 "error getting data for zipOrLatLon {}\nurl: \t{}\nerror: {}".format(
                     zipOrLatLon, self.weatherDotGovUrl(), errorString))
@@ -62,7 +64,7 @@ class Forecast:
         # no error
         self.rangeDict = rangeDict
         self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement)
-    
+
 
     def __repr__(self):
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
@@ -150,7 +152,8 @@ class Forecast:
         while currDatetime <= newestHour.datetime:
             foundHour = Forecast.findHourForDatetime(currDatetime, hoursWithGaps)
             if not foundHour:
-                foundHour = Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT, prevFoundHour.precip, prevFoundHour.temp, prevFoundHour.wind)
+                foundHour = Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT, prevFoundHour.precip,
+                                 prevFoundHour.temp, prevFoundHour.wind)
             hoursWithNoGaps.append(foundHour)
             prevFoundHour = foundHour
             currDatetime += oneHour
@@ -271,7 +274,8 @@ class Forecast:
         newestHour = self.hours[-1]
         numDays = 1 + (newestHour.datetime - oldestHour.datetime).days
         weekday = oldestHour.datetime.weekday()
-        headerRow = (dayOfWeekNames * 3)[weekday:weekday + numDays] # 3 is magic. at least good enough for 8 days of forecast data
+        headerRow = (dayOfWeekNames * 3)[
+                    weekday:weekday + numDays]  # 3 is magic. at least good enough for 8 days of forecast data
         return headerRow
 
 
@@ -301,7 +305,7 @@ class Forecast:
         """
         # since we have my hours, which has no gaps, all we need to do is create missing Hours from the start of the 
         # first day (hour 0) to newest sampled hour - call them the head ones, and create missing Hours from the
-        #  oldest sampled hour to the end of that last day (hour 23) - call them the tail
+        # oldest sampled hour to the end of that last day (hour 23) - call them the tail
         oneHour = datetime.timedelta(hours=1)
 
         # create headMissingHours by working backward from the oldest hour to hour 0
@@ -328,9 +332,9 @@ class Forecast:
         allHours = headMissingHours + self.hours + tailMissingHours
         numDays = 1 + (newestHour.datetime - oldestHour.datetime).days
         calendarRows = []
-        for hourNum in range(24):           # calendar row
+        for hourNum in range(24):  # calendar row
             hourRow = []
-            for dayNum in range(numDays):   # calendar column
+            for dayNum in range(numDays):  # calendar column
                 hour = allHours[hourNum + (24 * dayNum)]
                 hourRow.append(hour)
             calendarRows.append(hourRow)
@@ -343,3 +347,35 @@ class Forecast:
         :return: True if hour is a daylight hour. TODO: this is a very rough initial hack to limit hours shown. doesn't handle timezone, ...
         """
         return 7 < hour < 21
+
+
+    @classmethod
+    def urlQueryParamsForDefaultRanges(cls):
+        """
+        :return: a 3-tuple of strings (precipParam, tempParam, windParam) suitable for use as URL query parameters.
+        They are comma-separated int strings based on the corresponding weather parameter in PARAM_RANGE_STEPS_DEFAULT
+        """
+        return ','.join(map(str, Forecast.PARAM_RANGE_STEPS_DEFAULT['precip'])), \
+               ','.join(map(str, Forecast.PARAM_RANGE_STEPS_DEFAULT['temp'])), \
+               ','.join(map(str, Forecast.PARAM_RANGE_STEPS_DEFAULT['wind']))
+
+
+    @classmethod
+    def rangeDictFromUrlQueryParams(cls, precipParam, tempParam, windParam):
+        """
+        :param precipParam: a comma-separated URL query string for precipitation, similar to what urlQueryParamsForDefaultRanges() returns
+        :param tempParam: ""
+        :param windParam: ""
+        :return: a range dict based on args
+        """
+        def intStrToList(strList):
+            return list(map(int, strList.split(',')))
+        
+        if not precipParam or not tempParam or not windParam:
+            raise ValueError('bad int list syntax')
+        precipRange, tempRange, windRange = list(map(intStrToList, [precipParam, tempParam, windParam]))
+        
+        if len(precipRange) != 2 or len(tempRange) != 4 or len(windRange) != 2:
+            raise ValueError('wrong number of range ints')
+        
+        return {'precip': precipRange, 'temp': tempRange, 'wind': windRange}
