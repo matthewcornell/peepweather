@@ -72,9 +72,9 @@ class Hour():
             desirabilityToChar = {Hour.P_DES_HIGH: 'H', Hour.P_DES_MED: 'M', Hour.P_DES_LOW: 'L', }
             return '{} | {}% ({}), {}°F ({}), {} MPH ({})'.format(
                 self.datetime.strftime('%a %m/%d %H:%M') if self.datetime else "time?",
-                self.precip, desirabilityToChar[Hour.paramDesirabilityForValue('precip', self.precip)],
-                self.temp, desirabilityToChar[Hour.paramDesirabilityForValue('temp', self.temp)],
-                self.wind, desirabilityToChar[Hour.paramDesirabilityForValue('wind', self.wind)])
+                self.precip, desirabilityToChar[self.paramDesirabilityForValue('precip', self.precip)],
+                self.temp, desirabilityToChar[self.paramDesirabilityForValue('temp', self.temp)],
+                self.wind, desirabilityToChar[self.paramDesirabilityForValue('wind', self.wind)])
 
 
     #
