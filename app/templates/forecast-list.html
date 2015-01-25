@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Forecast for {{ forecast.location() }}{% endblock %}
+{% block navLocation %} > {{ forecast.location() }}{% endblock %}
+
+{% block content %}
+
+    <h2>Forecast for {{ forecast.location() }} </h2>
+
+    <span style="font-family: monospace">
+    {% for hour in forecast.hours %}
+        <span style="color:{{ hour.color() }}"> &block; </span> {{ hour.detailString() }}<br/>
+    {% endfor %}
+    </span>
+
+    {% include 'color-key.html' %}
+
+{% endblock %}

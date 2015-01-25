@@ -24,6 +24,9 @@ def showForecast(zipOrLatLon):
     latitude and longitude strings. ex: '01002' or '42.375370,-72.519249'
     Query parameters: Three comma-separated lists of integers, as returned by Forecast.urlQueryParamsForDefaultRanges().
     All three are always required for a forecast: precip_steps, temp_steps, wind_steps.
+    
+    URL query parameters: Accepts one: ?list=true , which shows a debugging output
+    
     :return:
     """
     try:
@@ -38,7 +41,10 @@ def showForecast(zipOrLatLon):
             rangeDict = json.loads(rangesDictJson)
 
         forecast = Forecast(zipOrLatLonList, rangeDict)
-        return render_template("forecast.html", forecast=forecast, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+        if request.values.get('list'):
+            return render_template("forecast-list.html", forecast=forecast, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+        else:
+            return render_template("forecast.html", forecast=forecast, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
     except ValueError as ve:
         return render_template("forecast-error.html", error=ve.args[0], colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
 
