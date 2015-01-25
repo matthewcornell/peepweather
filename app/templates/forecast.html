@@ -41,9 +41,12 @@
     {% include 'color-key.html' %}
 
     
-    <h2>Raw data</h2>
+    <h2>Debuging tools</h2>
 
+    {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + ',' + forecast.latLon[1] %}
+    
     For debugging purposes you can download the raw weather data for this forecast
-    <a href="{{ forecast.weatherDotGovUrl() }}">here</a> .
+    <a href="{{ forecast.weatherDotGovUrl() }}">here</a>. To show the hours in a list format, click
+    <a href="{{ url_for('showForecast', zipOrLatLon=zipOrLatLon, list=true) }}">here</a>.
     
 {% endblock %}
