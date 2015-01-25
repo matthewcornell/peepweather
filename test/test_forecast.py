@@ -42,27 +42,6 @@ class MyTestCase(unittest.TestCase):
         }
         forecast = Forecast('01002', rangeDict=rangeDict, elementTree=elementTree)
         self.assertEqual(rangeDict, forecast.rangeDict)
-        
-                
-    def testForecastUrlQueryParameters(self):
-        # ex: http://127.0.0.1:5000/forecast/09003?precip_steps=10,30&temp_steps=32,41,70,85&wind_steps=8,12
-        precipParam, tempParam, windParam = Forecast.urlQueryParamsForDefaultRanges()
-        self.assertEqual('10,30', precipParam)
-        self.assertEqual('32,41,70,85', tempParam)
-        self.assertEqual('8,12', windParam)        
-
-        rangeDict = Forecast.rangeDictFromUrlQueryParams('10,30', '32,41,70,85', '8,12')
-        self.assertEqual(Forecast.PARAM_RANGE_STEPS_DEFAULT, rangeDict)
-        
-        # test invalid syntax
-        for badPrecipParam in [None, '', '10 30', '10,x']:
-            with self.assertRaisesRegex(ValueError, ''):
-                Forecast.rangeDictFromUrlQueryParams(badPrecipParam, '32,41,70,85', '8,12')
-                
-        # test number of params
-        for badPrecipParam in ['10', '10,20,30']:   # s/b 2
-            with self.assertRaisesRegex(ValueError, 'wrong number of range ints'):
-                Forecast.rangeDictFromUrlQueryParams(badPrecipParam, '32,41,70,85', '8,12')
 
 
     def testErrorResponseFromAPI(self):

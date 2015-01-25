@@ -7,6 +7,8 @@ the hourly analysis-to-color algorithm.
 
 
 # Bugs
+- cookies: use secure!!
+
 - form validation:
     - zip, lat/lon search: not empty; valid entry
     - search: not empty
@@ -14,8 +16,6 @@ the hourly analysis-to-color algorithm.
 
 # Feature Requests: Active
 ## Essential
-- check color blind-friendly
-
 - customized parameter ranges - paramDesirabilityForValue(). see range-documentation.txt
     - come up with good defaults first. BTW, one idea for simple customization for advanced users: Leave the UI out,
       and just add query parameters for the customizable options. ex:

@@ -29,7 +29,7 @@ class Hour():
         Pass None for the weather parameters to represent missing data, i.e., a 'missing' hour.
         """
         self.datetime = datetime  # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
-        self.precip = precip  # probability of precipitation percent: integers range(101). TODO couldn't find docs about range end
+        self.precip = precip  # probability of precipitation percent: integers range(101). todo couldn't find docs about range end
         self.temp = temp  # degrees Fahrenheit: integers (negative and possitive)
         self.wind = wind  # MPH: whole numbers (integers from 0 up)
         self.rangeDict = rangeDict

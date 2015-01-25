@@ -29,7 +29,7 @@ class Forecast:
         """
         :param zipOrLatLon: location to get the forecast for. either a zip code string or a 2-tuple of latitude and
         longitude strings. ex: '01002' or ('42.375370', '-72.519249').
-        :param rangeDict: as in PARAM_RANGE_STEPS_DEFAULT, used by Hour.paramDesirabilityForValue()
+        :param rangeDict: optional as in PARAM_RANGE_STEPS_DEFAULT. uses that default if not passed
         :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
         :return:
         """
@@ -91,9 +91,7 @@ class Forecast:
         return url
 
 
-    #
-    # zipcode utilities
-    #
+    # ==== zipcode utilities ====
 
     @staticmethod
     def latLonNameForZipcode(zipcode):
@@ -122,9 +120,7 @@ class Forecast:
         return zipNameTuples
 
 
-    #
-    # hoursWithNoGapsFromXml() and friends
-    #
+    # ==== hoursWithNoGapsFromXml() and friends ====
 
 
     @classmethod
@@ -258,9 +254,7 @@ class Forecast:
         return paramDict
 
 
-    #
-    # calendar layout methods
-    #
+    # ==== calendar layout methods ====
 
 
     def calendarHeaderRow(self):
@@ -339,38 +333,6 @@ class Forecast:
     @staticmethod
     def isDaylightHour(hour):
         """
-        :return: True if hour is a daylight hour. TODO: this is a very rough initial hack to limit hours shown. doesn't handle timezone, ...
+        :return: True if hour is a daylight hour. todo: this is a very rough initial hack to limit hours shown. doesn't handle timezone, ...
         """
         return 7 < hour < 21
-
-
-    @classmethod
-    def urlQueryParamsForDefaultRanges(cls):
-        """
-        :return: a 3-tuple of strings (precipParam, tempParam, windParam) suitable for use as URL query parameters.
-        They are comma-separated int strings based on the corresponding weather parameter in PARAM_RANGE_STEPS_DEFAULT
-        """
-        return ','.join(map(str, Forecast.PARAM_RANGE_STEPS_DEFAULT['precip'])), \
-               ','.join(map(str, Forecast.PARAM_RANGE_STEPS_DEFAULT['temp'])), \
-               ','.join(map(str, Forecast.PARAM_RANGE_STEPS_DEFAULT['wind']))
-
-
-    @classmethod
-    def rangeDictFromUrlQueryParams(cls, precipParam, tempParam, windParam):
-        """
-        :param precipParam: a comma-separated URL query string for precipitation, similar to what urlQueryParamsForDefaultRanges() returns
-        :param tempParam: ""
-        :param windParam: ""
-        :return: a range dict based on args
-        """
-        def intStrToList(strList):
-            return list(map(int, strList.split(',')))
-        
-        if not precipParam or not tempParam or not windParam:
-            raise ValueError('bad int list syntax')
-        precipRange, tempRange, windRange = list(map(intStrToList, [precipParam, tempParam, windParam]))
-        
-        if len(precipRange) != 2 or len(tempRange) != 4 or len(windRange) != 2:
-            raise ValueError('wrong number of range ints')
-        
-        return {'precip': precipRange, 'temp': tempRange, 'wind': windRange}
