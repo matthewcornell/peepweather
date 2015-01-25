@@ -84,7 +84,7 @@ class Forecast:
               '&lon={lon}' \
               '&product=time-series' \
               '&Unit=e' \
-              '&temp=temp' \
+              '&appt=appt' \
               '&pop12=pop12' \
               '&wspd=wspd' \
               '&Submit=Submit'.format(lat=self.latLon[0], lon=self.latLon[1])

@@ -100,7 +100,7 @@
       <start-valid-time>2015-01-20T19:00:00-05:00</start-valid-time>
     </time-layout>
     <parameters applicable-location="point1">
-      <temperature type="hourly" units="Fahrenheit" time-layout="k-p3h-n41-2">
+      <temperature type="apparent" units="Fahrenheit" time-layout="k-p3h-n41-2">
         <name>Temperature</name>
         <value>10</value>
         <value>6</value>

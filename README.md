@@ -7,41 +7,32 @@ the hourly analysis-to-color algorithm.
 
 
 # Bugs
-- cookies: use secure!!
+- cookies: use secure
 
 - form validation:
-    - zip, lat/lon search: not empty; valid entry
-    - search: not empty
+    - /       : zipcode: not empty. five numbers. exists in zipcode file.
+    - /       : lat/lon: not empty. lat/lon pattern
+    - /ranges : param values: not empty. ints. sorted
+    - /search : not empty
 
 
 # Feature Requests: Active
-## Essential
-- customized parameter ranges - paramDesirabilityForValue(). see range-documentation.txt
-    - come up with good defaults first. BTW, one idea for simple customization for advanced users: Leave the UI out,
-      and just add query parameters for the customizable options. ex:
-      https://rc-weather.herokuapp.com/forecast/97030?min_ideal_temp=40&max_ideal_temp=80&max_ideal_wind=20
 
-- editable parameter weights for combined importance to the final rating - hourDesirabilityForParamDesCounts()
+## Essential
+- add Sky Cover. have to re-think Hour.hourDesirabilityForParamDesCounts()
+
+- (maybe for clicks) Weather Conditions Icons?
 
 - modern appearance
     - mobile-friendly (responsive design)
-    
+
 - daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark
     - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make
 
-- more parameters?
-    - DEC: Apparent Temperature, Wind Speed, PoP12, Sky Cover. maybe for click: Weather Conditions Icons. This would be
-      FOUR parameters, each with three desirability ratings.
-        - Currently we have THREE parameters, three ratings each, and FOUR hourly ratings:
-          CURRENT RULES: L**, MMH, MHH, HHH
-        - If we have FOUR params then we have these FIVE combinations:
-          NEW RULES : L***, MMMH, MMHH, MHHH, HHHH
-        - But is five colors getting out of hand? Which one inner pattern would we toss to keep four? The choice would be
-          arbitrary. However, maybe we could indicate sky cover separately, say by HSV or pattern? Nah - too complicated.
-          DEC: expand to FIVE hourly ratings and colors.
+- click a square to show details
 
-- click a block to show details
+- editable parameter weights for combined importance to the final rating
 
 
 ## Money to fund hosting?
@@ -50,16 +41,22 @@ the hourly analysis-to-color algorithm.
 
 
 ## Maybe or for fun
-- list/map AMA fields nearby
-- add a link to this page, say on github? Q: do I want to make the source open?
 - overall assessment
     - Use a picture/icon :-)
+
 - rethink layout/squares?
     - have long term squares, with users able to set their thresholds for bad, acceptable and great flying days, and
       then have a short term meteogram for double checking nearer the time.
     - show every three hours instead of one? After all, that's the most frequent update of data
+
 - show a sunny/overcast/rain/snow icon in the hour square like http://www.alessioatzeni.com/meteocons/res/img/screen.png
+
+- list/map AMA fields nearby :-)
+  http://www.modelaircraft.org/clubsearch.aspx
+  python screen scraper - http://www.crummy.com/software/BeautifulSoup/
+
 - international
+
 - mobile app
     - widget
     - alerts: mobile app that alerts me when local conditions are "green"
