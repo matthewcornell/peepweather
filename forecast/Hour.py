@@ -10,19 +10,6 @@ class Hour():
     # overall desirability rating for an hour, based on above parameter desirabilities:
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
 
-    # color definitions based on the HSV gradient b/w red and green: http://www.colorhexa.com/ff0000-to-00ff00
-    HOUR_DESIRABILITY_TO_COLOR = {H_DES_LOW: '#ff0000',
-                                  H_DES_MED_LOW: '#ffaa00',
-                                  H_DES_MED_HIGH: 'd5ff00',
-                                  H_DES_HIGH: '00ff00'}
-
-    HOUR_MISSING_COLOR = 'white'
-
-    COLOR_SEQ_HIGH_TO_LOW = [HOUR_DESIRABILITY_TO_COLOR[H_DES_HIGH],
-                             HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_HIGH],
-                             HOUR_DESIRABILITY_TO_COLOR[H_DES_MED_LOW],
-                             HOUR_DESIRABILITY_TO_COLOR[H_DES_LOW]]  # for views
-
 
     def __init__(self, datetime, rangeDict, precip=None, temp=None, wind=None):
         """
@@ -57,7 +44,7 @@ class Hour():
 
 
     def __str__(self):
-        if self.precip is None:
+        if self.isMissingHour():
             return '{} | no data'.format(self.datetime.strftime('%a %m/%d %H:%M'))
         else:
             return '{} | {}%, {}°F, {} MPH'.format(
@@ -65,8 +52,14 @@ class Hour():
                 self.wind)
 
 
+    def isMissingHour(self):
+        return self.precip is None
+
+
+    # ==== UI methods ====
+
     def detailString(self):
-        if self.precip is None:
+        if self.isMissingHour():
             return str(self)
         else:
             desirabilityToChar = {Hour.P_DES_HIGH: 'H', Hour.P_DES_MED: 'M', Hour.P_DES_LOW: 'L', }
@@ -77,15 +70,21 @@ class Hour():
                 self.wind, desirabilityToChar[self.paramDesirabilityForValue('wind', self.wind)])
 
 
-    #
-    # color-related methods
-    #
+    def cssClassForDesirability(self):
+        if self.isMissingHour():
+            return 'Missing'
+        
+        return {Hour.H_DES_LOW: 'Poor', Hour.H_DES_MED_LOW: 'Fair', Hour.H_DES_MED_HIGH: 'Okay',
+                Hour.H_DES_HIGH: 'Great'}[self.desirability()]
 
-    def color(self):
+
+    # ==== analysis methods ====
+
+    def desirability(self):
         """
-        :return: an HTML color string based on my weather settings
+        :return: overall desirability based on my parameters. one of H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH
         """
-        if self.precip is None:
+        if self.isMissingHour():
             return Hour.HOUR_MISSING_COLOR
 
         hDesHighCount = 0
@@ -101,19 +100,7 @@ class Hour():
                 hDesMedCount += 1
             else:
                 hDesHighCount += 1
-        hourDesirability = self.hourDesirabilityForParamDesCounts(hDesLowCount, hDesMedCount, hDesHighCount)
-        color = self.colorForHourDesirability(hourDesirability)
-        return color
-
-
-    @classmethod
-    def colorForHourDesirability(cls, hourDesirability):
-        """
-        Returns a color corresponding to hourDesirability, which comes from (hourDesirabilityForParamDesCounts)
-        :param hourDesirability:
-        :return: an HTML color
-        """
-        return Hour.HOUR_DESIRABILITY_TO_COLOR[hourDesirability]
+        return self.hourDesirabilityForParamDesCounts(hDesLowCount, hDesMedCount, hDesHighCount)
 
 
     @classmethod

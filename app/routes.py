@@ -14,7 +14,7 @@ RANGES_COOKIE_NAME = 'parameter_ranges'
 
 @app.route('/')
 def index():
-    return render_template("index.html", colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+    return render_template("index.html")
 
 
 @app.route('/forecast/<zipOrLatLon>')
@@ -42,11 +42,11 @@ def showForecast(zipOrLatLon):
 
         forecast = Forecast(zipOrLatLonList, rangeDict)
         if request.values.get('list'):
-            return render_template("forecast-list.html", forecast=forecast, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+            return render_template("forecast-list.html", forecast=forecast)
         else:
-            return render_template("forecast.html", forecast=forecast, colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+            return render_template("forecast.html", forecast=forecast)
     except ValueError as ve:
-        return render_template("forecast-error.html", error=ve.args[0], colorKeyHighToLow=Hour.COLOR_SEQ_HIGH_TO_LOW)
+        return render_template("forecast-error.html", error=ve.args[0])
 
 
 @app.route('/ranges')

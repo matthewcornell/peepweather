@@ -30,7 +30,7 @@ class MyTestCase(unittest.TestCase):
         for zipOrLatLon in [[]], [None], ['42.375370', None], [1, '-72.519249']:
             with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
                 Forecast(zipOrLatLon, elementTree=elementTree)
-                
+
         # default rangeDict:
         forecast = Forecast('01002', elementTree=elementTree)
         self.assertEqual(Forecast.PARAM_RANGE_STEPS_DEFAULT, forecast.rangeDict)
@@ -280,23 +280,23 @@ class MyTestCase(unittest.TestCase):
                   Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 6, 3)
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[:4])
 
-        h0 = Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+        h0 = Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
                   Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 19, 3)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
-        h3 = Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+        h3 = Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
                   Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3)
         exph0Idx = 51
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[exph0Idx:exph0Idx + 4])
 
-        h0 = Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+        h0 = Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
                   Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 28, 1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
         h3 = self.copyOfHourPlusOne(h2)
         h4 = self.copyOfHourPlusOne(h3)
         h5 = self.copyOfHourPlusOne(h4)
-        h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 
+        h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
                   Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 23, 1)
         exph0Idx = 162
         self.assertEqual([h0, h1, h2, h3, h4, h5, h6], actHoursWithNoGaps[exph0Idx:exph0Idx + 7])
@@ -438,26 +438,16 @@ class MyTestCase(unittest.TestCase):
             Hour.hourDesirabilityForParamDesCounts(2, 2, 2)
 
 
-    def testHourColor(self):
-        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_LOW], Hour.colorForHourDesirability(Hour.H_DES_LOW))
-        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_MED_LOW],
-                         Hour.colorForHourDesirability(Hour.H_DES_MED_LOW))
-        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_MED_HIGH],
-                         Hour.colorForHourDesirability(Hour.H_DES_MED_HIGH))
-        self.assertEqual(Hour.HOUR_DESIRABILITY_TO_COLOR[Hour.H_DES_HIGH],
-                         Hour.colorForHourDesirability(Hour.H_DES_HIGH))
-
-        # finally, test color()! tuple: (precip, temp, wind)
-        paramToColorDict = {(100, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_LOW),  # precip low
-                            (20, 40, 0): Hour.colorForHourDesirability(Hour.H_DES_MED_LOW),
-                            # precip med, temp med, wind high
-                            (20, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_MED_HIGH),
-                            # precip med, temp high, wind high
-                            (0, 65, 0): Hour.colorForHourDesirability(Hour.H_DES_HIGH),  # all high
+    def testHourDesirability(self):
+        # tuple: (precip, temp, wind)
+        paramToColorDict = {(100, 65, 0): Hour.H_DES_LOW,  # precip low
+                            (20, 40, 0): Hour.H_DES_MED_LOW, # precip med, temp med, wind high
+                            (20, 65, 0): Hour.H_DES_MED_HIGH, # precip med, temp high, wind high
+                            (0, 65, 0): Hour.H_DES_HIGH,  # all high
         }
         for precipTempWindTuple, expColor in paramToColorDict.items():
             hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT, *precipTempWindTuple)
-            self.assertEqual(expColor, hour.color())
+            self.assertEqual(expColor, hour.desirability())
 
 
     def expectedHoursWithGaps(self):

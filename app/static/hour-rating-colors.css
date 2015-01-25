@@ -1,0 +1,19 @@
+.Poor {
+    background-color: #ff0000
+}
+
+.Fair {
+    background-color: #ffaa00;
+}
+
+.Okay {
+    background-color: #d5ff00;
+}
+
+.Great {
+    background-color: #00ff00
+}
+
+.Missing {
+    background-color: white;
+}

@@ -12,8 +12,8 @@
         <img src="{{ url_for('static', filename='_MG_5049.jpg') }}" style="width:300px;" align="right">
     </p>
 
-    <table style="background-color:black; font-size: small" border="0" cellspacing="1" cellpadding="8" width="10">
-        <tr style="background-color:white;" border="0" cellpadding="8" cellspacing="1" width="10">
+    <table style="background-color:black; font-size:small" border="0" cellspacing="1" cellpadding="8" width="10">
+        <tr style="background-color:white;" >
             {# first column blank for row/hour header #}
             <td></td>
             {% for header in forecast.calendarHeaderRow() %}
@@ -21,13 +21,12 @@
             {% endfor %}
 
         </tr>
-        {% for hourOfDayHours in forecast.hoursAsCalendarRows() %}  {# each row is an hour of day #}
+        {% for hourOfDayRow in forecast.hoursAsCalendarRows() %}
             {% if forecast.isDaylightHour(loop.index0) %}
                 <tr>
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
-                    {% for dayOfWeekHour in hourOfDayHours %}           {# each ele/column is a day of week #}
-                        <td style="background-color: {{ dayOfWeekHour.color() }};"
-                            title="{{ dayOfWeekHour.detailString() }}">
+                    {% for hour in hourOfDayRow %}
+                        <td class="{{ hour.cssClassForDesirability() }}" title="{{ hour.detailString() }}">
                     {% endfor %}
                 </tr>
             {% endif %}
@@ -40,13 +39,13 @@
 
     {% include 'color-key.html' %}
 
-    
+
     <h2>Debuging tools</h2>
 
     {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + ',' + forecast.latLon[1] %}
-    
+
     For debugging purposes you can download the raw weather data for this forecast
     <a href="{{ forecast.weatherDotGovUrl() }}">here</a>. To show the hours in a list format, click
     <a href="{{ url_for('showForecast', zipOrLatLon=zipOrLatLon, list=true) }}">here</a>.
-    
+
 {% endblock %}
