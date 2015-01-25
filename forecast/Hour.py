@@ -76,6 +76,42 @@ class Hour():
         
         return {Hour.H_DES_LOW: 'Poor', Hour.H_DES_MED_LOW: 'Fair', Hour.H_DES_MED_HIGH: 'Okay',
                 Hour.H_DES_HIGH: 'Great'}[self.desirability()]
+    
+    
+    def charIconsForParams(self):
+        """
+        :return: list of three characters, one each for precip, temp, and wind respectively.
+        """
+        if self.isMissingHour():
+            return ''
+        
+        paramDesirabilities = [self.paramDesirabilityForValue('precip', self.precip),
+                               self.paramDesirabilityForValue('temp', self.temp),
+                               self.paramDesirabilityForValue('wind', self.wind)]
+        if paramDesirabilities[0] == paramDesirabilities[1] == paramDesirabilities[2]:
+            return ''
+
+        chars = ''
+
+        # add precip
+        if paramDesirabilities[0] == Hour.P_DES_LOW:
+            chars += 'P'
+        elif paramDesirabilities[0] == Hour.P_DES_MED:
+            chars += 'p'
+
+        # add temp
+        if paramDesirabilities[1] == Hour.P_DES_LOW:
+            chars += 'T'
+        elif paramDesirabilities[1] == Hour.P_DES_MED:
+            chars += 't'
+
+        # add wind
+        if paramDesirabilities[2] == Hour.P_DES_LOW:
+            chars += 'W'
+        elif paramDesirabilities[2] == Hour.P_DES_MED:
+            chars += 'w'
+
+        return chars
 
 
     # ==== analysis methods ====

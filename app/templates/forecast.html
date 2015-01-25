@@ -13,7 +13,7 @@
     </p>
 
     <table style="background-color:black; font-size:small" border="0" cellspacing="1" cellpadding="8" width="10">
-        <tr style="background-color:white;" >
+        <tr style="background-color:white;">
             {# first column blank for row/hour header #}
             <td></td>
             {% for header in forecast.calendarHeaderRow() %}
@@ -27,6 +27,8 @@
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for hour in hourOfDayRow %}
                         <td class="{{ hour.cssClassForDesirability() }}" title="{{ hour.detailString() }}">
+{#                            {{ hour.charIconsForParams() }}#}
+                        </td>
                     {% endfor %}
                 </tr>
             {% endif %}

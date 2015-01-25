@@ -55,7 +55,10 @@ the hourly analysis-to-color algorithm.
   http://www.modelaircraft.org/clubsearch.aspx
   python screen scraper - http://www.crummy.com/software/BeautifulSoup/
 
-- international
+- international. I don't know the details myself, but drop Benny Wydooghe a line on google+, or in the Meteogram Widget
+  group on google+. He's the developer of the widget I posted a screenshot of earlier, and has a great international
+  weather service he uses. He's had to work through all these timezone issues, provider issues, etc himself so he'd
+  probably be a good contact for you. - http://helifreak.com/showpost.php?p=6317185&postcount=89
 
 - mobile app
     - widget
