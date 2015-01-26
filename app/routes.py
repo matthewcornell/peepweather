@@ -2,7 +2,6 @@ import json
 
 from flask import render_template, request, redirect, url_for, make_response
 
-from forecast.Hour import Hour
 from forecast.Forecast import Forecast
 from app import app
 
@@ -10,6 +9,7 @@ from app import app
 # ==== routes ====
 
 RANGES_COOKIE_NAME = 'parameter_ranges'
+TEXT_ICON_COOKIE_NAME = 'text_icons_enabled'
 
 
 @app.route('/')
@@ -44,7 +44,8 @@ def showForecast(zipOrLatLon):
         if request.values.get('list'):
             return render_template("forecast-list.html", forecast=forecast)
         else:
-            return render_template("forecast.html", forecast=forecast)
+            return render_template("forecast.html", forecast=forecast,
+                                   useTextIcons=request.cookies.get(TEXT_ICON_COOKIE_NAME))
     except ValueError as ve:
         return render_template("forecast-error.html", error=ve.args[0])
 
@@ -71,21 +72,15 @@ def searchForZip(query):
 
 @app.route('/submit_zip', methods=['POST'])
 def do_zip_submit():
-    zipVal = request.form.get('zip_form_value', None)
+    zipVal = request.values.get('zip_form_value', None)
     return redirect(url_for('showForecast', zipOrLatLon=zipVal))
 
 
 @app.route('/lat_lon_submit', methods=['POST'])
 def do_lat_lon_submit():
-    latVal = request.form.get('lat_form_value', None)
-    lonVal = request.form.get('lon_form_value', None)
+    latVal = request.values.get('lat_form_value', None)
+    lonVal = request.values.get('lon_form_value', None)
     return redirect(url_for('showForecast', zipOrLatLon=latVal + ',' + lonVal))
-
-
-@app.route('/zip_search_submit', methods=['POST'])
-def do_zip_search_submit():
-    queryVal = request.form.get('query_form_value', None)
-    return redirect(url_for('searchForZip', query=queryVal))
 
 
 @app.route('/edit_parameters_submit', methods=['POST'])
@@ -124,3 +119,22 @@ def rangesDictFromEditFormValues():
                   'temp': list(map(int, [temp_v1_value, temp_v2_value, temp_v3_value, temp_v4_value])),
                   'wind': list(map(int, [wind_v1_value, wind_v2_value]))}
     return rangesDict
+
+
+@app.route('/zip_search_submit', methods=['POST'])
+def do_zip_search_submit():
+    queryVal = request.values.get('query_form_value', None)
+    return redirect(url_for('searchForZip', query=queryVal))
+
+
+@app.route('/text_icon_submit', methods=['POST'])
+def do_text_icon_submit():
+    if request.values.get('enable_button', None):
+        response = make_response(redirect(url_for('index')))
+        response.set_cookie(TEXT_ICON_COOKIE_NAME, 'True')
+        return response  # todo flash saved and stay on page
+    else:
+        # reset (expire) the cookie
+        response = make_response(redirect(url_for('index')))
+        response.set_cookie(TEXT_ICON_COOKIE_NAME, expires=0)
+        return response  # todo flash reset and stay on page

@@ -45,9 +45,9 @@
         <input id="lon-text" type="text" name="lon_form_value">
         <input type="submit" value="Go!">
     </form>
-    
-    
-    <h2>Edit parameters</h2>
+
+
+    <h2>Edit weather limits</h2>
 
     View and edit weather range parameters <a href="{{ url_for('editRanges') }}">here</a>.
 
@@ -58,6 +58,19 @@
         <label for="query-text">Query: </label>
         <input id="query-text" type="text" name="query_form_value">
         <input type="submit" value="Search">
+    </form>
+
+
+    <h2>Experimental</h2>
+
+    <p>This is an idea to show text 'icons' in the colored squares that give detail about which weather parameter(s)
+       are causing a non-green color. The letter indicates the parameter ('P' for precipitation probability, 'T' for
+       apparent temperature, and 'W' for wind), and the case shows whether the parameter was medium desirability (lower
+       case) or low desirability (upper case). Tell me what you think!
+    </p>
+    <form method="POST" action="{{ url_for('do_text_icon_submit') }}">
+        <input type='submit' name='enable_button' value='Show Text Icons'>
+        <input type='submit' name='disable_button' value='Reset to No Icons'>
     </form>
 
 

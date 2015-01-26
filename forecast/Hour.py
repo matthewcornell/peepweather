@@ -88,7 +88,7 @@ class Hour():
         paramDesirabilities = [self.paramDesirabilityForValue('precip', self.precip),
                                self.paramDesirabilityForValue('temp', self.temp),
                                self.paramDesirabilityForValue('wind', self.wind)]
-        if paramDesirabilities[0] == paramDesirabilities[1] == paramDesirabilities[2]:
+        if Hour.P_DES_HIGH == paramDesirabilities[0] == paramDesirabilities[1] == paramDesirabilities[2]:
             return ''
 
         chars = ''

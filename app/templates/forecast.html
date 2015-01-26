@@ -26,8 +26,11 @@
                 <tr>
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for hour in hourOfDayRow %}
-                        <td class="{{ hour.cssClassForDesirability() }}" title="{{ hour.detailString() }}">
-{#                            {{ hour.charIconsForParams() }}#}
+                        <td style="color: black; " class="{{ hour.cssClassForDesirability() }}"
+                            title="{{ hour.detailString() }}">
+                            {% if useTextIcons %}
+                                {{ hour.charIconsForParams() }}
+                            {% endif %}
                         </td>
                     {% endfor %}
                 </tr>
