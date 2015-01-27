@@ -84,9 +84,10 @@ class Forecast:
               '&lon={lon}' \
               '&product=time-series' \
               '&Unit=e' \
-              '&appt=appt' \
               '&pop12=pop12' \
+              '&appt=appt' \
               '&wspd=wspd' \
+              '&sky=sky' \
               '&Submit=Submit'.format(lat=self.latLon[0], lon=self.latLon[1])
         return url
 

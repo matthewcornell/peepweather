@@ -74,9 +74,10 @@ class MyTestCase(unittest.TestCase):
                      '&lon={lon}' \
                      '&product=time-series' \
                      '&Unit=e' \
-                     '&appt=appt' \
                      '&pop12=pop12' \
+                     '&appt=appt' \
                      '&wspd=wspd' \
+                     '&sky=sky' \
                      '&Submit=Submit'.format(lat=lat, lon=lon)
             # test passing zipcode to constructor
             forecast = Forecast(zipcode, elementTree=elementTree)
@@ -243,8 +244,142 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expDict, paramSamplesDict)
 
 
+    def testXmlToParamSamplesSkyCover(self):
+        elementTree = ET.parse('test/test-forecast-data-sky-cover.xml')
+        dwmlElement = elementTree.getroot()
+        expDict = {
+            'probability-of-precipitation': [
+                (100, datetime.datetime(2015, 1, 27, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (33, datetime.datetime(2015, 1, 27, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (9, datetime.datetime(2015, 1, 28, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (2, datetime.datetime(2015, 1, 28, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (17, datetime.datetime(2015, 1, 29, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (59, datetime.datetime(2015, 1, 29, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (56, datetime.datetime(2015, 1, 30, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (13, datetime.datetime(2015, 1, 30, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 1, 31, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (11, datetime.datetime(2015, 1, 31, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (23, datetime.datetime(2015, 2, 1, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (29, datetime.datetime(2015, 2, 1, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (22, datetime.datetime(2015, 2, 2, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))))],
+            'temperature': [
+                (5, datetime.datetime(2015, 1, 27, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 1, 27, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (-1, datetime.datetime(2015, 1, 27, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (0, datetime.datetime(2015, 1, 28, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (-1, datetime.datetime(2015, 1, 28, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (-2, datetime.datetime(2015, 1, 28, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 1, 28, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (11, datetime.datetime(2015, 1, 28, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (11, datetime.datetime(2015, 1, 28, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 1, 28, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (8, datetime.datetime(2015, 1, 28, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 1, 29, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (2, datetime.datetime(2015, 1, 29, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (1, datetime.datetime(2015, 1, 29, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (7, datetime.datetime(2015, 1, 29, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (19, datetime.datetime(2015, 1, 29, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (22, datetime.datetime(2015, 1, 29, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (19, datetime.datetime(2015, 1, 29, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (17, datetime.datetime(2015, 1, 30, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (27, datetime.datetime(2015, 1, 30, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (24, datetime.datetime(2015, 1, 30, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 1, 30, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (-7, datetime.datetime(2015, 1, 31, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (-16, datetime.datetime(2015, 1, 31, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (2, datetime.datetime(2015, 1, 31, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (2, datetime.datetime(2015, 1, 31, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 2, 1, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (0, datetime.datetime(2015, 2, 1, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (13, datetime.datetime(2015, 2, 1, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (9, datetime.datetime(2015, 2, 1, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (10, datetime.datetime(2015, 2, 2, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (1, datetime.datetime(2015, 2, 2, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (6, datetime.datetime(2015, 2, 2, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (1, datetime.datetime(2015, 2, 2, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))))],
+            'wind-speed': [
+                (13, datetime.datetime(2015, 1, 27, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (13, datetime.datetime(2015, 1, 27, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (10, datetime.datetime(2015, 1, 27, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (7, datetime.datetime(2015, 1, 28, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (7, datetime.datetime(2015, 1, 28, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (7, datetime.datetime(2015, 1, 28, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (7, datetime.datetime(2015, 1, 28, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (7, datetime.datetime(2015, 1, 28, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (6, datetime.datetime(2015, 1, 28, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 1, 28, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (2, datetime.datetime(2015, 1, 28, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (1, datetime.datetime(2015, 1, 29, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (2, datetime.datetime(2015, 1, 29, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (2, datetime.datetime(2015, 1, 29, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (3, datetime.datetime(2015, 1, 29, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 1, 29, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 1, 29, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 1, 29, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 1, 30, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (1, datetime.datetime(2015, 1, 30, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (6, datetime.datetime(2015, 1, 30, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (12, datetime.datetime(2015, 1, 30, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (11, datetime.datetime(2015, 1, 31, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (12, datetime.datetime(2015, 1, 31, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (11, datetime.datetime(2015, 1, 31, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (7, datetime.datetime(2015, 1, 31, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (3, datetime.datetime(2015, 2, 1, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (3, datetime.datetime(2015, 2, 1, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 2, 1, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (4, datetime.datetime(2015, 2, 1, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (3, datetime.datetime(2015, 2, 2, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (3, datetime.datetime(2015, 2, 2, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 2, 2, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (5, datetime.datetime(2015, 2, 2, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))))],
+            'cloud-amount': [
+                (100, datetime.datetime(2015, 1, 27, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (99, datetime.datetime(2015, 1, 27, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (98, datetime.datetime(2015, 1, 27, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (96, datetime.datetime(2015, 1, 28, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (89, datetime.datetime(2015, 1, 28, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (82, datetime.datetime(2015, 1, 28, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (67, datetime.datetime(2015, 1, 28, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (53, datetime.datetime(2015, 1, 28, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (32, datetime.datetime(2015, 1, 28, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (9, datetime.datetime(2015, 1, 28, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (15, datetime.datetime(2015, 1, 28, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (14, datetime.datetime(2015, 1, 29, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (17, datetime.datetime(2015, 1, 29, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (20, datetime.datetime(2015, 1, 29, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (42, datetime.datetime(2015, 1, 29, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (65, datetime.datetime(2015, 1, 29, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (74, datetime.datetime(2015, 1, 29, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (84, datetime.datetime(2015, 1, 29, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (96, datetime.datetime(2015, 1, 30, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (96, datetime.datetime(2015, 1, 30, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (76, datetime.datetime(2015, 1, 30, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (65, datetime.datetime(2015, 1, 30, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (38, datetime.datetime(2015, 1, 31, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (28, datetime.datetime(2015, 1, 31, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (30, datetime.datetime(2015, 1, 31, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (28, datetime.datetime(2015, 1, 31, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (51, datetime.datetime(2015, 2, 1, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (56, datetime.datetime(2015, 2, 1, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (63, datetime.datetime(2015, 2, 1, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (63, datetime.datetime(2015, 2, 1, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (69, datetime.datetime(2015, 2, 2, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (67, datetime.datetime(2015, 2, 2, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (48, datetime.datetime(2015, 2, 2, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+                (63, datetime.datetime(2015, 2, 2, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))))]
+        }
+        paramSamplesDict = Forecast.parameterSamplesDictFromXml(dwmlElement)
+        self.assertEqual(expDict, paramSamplesDict)
+
+
     def testHoursWithGapsFromXml(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
+        dwmlElement = elementTree.getroot()
+        expHoursWithGaps = self.expectedHoursWithGaps()
+        actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
+        self.assertEqual(expHoursWithGaps, actHoursWithGaps)
+
+        elementTree = ET.parse('test/test-forecast-data-sky-cover.xml')
         dwmlElement = elementTree.getroot()
         expHoursWithGaps = self.expectedHoursWithGaps()
         actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)

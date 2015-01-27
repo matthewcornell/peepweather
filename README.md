@@ -19,7 +19,7 @@ the hourly analysis-to-color algorithm.
 # Feature Requests: Active
 
 ## Essential
-- add Sky Cover. have to re-think Hour.hourDesirabilityForParamDesCounts()
+- >> add Sky Cover. have to re-think Hour.hourDesirabilityForParamDesCounts()
 
 - daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark
