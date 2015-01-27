@@ -82,36 +82,34 @@ class Hour():
         """
         :return: list of three characters, one each for precip, temp, and wind respectively.
         """
-        if self.isMissingHour():
-            return ''
-        
+        chars = ['\u00a0'] * 3
+        desirability = self.desirability()
+        if self.isMissingHour() or desirability == Hour.H_DES_HIGH or desirability == Hour.H_DES_MED_HIGH:
+            return ''.join(chars)
+
         paramDesirabilities = [self.paramDesirabilityForValue('precip', self.precip),
                                self.paramDesirabilityForValue('temp', self.temp),
                                self.paramDesirabilityForValue('wind', self.wind)]
-        if Hour.P_DES_HIGH == paramDesirabilities[0] == paramDesirabilities[1] == paramDesirabilities[2]:
-            return ''
-
-        chars = ''
 
         # add precip
         if paramDesirabilities[0] == Hour.P_DES_LOW:
-            chars += 'P'
+            chars[0] = 'P'
         elif paramDesirabilities[0] == Hour.P_DES_MED:
-            chars += 'p'
+            chars[0] = 'p'
 
         # add temp
         if paramDesirabilities[1] == Hour.P_DES_LOW:
-            chars += 'T'
+            chars[1] = 'T'
         elif paramDesirabilities[1] == Hour.P_DES_MED:
-            chars += 't'
+            chars[1] = 't'
 
         # add wind
         if paramDesirabilities[2] == Hour.P_DES_LOW:
-            chars += 'W'
+            chars[2] = 'W'
         elif paramDesirabilities[2] == Hour.P_DES_MED:
-            chars += 'w'
+            chars[2] = 'w'
 
-        return chars
+        return ''.join(chars)
 
 
     # ==== analysis methods ====
@@ -119,9 +117,10 @@ class Hour():
     def desirability(self):
         """
         :return: overall desirability based on my parameters. one of H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH
+        returns None if this is a missing hour.
         """
         if self.isMissingHour():
-            return Hour.HOUR_MISSING_COLOR
+            return None
 
         hDesHighCount = 0
         hDesMedCount = 0

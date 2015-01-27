@@ -12,7 +12,7 @@
         <img src="{{ url_for('static', filename='_MG_5049.jpg') }}" style="width:300px;" align="right">
     </p>
 
-    <table style="background-color:black; font-size:small" border="0" cellspacing="1" cellpadding="8" width="10">
+    <table style="background-color:black; font-size:medium" border="0" cellspacing="1" cellpadding="8" width="10">
         <tr style="background-color:white;">
             {# first column blank for row/hour header #}
             <td></td>
@@ -26,7 +26,7 @@
                 <tr>
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for hour in hourOfDayRow %}
-                        <td style="color: black; " class="{{ hour.cssClassForDesirability() }}"
+                        <td style="color: black; font-family: monospace;" class="{{ hour.cssClassForDesirability() }}"
                             title="{{ hour.detailString() }}">
                             {% if useTextIcons %}
                                 {{ hour.charIconsForParams() }}
