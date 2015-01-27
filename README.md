@@ -39,25 +39,11 @@ the hourly analysis-to-color algorithm.
 ## Maybe for fun
 - geolocation :-)
 
-- palette selection. multiple css files, popup 
-
-- click a square to show details
-
-- palette choices - css should make it easy :-)
-
-- overall assessment
-    - Use a picture/icon :-)
-
-- rethink layout/squares?
-    - have long term squares, with users able to set their thresholds for bad, acceptable and great flying days, and
-      then have a short term meteogram for double checking nearer the time.
-    - show every three hours instead of one? After all, that's the most frequent update of data
-
-- show a sunny/overcast/rain/snow icon in the hour square like http://www.alessioatzeni.com/meteocons/res/img/screen.png
-
 - list/map AMA fields nearby :-)
   http://www.modelaircraft.org/clubsearch.aspx
   python screen scraper - http://www.crummy.com/software/BeautifulSoup/
+
+- click a square to show details
 
 - international. I don't know the details myself, but drop Benny Wydooghe a line on google+, or in the Meteogram Widget
   group on google+. He's the developer of the widget I posted a screenshot of earlier, and has a great international
