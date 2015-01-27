@@ -102,9 +102,9 @@ class Hour():
         # add temp
         tempDes = self.paramDesirabilityForValue('temp', self.temp)
         if tempDes == Hour.P_DES_LOW:
-            chars[1] = 'wi-thermometer-exterior'
-        elif tempDes == Hour.P_DES_MED:
             chars[1] = 'wi-thermometer'
+        elif tempDes == Hour.P_DES_MED:
+            chars[1] = 'wi-thermometer-exterior'
 
         # add wind
         windDes = self.paramDesirabilityForValue('wind', self.wind)

@@ -63,13 +63,13 @@
 
     <h2>Experimental</h2>
 
-    <p>This is an idea to show text 'icons' in the colored squares that give detail about which weather parameter(s)
-       are causing a non-green color. The letter indicates the parameter ('P' for precipitation probability, 'T' for
-       apparent temperature, and 'W' for wind), and the case shows whether the parameter was medium desirability (lower
-       case) or low desirability (upper case). Tell me what you think!
+    <p>This is an idea to show weather icons in the colored squares that give detail about which weather parameter(s)
+        are causing a non-green color. Each icon contains two pieces of information: The parameter that is causing
+        the Poor or Fair rating ((precipitation probability, apparent temperature, or wind) and whether that parameter
+        was Low or Medium. Check out the key on the forecast page, and tell me what you think!
     </p>
     <form method="POST" action="{{ url_for('do_text_icon_submit') }}">
-        <input type='submit' name='enable_button' value='Show Text Icons'>
+        <input type='submit' name='enable_button' value='Show Icons'>
         <input type='submit' name='disable_button' value='Reset to No Icons'>
     </form>
 
