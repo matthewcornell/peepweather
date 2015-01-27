@@ -8,8 +8,9 @@
 
     <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
     <p>
-        Time: <span id="time-id"></span>
-        (<a href="https://www.google.com/maps/place/{{ forecast.latLon[0] }},{{ forecast.latLon[1] }}">map it</a>)
+        Time: <span id="time-id"></span><br>
+        Links: <a href="https://www.google.com/maps/place/{{ forecast.latLon[0] }},{{ forecast.latLon[1] }}">Google Maps</a>,
+        <a href="http://forecast.weather.gov/MapClick.php?lat={{ forecast.latLon[0] }}&lon={{ forecast.latLon[1] }}">weather.gov</a>
         <img src="{{ url_for('static', filename='_MG_5049.jpg') }}" style="width:300px;" align="right">
     </p>
 

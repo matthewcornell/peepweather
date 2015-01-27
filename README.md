@@ -7,7 +7,7 @@ the hourly analysis-to-color algorithm.
 
 
 # Bugs
-- cookies: use secure
+- cookies: use secure?
 
 - form validation:
     - /       : zipcode: not empty. five numbers. exists in zipcode file.
@@ -21,16 +21,12 @@ the hourly analysis-to-color algorithm.
 ## Essential
 - add Sky Cover. have to re-think Hour.hourDesirabilityForParamDesCounts()
 
-- (maybe for clicks) Weather Conditions Icons?
-
-- modern appearance
-    - mobile-friendly (responsive design)
-
 - daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark
     - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make
 
-- click a square to show details
+- modern appearance
+    - mobile-friendly (responsive design)
 
 - editable parameter weights for combined importance to the final rating
 
@@ -41,6 +37,10 @@ the hourly analysis-to-color algorithm.
 
 
 ## Maybe or for fun
+- click a square to show details
+
+- palette choices - css should make it easy :-)
+
 - overall assessment
     - Use a picture/icon :-)
 
