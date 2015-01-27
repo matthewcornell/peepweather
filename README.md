@@ -36,7 +36,11 @@ the hourly analysis-to-color algorithm.
 - ads
 
 
-## Maybe or for fun
+## Maybe for fun
+- geolocation :-)
+
+- palette selection. multiple css files, popup 
+
 - click a square to show details
 
 - palette choices - css should make it easy :-)
@@ -95,6 +99,7 @@ the hourly analysis-to-color algorithm.
 - [Aviation Weather Report and Forecast - Wind Speed, Temperature, Wind Direction, Precipitation Forecast](http://www.usairnet.com/cgi-bin/launch/code.cgi?state=TX&sta=KTKI)
 - [meteocons](http://www.alessioatzeni.com/meteocons/res/img/screen.png)
 - [1Weather:Widget Forecast Radar | 1mobile.com] (http://www.1mobile.com/1weather-widget-forecast-radar-336436.html)
+- [windalert.com] (http://windalert.com/map#42.375,-72.513,10,1)
 
 
 ## Tagline: "Just look for the green and then go fly!"
