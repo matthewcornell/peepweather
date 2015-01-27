@@ -80,36 +80,40 @@ class Hour():
     
     def charIconsForParams(self):
         """
-        :return: list of three characters, one each for precip, temp, and wind respectively.
+        :return: list of three Weather Icons 'specific icon class' strings, one each for precip, temp, and wind
+        respectively, or None if no applicable. 
         """
-        chars = ['\u00a0'] * 3
-        desirability = self.desirability()
-        if self.isMissingHour() or desirability == Hour.H_DES_HIGH or desirability == Hour.H_DES_MED_HIGH:
-            return ''.join(chars)
+        # Precip: P_DES_LOW: <i class="wi wi-rain"></i>, P_DES_MED: <i class="wi wi-showers"></i><br>
+        # Temp: P_DES_LOW: <i class="wi wi-thermometer-exterior"></i>, P_DES_MED: <i class="wi wi-thermometer"></i><br>
+        # Wind: P_DES_LOW: <i class="wi wi-cloudy-gusts"></i>, P_DES_MED: <i class="wi wi-cloudy-windy"></i><br>
 
-        paramDesirabilities = [self.paramDesirabilityForValue('precip', self.precip),
-                               self.paramDesirabilityForValue('temp', self.temp),
-                               self.paramDesirabilityForValue('wind', self.wind)]
+        desirability = self.desirability()
+        chars = [None, None, None]
+        if self.isMissingHour() or desirability == Hour.H_DES_HIGH or desirability == Hour.H_DES_MED_HIGH:
+            return chars
 
         # add precip
-        if paramDesirabilities[0] == Hour.P_DES_LOW:
-            chars[0] = 'P'
-        elif paramDesirabilities[0] == Hour.P_DES_MED:
-            chars[0] = 'p'
+        precipDes = self.paramDesirabilityForValue('precip', self.precip)
+        if precipDes == Hour.P_DES_LOW:
+            chars[0] = 'wi-rain'
+        elif precipDes == Hour.P_DES_MED:
+            chars[0] = 'wi-showers'
 
         # add temp
-        if paramDesirabilities[1] == Hour.P_DES_LOW:
-            chars[1] = 'T'
-        elif paramDesirabilities[1] == Hour.P_DES_MED:
-            chars[1] = 't'
+        tempDes = self.paramDesirabilityForValue('temp', self.temp)
+        if tempDes == Hour.P_DES_LOW:
+            chars[1] = 'wi-thermometer-exterior'
+        elif tempDes == Hour.P_DES_MED:
+            chars[1] = 'wi-thermometer'
 
         # add wind
-        if paramDesirabilities[2] == Hour.P_DES_LOW:
-            chars[2] = 'W'
-        elif paramDesirabilities[2] == Hour.P_DES_MED:
-            chars[2] = 'w'
+        windDes = self.paramDesirabilityForValue('wind', self.wind)
+        if windDes == Hour.P_DES_LOW:
+            chars[2] = 'wi-cloudy-gusts'
+        elif windDes == Hour.P_DES_MED:
+            chars[2] = 'wi-cloudy-windy'
 
-        return ''.join(chars)
+        return chars
 
 
     # ==== analysis methods ====

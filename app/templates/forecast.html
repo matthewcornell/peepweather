@@ -6,6 +6,11 @@
 
     <h2>Forecast for {{ forecast.location() }} </h2>
 
+    <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
+    Precip: P_DES_LOW: <i class="wi wi-rain"></i>, P_DES_MED: <i class="wi wi-showers"></i><br>
+    Temp: P_DES_LOW: <i class="wi wi-thermometer-exterior"></i>, P_DES_MED: <i class="wi wi-thermometer"></i><br>
+    Wind: P_DES_LOW: <i class="wi wi-cloudy-gusts"></i>, P_DES_MED: <i class="wi wi-cloudy-windy"></i><br>
+
     <p>
         Time: <span id="time-id"></span>
         (<a href="https://www.google.com/maps/place/{{ forecast.latLon[0] }},{{ forecast.latLon[1] }}">map it</a>)
@@ -26,10 +31,14 @@
                 <tr>
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for hour in hourOfDayRow %}
-                        <td style="color: black; font-family: monospace;" class="{{ hour.cssClassForDesirability() }}"
+                        {# todo: correct way to reserve width for three weather icons? 4em worked in Firefox but not Chrome, which wanted 5em #}
+                        <td style="{% if useTextIcons %} min-width:5em; {% endif %} color: black; font-family: monospace;"
+                            class="{{ hour.cssClassForDesirability() }}"
                             title="{{ hour.detailString() }}">
                             {% if useTextIcons %}
-                                {{ hour.charIconsForParams() }}
+                                {% for wiClass in hour.charIconsForParams() %}
+                                    {% if wiClass %} <i class="wi {{ wiClass }}"></i> {% endif %}
+                                {% endfor %}
                             {% endif %}
                         </td>
                     {% endfor %}
