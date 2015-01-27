@@ -1,0 +1,5 @@
+{% if useAlternatePalette %}
+    <link rel='stylesheet' href='{{ url_for('static', filename='hour-styles/cc4c02.css') }}'> {# ss-orange-dark-bad #}
+{% else %}
+    <link rel='stylesheet' href='{{ url_for('static', filename='hour-styles/ff0000.css') }}'> {# stoplight #}
+{% endif %}

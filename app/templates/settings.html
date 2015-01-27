@@ -3,6 +3,34 @@
 
 {% block content %}
 
+    <h2>Color Pallete</h2>
+    
+    Choose a palette for the squares:
+    <form method="POST" action="{{ url_for('do_palette_submit') }}">
+        <label>
+            <select id="palette_selection" name="palette_selection">
+                <option value="green_yellow_red">Green, Yellow, Red</option>
+                <option value="brown_hues">Brown Hues</option>
+            </select>
+        </label>
+        <input type='submit' name='submit_button' value='Save'>
+    </form>
+
+    {# populate the palette form with current values #}
+    <script type="text/javascript">
+        function set_palette_values() {
+{#            var useAlternatePalette = {{ useAlternatePalette }};#}
+            var useAlternatePalette = {% if useAlternatePalette %} true {% else %} false {% endif %};
+            if (useAlternatePalette) {
+                document.getElementById('palette_selection').value = 'brown_hues';
+            } else {
+                document.getElementById('palette_selection').value = 'green_yellow_red';
+            }
+        }
+        set_palette_values();
+    </script>
+
+
     <h2>Parameter Range Editor</h2>
 
     <p>This page lets you view and edit the weather parameter ranges that combine to determine how each hour is
@@ -53,6 +81,7 @@
     </form>
 
 
+    {# populate the range form with current values #}
     <script type="text/javascript">
         function set_parameter_text_values() {
             var precipVals = {{ precipVals }};

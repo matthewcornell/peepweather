@@ -4,6 +4,10 @@
 
 {% block content %}
 
+    <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
+    
+    {% include 'pallete-select.html' %}
+    
     <h2>Forecast for {{ forecast.location() }} </h2>
 
     <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
@@ -48,7 +52,6 @@
     </script>
 
     {% include 'color-key.html' %}
-    {% include 'icon-key.html' %}
 
 
     <h2>Debuging tools</h2>
