@@ -6,6 +6,7 @@
 
     <h2>Forecast for {{ forecast.location() }} </h2>
 
+    <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
     <p>
         Time: <span id="time-id"></span>
         (<a href="https://www.google.com/maps/place/{{ forecast.latLon[0] }},{{ forecast.latLon[1] }}">map it</a>)
