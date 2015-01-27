@@ -9,7 +9,6 @@ from app import app
 # ==== routes ====
 
 RANGES_COOKIE_NAME = 'parameter_ranges'
-TEXT_ICON_COOKIE_NAME = 'text_icons_enabled'
 
 
 @app.route('/')
@@ -44,8 +43,7 @@ def showForecast(zipOrLatLon):
         if request.values.get('list'):
             return render_template("forecast-list.html", forecast=forecast)
         else:
-            return render_template("forecast.html", forecast=forecast,
-                                   useTextIcons=request.cookies.get(TEXT_ICON_COOKIE_NAME))
+            return render_template("forecast.html", forecast=forecast)
     except ValueError as ve:
         return render_template("forecast-error.html", error=ve.args[0])
 
@@ -125,16 +123,3 @@ def rangesDictFromEditFormValues():
 def do_zip_search_submit():
     queryVal = request.values.get('query_form_value', None)
     return redirect(url_for('searchForZip', query=queryVal))
-
-
-@app.route('/text_icon_submit', methods=['POST'])
-def do_text_icon_submit():
-    if request.values.get('enable_button', None):
-        response = make_response(redirect(url_for('index')))
-        response.set_cookie(TEXT_ICON_COOKIE_NAME, 'True')
-        return response  # todo flash saved and stay on page
-    else:
-        # reset (expire) the cookie
-        response = make_response(redirect(url_for('index')))
-        response.set_cookie(TEXT_ICON_COOKIE_NAME, expires=0)
-        return response  # todo flash reset and stay on page
