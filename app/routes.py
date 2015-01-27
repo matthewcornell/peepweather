@@ -48,14 +48,14 @@ def showForecast(zipOrLatLon):
         return render_template("forecast-error.html", error=ve.args[0])
 
 
-@app.route('/ranges')
-def editRanges():
+@app.route('/settings')
+def editSettings():
     rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
     if rangesDictJson:
         rangesDict = json.loads(rangesDictJson)
     else:
         rangesDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
-    return render_template("edit-ranges.html",
+    return render_template("settings.html",
                            precipVals=rangesDict['precip'],
                            tempVals=rangesDict['temp'],
                            windVals=rangesDict['wind'])
@@ -86,7 +86,7 @@ def do_edit_parameters_submit():
     isReset = request.values.get('reset_button')
     if isReset:
         # reset (expire) the cookie
-        response = make_response(redirect(url_for('editRanges')))
+        response = make_response(redirect(url_for('editSettings')))
         response.set_cookie(RANGES_COOKIE_NAME, expires=0)
         return response  # todo flash reset and stay on page
     else:
@@ -95,7 +95,7 @@ def do_edit_parameters_submit():
             rangesDict = rangesDictFromEditFormValues()
             # todo validate rangeDict - all ints increasing, for example
             rangesDictJson = json.dumps(rangesDict)
-            response = make_response(redirect(url_for('editRanges')))
+            response = make_response(redirect(url_for('editSettings')))
             response.set_cookie(RANGES_COOKIE_NAME, rangesDictJson)
             return response  # todo flash saved and stay on page
         except Exception as ex:
