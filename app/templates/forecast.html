@@ -6,11 +6,6 @@
 
     <h2>Forecast for {{ forecast.location() }} </h2>
 
-    <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
-    Precip: P_DES_LOW: <i class="wi wi-rain"></i>, P_DES_MED: <i class="wi wi-showers"></i><br>
-    Temp: P_DES_LOW: <i class="wi wi-thermometer-exterior"></i>, P_DES_MED: <i class="wi wi-thermometer"></i><br>
-    Wind: P_DES_LOW: <i class="wi wi-cloudy-gusts"></i>, P_DES_MED: <i class="wi wi-cloudy-windy"></i><br>
-
     <p>
         Time: <span id="time-id"></span>
         (<a href="https://www.google.com/maps/place/{{ forecast.latLon[0] }},{{ forecast.latLon[1] }}">map it</a>)
