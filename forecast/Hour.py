@@ -19,7 +19,7 @@ class Hour():
         self.precip = precip  # probability of precipitation percent: integers range(101). todo couldn't find docs about range end
         self.temp = temp  # degrees Fahrenheit: integers (negative and possitive)
         self.wind = wind  # MPH: whole numbers (integers from 0 up)
-        self.clouds = clouds # cloud cover percentage
+        self.clouds = clouds  # cloud cover percentage
         self.rangeDict = rangeDict
 
 
@@ -40,8 +40,8 @@ class Hour():
 
 
     def __repr__(self):
-        return '{}({}, {}, {}, {})'.format(self.__class__.__name__, repr(self.datetime),
-                                           self.precip, self.temp, self.wind)
+        return '{}({}, {}, {}, {}, {})'.format(self.__class__.__name__, repr(self.datetime),
+                                               self.precip, self.temp, self.wind, self.clouds)
 
 
     def __str__(self):
@@ -72,13 +72,26 @@ class Hour():
 
 
     def cssClassForDesirability(self):
+        """
+        :return: a css class from static/hour-styles/ff0000.css, factoring in my clouds
+        """
         if self.isMissingHour():
             return 'Missing'
-        
-        return {Hour.H_DES_LOW: 'Poor', Hour.H_DES_MED_LOW: 'Fair', Hour.H_DES_MED_HIGH: 'Okay',
-                Hour.H_DES_HIGH: 'Great'}[self.desirability()]
-    
-    
+
+        hourDesirabilityToClass = {Hour.H_DES_LOW: 'Poor',
+                                   Hour.H_DES_MED_LOW: 'Fair',
+                                   Hour.H_DES_MED_HIGH: 'Okay',
+                                   Hour.H_DES_HIGH: 'Great'}
+        cssClassToCloudyClass = {'Poor': 'Poor_cloudy',
+                                 'Fair': 'Fair_cloudy',
+                                 'Okay': 'Okay_cloudy',
+                                 'Great': 'Great_cloudy'}
+        cssClass = hourDesirabilityToClass[self.desirability()]
+        if self.cloudinessDesirability() == Hour.P_DES_LOW:
+            cssClass = cssClassToCloudyClass[cssClass]
+        return cssClass
+
+
     def charIconsForParams(self):
         """
         :return: list of three Weather Icons 'specific icon class' strings, one each for precip, temp, and wind
@@ -149,7 +162,8 @@ class Hour():
         Gives an overall rating for a set of paramaneter desirability counts.
 
         :param paramDesireTuple: a 3-tuple of counts for these param desirabilities, in order:
-            (Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH)
+            (Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH). NB: Should only include precip, temp, and wind, and
+            *not* clouds
         :return: one of H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH
         """
         if not all(map(lambda count: isinstance(count, Number), (hDesLowCount, hDesMedCount, hDesHighCount))):
@@ -173,7 +187,7 @@ class Hour():
         """
         Gives a rating for a particular parameter value using the current ranges.
 
-        :param paramName: one of ['precip', 'temp', 'wind']
+        :param paramName: one of ['precip', 'temp', 'wind']. NB: *not* clouds
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
@@ -195,3 +209,11 @@ class Hour():
                 return Hour.P_DES_HIGH
             else:
                 return Hour.P_DES_MED
+
+
+    def cloudinessDesirability(self):
+        """
+        :return: Hard-coded desirability of my clouds, but only two P_* values as opposed to three in
+        Hour.paramDesirabilityForValue(): one of P_DES_LOW, P_DES_HIGH
+        """
+        return Hour.P_DES_LOW if self.clouds <= 50 else Hour.P_DES_HIGH

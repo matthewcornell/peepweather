@@ -358,13 +358,6 @@ class MyTestCase(unittest.TestCase):
                      (12, Hour.P_DES_LOW),
                      (100, Hour.P_DES_LOW),
             ],
-            'cloud': [(0, Hour.P_DES_HIGH),
-                      (32, Hour.P_DES_HIGH),
-                      (33, Hour.P_DES_MED),
-                      (65, Hour.P_DES_MED),
-                      (66, Hour.P_DES_LOW),
-                      (100, Hour.P_DES_LOW),
-            ],
         }
         for paramName, expParamValRatings in expParamValRatings.items():
             for paramval, expParamRating in expParamValRatings:

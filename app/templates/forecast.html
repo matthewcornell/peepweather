@@ -33,7 +33,6 @@
                 <tr>
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for hour in hourOfDayRow %}
-                        {# todo: correct way to reserve width for three weather icons? 4em worked in Firefox but not Chrome, which wanted 5em #}
                         <td style="min-width:5em; color: black; font-family: monospace;"
                             class="{{ hour.cssClassForDesirability() }}"
                             title="{{ hour.detailString() }}">
