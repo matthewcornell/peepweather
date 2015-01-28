@@ -11,7 +11,7 @@ class Hour():
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
 
 
-    def __init__(self, datetime, rangeDict, precip=None, temp=None, wind=None):
+    def __init__(self, datetime, rangeDict, precip=None, temp=None, wind=None, clouds=None):
         """
         Pass None for the weather parameters to represent missing data, i.e., a 'missing' hour.
         """
@@ -19,6 +19,7 @@ class Hour():
         self.precip = precip  # probability of precipitation percent: integers range(101). todo couldn't find docs about range end
         self.temp = temp  # degrees Fahrenheit: integers (negative and possitive)
         self.wind = wind  # MPH: whole numbers (integers from 0 up)
+        self.clouds = clouds # cloud cover percentage
         self.rangeDict = rangeDict
 
 

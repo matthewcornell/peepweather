@@ -1,17 +1,33 @@
 .Poor {
-    background-color: #ff0000
+    background-color: #ff0000;
+}
+
+.Poor_cloudy {
+    background-color: #b30000;
 }
 
 .Fair {
     background-color: #ffaa00;
 }
 
+.Fair_cloudy {
+    background-color: #b37700;
+}
+
 .Okay {
     background-color: #d5ff00;
 }
 
+.Okay_cloudy {
+    background-color: #95b300;
+}
+
 .Great {
-    background-color: #00ff00
+    background-color: #00ff00;
+}
+
+.Great_cloudy {
+    background-color: #00b300;
 }
 
 .Missing {

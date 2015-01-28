@@ -133,7 +133,7 @@ class MyTestCase(unittest.TestCase):
         }
         paramDict = Forecast.parameterDictFromXml(dwmlElement)
         self.assertEqual(expDict, paramDict)
-    
+
 
     def testXmlToParamSamples(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
@@ -149,6 +149,49 @@ class MyTestCase(unittest.TestCase):
         expDict = self.expDict_testXmlToParamSamplesSkyCover()
         paramSamplesDict = Forecast.parameterSamplesDictFromXml(dwmlElement)
         self.assertEqual(expDict, paramSamplesDict)
+        
+    
+    def testHourInstanceVariablesInclCloudiness(self):
+        elementTree = ET.parse('test/test-forecast-data-sky-cover.xml')
+        forecast = Forecast('01002', elementTree=elementTree)
+        expCloudsDatetime = [
+            (100, datetime.datetime(2015, 1, 27, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (99, datetime.datetime(2015, 1, 27, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (98, datetime.datetime(2015, 1, 27, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (96, datetime.datetime(2015, 1, 28, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (89, datetime.datetime(2015, 1, 28, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (82, datetime.datetime(2015, 1, 28, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (67, datetime.datetime(2015, 1, 28, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (53, datetime.datetime(2015, 1, 28, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (32, datetime.datetime(2015, 1, 28, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (9, datetime.datetime(2015, 1, 28, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (15, datetime.datetime(2015, 1, 28, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (14, datetime.datetime(2015, 1, 29, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (17, datetime.datetime(2015, 1, 29, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (20, datetime.datetime(2015, 1, 29, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (42, datetime.datetime(2015, 1, 29, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (65, datetime.datetime(2015, 1, 29, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (74, datetime.datetime(2015, 1, 29, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (84, datetime.datetime(2015, 1, 29, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (96, datetime.datetime(2015, 1, 30, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (96, datetime.datetime(2015, 1, 30, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (76, datetime.datetime(2015, 1, 30, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (65, datetime.datetime(2015, 1, 30, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (38, datetime.datetime(2015, 1, 31, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (28, datetime.datetime(2015, 1, 31, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (30, datetime.datetime(2015, 1, 31, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (28, datetime.datetime(2015, 1, 31, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (51, datetime.datetime(2015, 2, 1, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (56, datetime.datetime(2015, 2, 1, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (63, datetime.datetime(2015, 2, 1, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (63, datetime.datetime(2015, 2, 1, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (69, datetime.datetime(2015, 2, 2, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (67, datetime.datetime(2015, 2, 2, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (48, datetime.datetime(2015, 2, 2, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
+            (63, datetime.datetime(2015, 2, 2, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))))]
+        for expClouds, expDatetime in expCloudsDatetime:
+            foundHour = forecast.findHourForDatetime(expDatetime)
+            self.assertEqual(expClouds, foundHour.clouds)
 
 
     def testHoursWithGapsFromXml(self):
@@ -181,31 +224,31 @@ class MyTestCase(unittest.TestCase):
 
         # spot-check some interpolated weather values
         h0 = Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 10, 3)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 10, 3, -1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
         h3 = Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 6, 3)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 6, 3, -1)
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[:4])
 
         h0 = Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 19, 3)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 19, 3, -1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
         h3 = Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3, -1)
         exph0Idx = 51
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[exph0Idx:exph0Idx + 4])
 
         h0 = Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 28, 1)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 28, 1, -1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
         h3 = self.copyOfHourPlusOne(h2)
         h4 = self.copyOfHourPlusOne(h3)
         h5 = self.copyOfHourPlusOne(h4)
         h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 23, 1)
+                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 23, 1, -1)
         exph0Idx = 162
         self.assertEqual([h0, h1, h2, h3, h4, h5, h6], actHoursWithNoGaps[exph0Idx:exph0Idx + 7])
 
@@ -254,19 +297,19 @@ class MyTestCase(unittest.TestCase):
             Hour(datetime.datetime(2015, 1, 13, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
                  Forecast.PARAM_RANGE_STEPS_DEFAULT, None, None, None),
             Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 3, 2),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 3, 2, -1),
             Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 13, 2),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 13, 2, -1),
             Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3, -1),
             Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 11, 4),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 11, 4, -1),
             Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 21, 5),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 21, 5, -1),
             Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 28, 4),
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 28, 4, -1),
             Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 18, 3)]
+                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 18, 3, -1)]
         self.assertEqual(expRow1, actCaledarRows[1])
 
 
@@ -287,7 +330,8 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(expIsDaylight, Forecast.isDaylightHour(hour))
 
 
-    def testHourColorDesirabilities(self):
+    def testHourDesirabilities(self):
+        # check individual parameter ratings
         expParamValRatings = {
             'precip': [(0, Hour.P_DES_HIGH),
                        (9, Hour.P_DES_HIGH),
@@ -295,13 +339,6 @@ class MyTestCase(unittest.TestCase):
                        (29, Hour.P_DES_MED),
                        (30, Hour.P_DES_LOW),
                        (100, Hour.P_DES_LOW),
-            ],
-            'wind': [(0, Hour.P_DES_HIGH),
-                     (7, Hour.P_DES_HIGH),
-                     (8, Hour.P_DES_MED),
-                     (11, Hour.P_DES_MED),
-                     (12, Hour.P_DES_LOW),
-                     (100, Hour.P_DES_LOW),
             ],
             'temp': [(-100, Hour.P_DES_LOW),
                      (31, Hour.P_DES_LOW),
@@ -313,6 +350,20 @@ class MyTestCase(unittest.TestCase):
                      (84, Hour.P_DES_MED),
                      (85, Hour.P_DES_LOW),
                      (100, Hour.P_DES_LOW),
+            ],
+            'wind': [(0, Hour.P_DES_HIGH),
+                     (7, Hour.P_DES_HIGH),
+                     (8, Hour.P_DES_MED),
+                     (11, Hour.P_DES_MED),
+                     (12, Hour.P_DES_LOW),
+                     (100, Hour.P_DES_LOW),
+            ],
+            'cloud': [(0, Hour.P_DES_HIGH),
+                      (32, Hour.P_DES_HIGH),
+                      (33, Hour.P_DES_MED),
+                      (65, Hour.P_DES_MED),
+                      (66, Hour.P_DES_LOW),
+                      (100, Hour.P_DES_LOW),
             ],
         }
         for paramName, expParamValRatings in expParamValRatings.items():
@@ -354,7 +405,7 @@ class MyTestCase(unittest.TestCase):
 
     def copyOfHourPlusOne(self, hour):
         oneHour = datetime.timedelta(hours=1)
-        return Hour(hour.datetime + oneHour, Forecast.PARAM_RANGE_STEPS_DEFAULT, hour.precip, hour.temp, hour.wind)
+        return Hour(hour.datetime + oneHour, Forecast.PARAM_RANGE_STEPS_DEFAULT, hour.precip, hour.temp, hour.wind, hour.clouds)
 
 
     def expHoursWithGaps_testHoursWithGapsFromXml(self):
@@ -484,6 +535,7 @@ class MyTestCase(unittest.TestCase):
                  1)
         ]
         return expHoursWithGaps
+
 
     def expDict_testXmlToParamSamples(self):
         expDict = {

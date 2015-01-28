@@ -6,8 +6,24 @@ Obviously the two big factors in how useful this app is are 1) quality of underl
 the hourly analysis-to-color algorithm.
 
 
+# current branch todo
+- v add darker css color classes to ff0000.css: .Poor_cloudy, .Fair_cloudy, etc.
+- add cloud-amount data from API (TDD)
+- add Hour.clouds for ""
+- leave unchanged: Hour.hourDesirabilityForParamDesCounts()
+- def Hour.cloudinessDesirability() -> P_DES_LOW or P_DES_HIGH (only two ratings)
+- change to use cloudiness level: forecast.html (DEC: not forecast-list): selects correct css color
+  (e.g., .Poor/.Poor_cloudy, .Fair/.Fair_cloudy, etc.)
+
+- remove palette selection feature ;-)
+
+
 # Bugs
+- ~ clean up forecast TABLE HTML?
+
 - cookies: use secure?
+
+- ~ todo: correct way to reserve width for three weather icons? 4em worked in Firefox but not Chrome, which wanted 5em
 
 - form validation:
     - /       : zipcode: not empty. five numbers. exists in zipcode file.

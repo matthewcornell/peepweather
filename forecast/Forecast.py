@@ -22,6 +22,7 @@ class Forecast:
     PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H-M-L
                                  'temp': [32, 41, 70, 85],  # L-M-H-M-L
                                  'wind': [8, 12],  # H-M-L
+                                 'cloud': [33, 66],  # H-M-L
     }
 
 
@@ -142,18 +143,25 @@ class Forecast:
         currDatetime = oldestHour.datetime
         prevFoundHour = oldestHour
         while currDatetime <= newestHour.datetime:
-            foundHour = Forecast.findHourForDatetime(currDatetime, hoursWithGaps)
+            foundHour = Forecast.findHourForDatetimeFromHoursWithGaps(currDatetime, hoursWithGaps)
             if not foundHour:
                 foundHour = Hour(currDatetime, rangeDict, prevFoundHour.precip,
-                                 prevFoundHour.temp, prevFoundHour.wind)
+                                 prevFoundHour.temp, prevFoundHour.wind, prevFoundHour.clouds)
             hoursWithNoGaps.append(foundHour)
             prevFoundHour = foundHour
             currDatetime += oneHour
         return hoursWithNoGaps
 
 
+    def findHourForDatetime(self, theDatetime):
+        for hour in self.hours:
+            if hour.datetime == theDatetime:
+                return hour
+        return None
+
+
     @classmethod
-    def findHourForDatetime(cls, theDatetime, hoursWithGaps):
+    def findHourForDatetimeFromHoursWithGaps(cls, theDatetime, hoursWithGaps):
         for hour in hoursWithGaps:
             if hour.datetime == theDatetime:
                 return hour
@@ -186,8 +194,12 @@ class Forecast:
                             hour.precip = pVal
                         elif pName == 'temperature':
                             hour.temp = pVal
-                        else:  # 'wind-speed'
+                        elif pName == 'wind-speed':
                             hour.wind = pVal
+                        elif pName == 'cloud-amount':
+                            hour.clouds = pVal
+                        else:
+                            raise ValueError('invalid parameter name: {} for value {}'.format(pName, pVal))
 
         # 3) fill in missing data by projecting forward the most recently set value. note that the first item will
         # likely have missing values because there are no older items to project from
