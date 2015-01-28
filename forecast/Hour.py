@@ -64,11 +64,12 @@ class Hour():
             return str(self)
         else:
             desirabilityToChar = {Hour.P_DES_HIGH: 'H', Hour.P_DES_MED: 'M', Hour.P_DES_LOW: 'L', }
-            return '{} | {}% ({}), {}°F ({}), {} MPH ({})'.format(
+            return '{} | P:{}% ({}), T:{}°F ({}), W:{} MPH ({}), C:{}% ({})'.format(
                 self.datetime.strftime('%a %m/%d %H:%M') if self.datetime else "time?",
                 self.precip, desirabilityToChar[self.paramDesirabilityForValue('precip', self.precip)],
                 self.temp, desirabilityToChar[self.paramDesirabilityForValue('temp', self.temp)],
-                self.wind, desirabilityToChar[self.paramDesirabilityForValue('wind', self.wind)])
+                self.wind, desirabilityToChar[self.paramDesirabilityForValue('wind', self.wind)],
+                self.wind, desirabilityToChar[self.cloudinessDesirability()])
 
 
     def cssClassForDesirability(self):
@@ -97,21 +98,19 @@ class Hour():
         :return: list of three Weather Icons 'specific icon class' strings, one each for precip, temp, and wind
         respectively, or None if no applicable. 
         """
-        # Precip: P_DES_LOW: <i class="wi wi-rain"></i>, P_DES_MED: <i class="wi wi-showers"></i><br>
-        # Temp: P_DES_LOW: <i class="wi wi-thermometer-exterior"></i>, P_DES_MED: <i class="wi wi-thermometer"></i><br>
-        # Wind: P_DES_LOW: <i class="wi wi-cloudy-gusts"></i>, P_DES_MED: <i class="wi wi-cloudy-windy"></i><br>
-
         desirability = self.desirability()
-        chars = [None, None, None]
+        chars = [None, None, None]  # precip, temp, wind
         if self.isMissingHour() or desirability == Hour.H_DES_HIGH or desirability == Hour.H_DES_MED_HIGH:
             return chars
 
-        # add precip
+        # add precip or clouds
         precipDes = self.paramDesirabilityForValue('precip', self.precip)
         if precipDes == Hour.P_DES_LOW:
             chars[0] = 'wi-rain'
         elif precipDes == Hour.P_DES_MED:
             chars[0] = 'wi-showers'
+        elif self.cloudinessDesirability() == Hour.P_DES_LOW:   # add a cloud icon if it's cloudy and no other cloud-containing icons are present due to precip
+            chars[0] = 'wi-cloudy'
 
         # add temp
         tempDes = self.paramDesirabilityForValue('temp', self.temp)
@@ -216,4 +215,4 @@ class Hour():
         :return: Hard-coded desirability of my clouds, but only two P_* values as opposed to three in
         Hour.paramDesirabilityForValue(): one of P_DES_LOW, P_DES_HIGH
         """
-        return Hour.P_DES_LOW if self.clouds <= 50 else Hour.P_DES_HIGH
+        return Hour.P_DES_HIGH if self.clouds <= 50 else Hour.P_DES_LOW
