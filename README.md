@@ -7,20 +7,12 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- v add darker css color classes to ff0000.css: .Poor_cloudy, .Fair_cloudy, etc.
-- v add cloud-amount data from API (TDD)
-- v add Hour.clouds for ""
-- v leave unchanged: Hour.hourDesirabilityForParamDesCounts()
-- v def Hour.cloudinessDesirability() -> P_DES_LOW or P_DES_HIGH (only two ratings)
-- v change to use cloudiness level: forecast.html (DEC: not forecast-list): selects correct css color
-  (e.g., .Poor/.Poor_cloudy, .Fair/.Fair_cloudy, etc.)
-- change color-key.html to include cloudy too
-- rename ff0000.class to hour-palette.css
-
-- remove palette selection feature ;-)
+- TBD
 
 
 # Bugs
+- ! my customized settings no longer stay stored anymore, and this wasn't happening a few days ago. Every time I go the site, the settings are reset back to default again no matter if I access the site on my desktop or iPad.
+
 - ~ clean up forecast TABLE HTML?
 
 - cookies: use secure?
@@ -37,7 +29,7 @@ the hourly analysis-to-color algorithm.
 # Feature Requests: Active
 
 ## Essential
-- >> add Sky Cover. have to re-think Hour.hourDesirabilityForParamDesCounts()
+- ? remove palette selection feature -> ff0000.class to hour-palette.css
 
 - daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark

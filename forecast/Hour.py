@@ -87,8 +87,8 @@ class Hour():
                                  'Okay': 'Okay_cloudy',
                                  'Great': 'Great_cloudy'}
         cssClass = hourDesirabilityToClass[self.desirability()]
-        if self.cloudinessDesirability() == Hour.P_DES_LOW:
-            cssClass = cssClassToCloudyClass[cssClass]
+        # if self.cloudinessDesirability() == Hour.P_DES_LOW:
+        #     cssClass = cssClassToCloudyClass[cssClass]
         return cssClass
 
 
