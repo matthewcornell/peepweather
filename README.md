@@ -28,8 +28,10 @@ the hourly analysis-to-color algorithm.
 
 ## Essential
 - daylight: factor in
-    - transparent, or somehow make "less visible" the hours when it's dark
-    - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make
+    - for nighttime hours, make hour number on left column gray
+    - add new setting for defining hours to show - start, end (inclusive). default: 8a-8p like current
+
+- show color and icon keys to the right, not below
 
 - modern appearance
     - mobile-friendly (responsive design)
