@@ -123,9 +123,9 @@ class Hour():
         # add wind
         windDes = self.paramDesirabilityForValue('wind', self.wind)
         if windDes == Hour.P_DES_LOW:
-            chars[2] = 'wi-cloudy-gusts'
+            chars[2] = 'wi-strong-wind'
         elif windDes == Hour.P_DES_MED:
-            chars[2] = 'wi-cloudy-windy'
+            chars[2] = 'wi-windy'
 
         return chars
 

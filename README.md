@@ -13,17 +13,19 @@ the hourly analysis-to-color algorithm.
 # Bugs
 - ! my customized settings no longer stay stored anymore, and this wasn't happening a few days ago. Every time I go the site, the settings are reset back to default again no matter if I access the site on my desktop or iPad.
 
-- ~ clean up forecast TABLE HTML?
-
 - cookies: use secure?
-
-- ~ todo: forecast.html: correct way to reserve width for three weather icons? 4em worked in Firefox but not Chrome, which wanted 5em
 
 - form validation:
     - /       : zipcode: not empty. five numbers. exists in zipcode file.
     - /       : lat/lon: not empty. lat/lon pattern
     - /ranges : param values: not empty. ints. sorted
     - /search : not empty
+
+- ~ clean up forecast TABLE HTML?
+
+- ~ todo: forecast.html: correct way to reserve width for three weather icons? 4em worked in Firefox but not Chrome, which wanted 5em
+
+- ~ update https://github.com/erikflowers/weather-icons/tree/master/css
 
 
 # Feature Requests: Active
