@@ -18,11 +18,11 @@ class Forecast:
     Computes a forecast based on a zip code using http://www.nws.noaa.gov/ndfd/technical.htm as a sequence of Hours.
     """
 
-    # default ranges (AKA a 'range dict'). see range-documentation.txt for detail. Note that clouds are handled
-    #  separately via Hour.cloudinessDesirability() because they do not factor into Hour.desirability()
+    # default ranges (AKA a 'range dict'). see range-documentation.txt for detail
     PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H-M-L
                                  'temp': [32, 41, 70, 85],  # L-M-H-M-L
                                  'wind': [8, 12],  # H-M-L
+                                 'clouds': [33, 66],  # H-M-L
     }
 
 

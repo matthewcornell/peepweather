@@ -7,7 +7,14 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- TBD
+- make clouds use rangeDict
+    - v add to PARAM_RANGE_STEPS_DEFAULT
+    - v TDD
+    - v make paramDesirabilityForValue() use it
+    - v make charIconsForParams() use it to return two different icons for range
+    - v color-key.html
+    - v range documentation
+    - add clouds editing support to form, including adding wind range to docs
 
 
 # Bugs

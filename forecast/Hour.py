@@ -48,9 +48,9 @@ class Hour():
         if self.isMissingHour():
             return '{} | no data'.format(self.datetime.strftime('%a %m/%d %H:%M'))
         else:
-            return '{} | {}%, {}°F, {} MPH'.format(
+            return '{} | {}%, {}°F, {} MPH, {}%'.format(
                 self.datetime.strftime('%a %m/%d %H:%M') if self.datetime else "time?", self.precip, self.temp,
-                self.wind)
+                self.wind, self.clouds)
 
 
     def isMissingHour(self):
@@ -69,7 +69,7 @@ class Hour():
                 self.precip, desirabilityToChar[self.paramDesirabilityForValue('precip', self.precip)],
                 self.temp, desirabilityToChar[self.paramDesirabilityForValue('temp', self.temp)],
                 self.wind, desirabilityToChar[self.paramDesirabilityForValue('wind', self.wind)],
-                self.wind, desirabilityToChar[self.cloudinessDesirability()])
+                self.clouds, desirabilityToChar[self.paramDesirabilityForValue('clouds', self.clouds)])
 
 
     def cssClassForDesirability(self):
@@ -83,13 +83,7 @@ class Hour():
                                    Hour.H_DES_MED_LOW: 'Fair',
                                    Hour.H_DES_MED_HIGH: 'Okay',
                                    Hour.H_DES_HIGH: 'Great'}
-        cssClassToCloudyClass = {'Poor': 'Poor_cloudy',
-                                 'Fair': 'Fair_cloudy',
-                                 'Okay': 'Okay_cloudy',
-                                 'Great': 'Great_cloudy'}
         cssClass = hourDesirabilityToClass[self.desirability()]
-        # if self.cloudinessDesirability() == Hour.P_DES_LOW:
-        #     cssClass = cssClassToCloudyClass[cssClass]
         return cssClass
 
 
@@ -100,7 +94,16 @@ class Hour():
         """
         desirability = self.desirability()
         chars = [None, None, None]  # precip, temp, wind
-        if self.isMissingHour() or desirability == Hour.H_DES_HIGH or desirability == Hour.H_DES_MED_HIGH:
+        
+        if self.isMissingHour():
+            return chars
+        
+        cloudsDes = self.paramDesirabilityForValue('clouds', self.clouds)
+        if desirability == Hour.H_DES_HIGH or desirability == Hour.H_DES_MED_HIGH:
+            if cloudsDes == Hour.P_DES_LOW:
+                chars[0] = 'wi-cloudy'  # double clouds
+            elif cloudsDes == Hour.P_DES_MED:
+                chars[0] = 'wi-cloud'   # single cloud
             return chars
 
         # add precip or clouds
@@ -109,8 +112,10 @@ class Hour():
             chars[0] = 'wi-rain'
         elif precipDes == Hour.P_DES_MED:
             chars[0] = 'wi-showers'
-        elif self.cloudinessDesirability() == Hour.P_DES_LOW:   # add a cloud icon if it's cloudy and no other cloud-containing icons are present due to precip
-            chars[0] = 'wi-cloudy'
+        elif cloudsDes == Hour.P_DES_LOW:   # add a cloud icon if it's cloudy and no other cloud-containing icons are present due to precip
+            chars[0] = 'wi-cloudy'  # double clouds
+        elif cloudsDes == Hour.P_DES_MED:
+            chars[0] = 'wi-cloud'   # single cloud
 
         # add temp
         tempDes = self.paramDesirabilityForValue('temp', self.temp)
@@ -134,7 +139,7 @@ class Hour():
     def desirability(self):
         """
         :return: overall desirability based on my parameters. one of H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH
-        returns None if this is a missing hour.
+        returns None if this is a missing hour. NB: Does not factor in cloudiness.
         """
         if self.isMissingHour():
             return None
@@ -186,7 +191,7 @@ class Hour():
         """
         Gives a rating for a particular parameter value using the current ranges.
 
-        :param paramName: one of ['precip', 'temp', 'wind']. NB: *not* clouds
+        :param paramName: one of ['precip', 'temp', 'wind', 'clouds]
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
@@ -208,11 +213,3 @@ class Hour():
                 return Hour.P_DES_HIGH
             else:
                 return Hour.P_DES_MED
-
-
-    def cloudinessDesirability(self):
-        """
-        :return: Hard-coded desirability of my clouds, but only two P_* values as opposed to three in
-        Hour.paramDesirabilityForValue(): one of P_DES_LOW, P_DES_HIGH
-        """
-        return Hour.P_DES_HIGH if self.clouds <= 50 else Hour.P_DES_LOW
