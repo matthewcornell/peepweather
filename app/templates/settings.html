@@ -4,7 +4,7 @@
 {% block content %}
 
     <h2>Color Pallete</h2>
-    
+
     Choose a palette for the squares:
     <form method="POST" action="{{ url_for('do_palette_submit') }}">
         <label>
@@ -36,12 +36,12 @@
     <p>This page lets you view and edit the weather parameter ranges that combine to determine how each hour is
         rated. They are saved as cookies. To clear them, use the Reset to Defaults button below.</p>
 
-    <p>The condensed summary is that percent of precipitation and wind speed are broken into three Low, Medium, and High
-        ranges that are identified by two numbers called "v1" and "v2" which mark out the Medium range. Anything below
-        v1 is High desirability and anything above v2 is Low desirability. Temperature is identified by four numbers,
-        v1 through v4, that delineate a "hat" shape where anything below v1 or above v4 is Low desirability, v1-to-v2
-        and v3-to-v4 are Medium, and v2-to-v3 is the High sweet spot. The edit areas below let you view and change all
-        these values.</p>
+    <p>The condensed summary is that percent of precipitation, wind speed, and cloud cover are broken into three Low, Medium,
+    and High ranges that are identified by two numbers called "v1" and "v2" which mark out the Medium range. Anything below
+    v1 is High desirability and anything above v2 is Low desirability. Temperature is identified by four numbers, v1 through
+    v4, that delineate a "hat" shape where anything below v1 or above v4 is Low desirability, v1-to-v2 and v3-to-v4 are
+    Medium, and v2-to-v3 is the High sweet spot. The edit areas below let you view and change all these values.
+    </p>
 
     <p>At the bottom of this page is the detailed explanation.</p>
 
@@ -61,6 +61,13 @@
         <br>
         <label for='precip_v2_text'>Precip v2: </label>
         <input id='precip_v2_text' type='text' name='precip_v2_value'>
+        <br>
+        <br>
+        <label for='cloud_v1_text'>cloud v1: </label>
+        <input id='cloud_v1_text' type='text' name='cloud_v1_value'>
+        <br>
+        <label for='cloud_v2_text'>cloud v2: </label>
+        <input id='cloud_v2_text' type='text' name='cloud_v2_value'>
         <br>
         <br>
         <label for='temp_v1_text'>Temp v1: </label>
@@ -87,10 +94,13 @@
             var precipVals = {{ precipVals }};
             var tempVals = {{ tempVals }};
             var windVals = {{ windVals }};
+            var cloudVals = {{ cloudVals }};
             document.getElementById('wind_v1_text').value = windVals[0];
             document.getElementById('wind_v2_text').value = windVals[1];
             document.getElementById('precip_v1_text').value = precipVals[0];
             document.getElementById('precip_v2_text').value = precipVals[1];
+            document.getElementById('cloud_v1_text').value = cloudVals[0];
+            document.getElementById('cloud_v2_text').value = cloudVals[1];
             document.getElementById('temp_v1_text').value = tempVals[0];
             document.getElementById('temp_v2_text').value = tempVals[1];
             document.getElementById('temp_v3_text').value = tempVals[2];
@@ -101,12 +111,11 @@
 
 
     <h2>Color calculation details</h2>
-    Each hour's color is chosen in three steps: First, each weather parameter (percent of precipitation, temperature,
-    and
-    wind speed) is assessed individually to get one of three desirability ratings - Low, Medium, and High - based on a
-    simple formula. Second, those three ratings are combined to get one of four overall desirability ratings for the
-    hour - Poor, Fair, Okay, and Great. Finally, the overall desirability rating is mapped to a color, such as:
-    Great = green, Okay = yellow, Fair = Orange, and Poor = red.
+    Each hour's color is chosen in three steps: First, each weather parameter (percent of precipitation, temperature, and
+    wind speed - but *not* cloud cover) is assessed individually to get one of three desirability ratings - Low, Medium, and
+    High - based on a simple formula. Second, those three ratings are combined to get one of four overall desirability
+    ratings for the hour - Poor, Fair, Okay, and Great. Finally, the overall desirability rating is mapped to a color, such
+    as: Great = green, Okay = yellow, Fair = Orange, and Poor = red.
 
     This means there are two types of functions ( http://en.wikipedia.org/wiki/Function_%28mathematics%29 ) involved:
     One
@@ -116,13 +125,12 @@
 
 
     <h3>Parameter Function</h3>
-    On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, or wind speed)
-    into
-    ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH then consider that
-    desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher than 10 MPH
+    On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, wind speed, or cloud
+    cover) into ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH then consider
+    that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher than 10 MPH
     then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to 10% might be High
-    desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially three step
-    ranges, graphically shown as:
+    desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially three step ranges,
+    graphically shown as:
 
     <pre>
 H +--+

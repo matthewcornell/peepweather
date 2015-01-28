@@ -7,14 +7,7 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- make clouds use rangeDict
-    - v add to PARAM_RANGE_STEPS_DEFAULT
-    - v TDD
-    - v make paramDesirabilityForValue() use it
-    - v make charIconsForParams() use it to return two different icons for range
-    - v color-key.html
-    - v range documentation
-    - add clouds editing support to form, including adding wind range to docs
+- ? remove palette selection feature -> ff0000.class to hour-palette.css
 
 
 # Bugs
@@ -38,8 +31,6 @@ the hourly analysis-to-color algorithm.
 # Feature Requests: Active
 
 ## Essential
-- ? remove palette selection feature -> ff0000.class to hour-palette.css
-
 - daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark
     - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make

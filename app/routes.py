@@ -21,12 +21,8 @@ def index():
 def showForecast(zipOrLatLon):
     """
     :param zipOrLatLon: location to get the forecast for. either a zip code string or a comma-separated list of
-    latitude and longitude strings. ex: '01002' or '42.375370,-72.519249'
-    Query parameters: Three comma-separated lists of integers, as returned by Forecast.urlQueryParamsForDefaultRanges().
-    All three are always required for a forecast: precip_steps, temp_steps, wind_steps.
-    
+    latitude and longitude strings. ex: '01002' or '42.375370,-72.519249'.
     URL query parameters: Accepts one: ?list=true , which shows a debugging output
-    
     :return:
     """
     try:
@@ -62,7 +58,8 @@ def editSettings():
                            useAlternatePalette=useAlternatePalette,
                            precipVals=rangesDict['precip'],
                            tempVals=rangesDict['temp'],
-                           windVals=rangesDict['wind'])
+                           windVals=rangesDict['wind'],
+                           cloudVals=rangesDict['clouds'])
 
 
 @app.route('/search/<query>')
@@ -112,13 +109,17 @@ def rangesDictFromEditFormValues():
     wind_v2_value = request.values.get('wind_v2_value')
     precip_v1_value = request.values.get('precip_v1_value')
     precip_v2_value = request.values.get('precip_v2_value')
+    cloud_v1_value = request.values.get('cloud_v1_value')
+    cloud_v2_value = request.values.get('cloud_v2_value')
     temp_v1_value = request.values.get('temp_v1_value')
     temp_v2_value = request.values.get('temp_v2_value')
     temp_v3_value = request.values.get('temp_v3_value')
     temp_v4_value = request.values.get('temp_v4_value')
     rangesDict = {'precip': list(map(int, [precip_v1_value, precip_v2_value])),
                   'temp': list(map(int, [temp_v1_value, temp_v2_value, temp_v3_value, temp_v4_value])),
-                  'wind': list(map(int, [wind_v1_value, wind_v2_value]))}
+                  'wind': list(map(int, [wind_v1_value, wind_v2_value])),
+                  'clouds': list(map(int, [cloud_v1_value, cloud_v2_value])),
+                  }
     return rangesDict
 
 
