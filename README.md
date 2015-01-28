@@ -27,8 +27,6 @@ the hourly analysis-to-color algorithm.
 # Feature Requests: Active
 
 ## Essential
-- cookies: use secure?
-
 - daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark
     - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make
@@ -36,7 +34,7 @@ the hourly analysis-to-color algorithm.
 - modern appearance
     - mobile-friendly (responsive design)
 
-- ~ editable parameter weights for combined importance to the final rating
+- cookies: use secure?
 
 
 ## Money to fund hosting?
@@ -51,7 +49,9 @@ the hourly analysis-to-color algorithm.
   http://www.modelaircraft.org/clubsearch.aspx
   python screen scraper - http://www.crummy.com/software/BeautifulSoup/
 
-- click a square to show details
+- ~ click a square to show details
+
+- ~ editable parameter weights for combined importance to the final rating
 
 - international. I don't know the details myself, but drop Benny Wydooghe a line on google+, or in the Meteogram Widget
   group on google+. He's the developer of the widget I posted a screenshot of earlier, and has a great international
