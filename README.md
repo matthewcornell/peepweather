@@ -11,10 +11,6 @@ the hourly analysis-to-color algorithm.
 
 
 # Bugs
-- ! my customized settings no longer stay stored anymore, and this wasn't happening a few days ago. Every time I go the site, the settings are reset back to default again no matter if I access the site on my desktop or iPad.
-
-- cookies: use secure?
-
 - form validation:
     - /       : zipcode: not empty. five numbers. exists in zipcode file.
     - /       : lat/lon: not empty. lat/lon pattern
@@ -31,6 +27,8 @@ the hourly analysis-to-color algorithm.
 # Feature Requests: Active
 
 ## Essential
+- cookies: use secure?
+
 - daylight: factor in
     - transparent, or somehow make "less visible" the hours when it's dark
     - show the sunset and sunrise times. smarter daylight calculation (don't show if dusk or night). Perhaps grey-out, make
@@ -38,7 +36,7 @@ the hourly analysis-to-color algorithm.
 - modern appearance
     - mobile-friendly (responsive design)
 
-- editable parameter weights for combined importance to the final rating
+- ~ editable parameter weights for combined importance to the final rating
 
 
 ## Money to fund hosting?
