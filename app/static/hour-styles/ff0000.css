@@ -1,33 +1,19 @@
-.Poor {
-    background-color: #ff0000;
-}
+/* http://clrs.cc/ */
 
-.Poor_cloudy {
-    background-color: #b30000;
+.Poor {
+    background-color: #ff4136;
 }
 
 .Fair {
-    background-color: #ffaa00;
-}
-
-.Fair_cloudy {
-    background-color: #b37700;
+    background-color: #ff851b;
 }
 
 .Okay {
-    background-color: #d5ff00;
-}
-
-.Okay_cloudy {
-    background-color: #95b300;
+    background-color: #ffdc00;
 }
 
 .Great {
-    background-color: #00ff00;
-}
-
-.Great_cloudy {
-    background-color: #00b300;
+    background-color: #2ecc40;
 }
 
 .Missing {

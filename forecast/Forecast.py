@@ -97,12 +97,33 @@ class Forecast:
 
     def isDaylightHour(self, hour):
         """
-        :return: True if hour is a daylight hour, and False o/w
+        :return: True if hour daytime according to my latLon, and False o/w
         """
+        pass
+
+
+    @classmethod
+    def isDaylightDatetime(cls, latLon, dt):
+        """
+        :param latLon: 2-tuple of strings
+        :param dt: a Python datetime containing timezone information as returned by Forecast.parseStartValidTime()
+        :return: True if dt is daytime according to my latLon, and False o/w
+        """
+        if not dt.tzinfo:
+            raise ValueError("datetime has no tzinfo: {!r}".format(dt)) # 'naive' datetime
+        
         observer = ephem.Observer()
-        observer.lat = self.latLon[0]
-        observer.lon = self.latLon[1]
-        observer.date = hour.datetime
+        observer.lat = latLon[0]
+        observer.lon = latLon[1]
+        
+        # now set observer.date. Note: because forecast times are local to the lat/lon (<time-layout time-coordinate="local" ...">),
+        # and because ephem requires all dates in UTC and does not honor time zones, we need to covert to UTC. do so by
+        # adding the # hours represented by the included datetime timezone
+        tzd = dt.tzinfo.utcoffset(None)
+        e = ephem.Date(dt)
+        tzUtcOffsetHours = (tzd.days * 24) + (tzd.seconds / (60 * 60))
+        eMinusTzdHours = e - (tzUtcOffsetHours * ephem.hour)  # 42017.25 Q: intuition behind subtracting?
+        observer.date = ephem.Date(eMinusTzdHours)
 
         sun = ephem.Sun()
         sun.compute(observer)
@@ -246,13 +267,19 @@ class Forecast:
             layoutKey = timeLayoutEle.find('layout-key')
             startValidTimes = []
             for startValidTimeEle in timeLayoutEle.findall('start-valid-time'):
-                # e.g., <start-valid-time>2015-01-13T07:00:00-05:00</start-valid-time>. NB: that format is ISO 8601
-                # EXCEPT for the ':' in the final time zone section (e.g., '-05:00'), so we remove it before parsing
-                startValidTimeTrim = startValidTimeEle.text[:-3] + startValidTimeEle.text[-2:]
-                dt = datetime.datetime.strptime(startValidTimeTrim, '%Y-%m-%dT%H:%M:%S%z')
+                dt = Forecast.parseStartValidTime(startValidTimeEle.text)                
                 startValidTimes.append(dt)
             timeLayoutDict[layoutKey.text] = startValidTimes
         return timeLayoutDict
+
+
+    @classmethod
+    def parseStartValidTime(cls, startValidTimeText):
+        # e.g., <start-valid-time>2015-01-13T07:00:00-05:00</start-valid-time>. NB: that format is ISO 8601
+        # EXCEPT for the ':' in the final time zone section (e.g., '-05:00'), so we remove it before parsing
+        startValidTimeText = startValidTimeText[:-3] + startValidTimeText[-2:]
+        dt = datetime.datetime.strptime(startValidTimeText, '%Y-%m-%dT%H:%M:%S%z')
+        return dt
 
 
     @classmethod

@@ -324,6 +324,102 @@ class MyTestCase(unittest.TestCase):
                 self.assertEqual(expRowCount, len(row))
 
 
+    def testIsDaylightInternal(self):
+        # bracket: before/after sunrise, eve: before/after sunset
+        latLonToStartValidTimesIsDaylight = {
+            # MA UTC/GMT -5 hours, EST
+            ("42.38", "-72.50"): [
+                ('2015-01-14T00:00:00-05:00', False),
+                ('2015-01-14T01:00:00-05:00', False),
+                ('2015-01-14T02:00:00-05:00', False),
+                ('2015-01-14T03:00:00-05:00', False),
+                ('2015-01-14T04:00:00-05:00', False),
+                ('2015-01-14T05:00:00-05:00', False),
+                ('2015-01-14T06:00:00-05:00', False),
+                ('2015-01-14T07:00:00-05:00', False),
+                ('2015-01-14T08:00:00-05:00', True),
+                ('2015-01-14T09:00:00-05:00', True),
+                ('2015-01-14T10:00:00-05:00', True),
+                ('2015-01-14T11:00:00-05:00', True),
+                ('2015-01-14T12:00:00-05:00', True),
+                ('2015-01-14T13:00:00-05:00', True),
+                ('2015-01-14T14:00:00-05:00', True),
+                ('2015-01-14T15:00:00-05:00', True),
+                ('2015-01-14T16:00:00-05:00', True),
+                ('2015-01-14T17:00:00-05:00', True),
+                ('2015-01-14T18:00:00-05:00', True),
+                ('2015-01-14T19:00:00-05:00', False),
+                ('2015-01-14T20:00:00-05:00', False),
+                ('2015-01-14T21:00:00-05:00', False),
+                ('2015-01-14T22:00:00-05:00', False),
+                ('2015-01-14T23:00:00-05:00', False),
+            ],
+            # CA UTC/GMT -8 hours, PST
+            ("32.74", "-117.10"): [
+                ('2015-01-31T00:00:00-08:00', False),
+                ('2015-01-31T01:00:00-08:00', False),
+                ('2015-01-31T02:00:00-08:00', False),
+                ('2015-01-31T03:00:00-08:00', False),
+                ('2015-01-31T04:00:00-08:00', False),
+                ('2015-01-31T08:00:00-08:00', False),
+                ('2015-01-31T06:00:00-08:00', False),
+                ('2015-01-31T07:00:00-08:00', False),
+                ('2015-01-31T08:00:00-08:00', True),
+                ('2015-01-31T09:00:00-08:00', True),
+                ('2015-01-31T10:00:00-08:00', True),
+                ('2015-01-31T11:00:00-08:00', True),
+                ('2015-01-31T12:00:00-08:00', True),
+                ('2015-01-31T13:00:00-08:00', True),
+                ('2015-01-31T14:00:00-08:00', True),
+                ('2015-01-31T15:00:00-08:00', True),
+                ('2015-01-31T16:00:00-08:00', True),
+                ('2015-01-31T17:00:00-08:00', True),
+                ('2015-01-31T18:00:00-08:00', True),
+                ('2015-01-31T19:00:00-08:00', False),
+                ('2015-01-31T20:00:00-08:00', False),
+                ('2015-01-31T21:00:00-08:00', False),
+                ('2015-01-31T22:00:00-08:00', False),
+                ('2015-01-31T23:00:00-08:00', False),
+            ],
+            # HI UTC/GMT -10 hours, HAST
+            ("20.09", "-155.52"): [
+                ('2015-02-02T00:00:00-10:00', False),
+                ('2015-02-02T01:00:00-10:00', False),
+                ('2015-02-02T02:00:00-10:00', False),
+                ('2015-02-02T03:00:00-10:00', False),
+                ('2015-02-02T04:00:00-10:00', False),
+                ('2015-02-02T10:00:00-10:00', False),
+                ('2015-02-02T06:00:00-10:00', False),
+                ('2015-02-02T07:00:00-10:00', False),
+                ('2015-02-02T08:00:00-10:00', True),
+                ('2015-02-02T09:00:00-10:00', True),
+                ('2015-02-02T10:00:00-10:00', True),
+                ('2015-02-02T11:00:00-10:00', True),
+                ('2015-02-02T12:00:00-10:00', True),
+                ('2015-02-02T13:00:00-10:00', True),
+                ('2015-02-02T14:00:00-10:00', True),
+                ('2015-02-02T15:00:00-10:00', True),
+                ('2015-02-02T16:00:00-10:00', True),
+                ('2015-02-02T17:00:00-10:00', True),
+                ('2015-02-02T18:00:00-10:00', True),
+                ('2015-02-02T19:00:00-10:00', False),
+                ('2015-02-02T20:00:00-10:00', False),
+                ('2015-02-02T21:00:00-10:00', False),
+                ('2015-02-02T22:00:00-10:00', False),
+                ('2015-02-02T23:00:00-10:00', False),
+            ],
+        }
+        for latLon, startValidTimesIsDaylight in latLonToStartValidTimesIsDaylight.items():
+            for startValidTimeText, expIsDaylight in startValidTimesIsDaylight:
+                dt = Forecast.parseStartValidTime(startValidTimeText)
+                isDaylight = Forecast.isDaylightDatetime(latLon, dt)
+                print('yy', latLon, startValidTimeText, '-', dt, expIsDaylight, isDaylight)
+                self.assertEqual(expIsDaylight, isDaylight)
+            
+        with self.assertRaisesRegex(ValueError, "datetime has no tzinfo"):
+            Forecast.isDaylightDatetime(None, datetime.datetime.now())
+
+
     def testIsDaylight(self):
         isDaylightList = [True, True, False, False, False, False, False, False, False, False, False, False, False, True,
                           True, True, True, True, True, True, True, True, True, True, True, True, False, False, False,
@@ -344,8 +440,7 @@ class MyTestCase(unittest.TestCase):
             expIsDaylight = isDaylightList[index]
             isDaylight = forecast.isDaylightHour(hour)
             print('  ', repr(hour.datetime), expIsDaylight, isDaylight)
-            # self.assertEqual(expIsDaylight, isDaylight)
-        self.fail()
+            self.assertEqual(expIsDaylight, isDaylight)
 
 
     def testHourDesirabilities(self):
