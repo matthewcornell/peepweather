@@ -336,7 +336,7 @@ class MyTestCase(unittest.TestCase):
                 ('2015-01-14T04:00:00-05:00', False),
                 ('2015-01-14T05:00:00-05:00', False),
                 ('2015-01-14T06:00:00-05:00', False),
-                ('2015-01-14T07:00:00-05:00', False),
+                ('2015-01-14T07:00:00-05:00', True),
                 ('2015-01-14T08:00:00-05:00', True),
                 ('2015-01-14T09:00:00-05:00', True),
                 ('2015-01-14T10:00:00-05:00', True),
@@ -347,7 +347,7 @@ class MyTestCase(unittest.TestCase):
                 ('2015-01-14T15:00:00-05:00', True),
                 ('2015-01-14T16:00:00-05:00', True),
                 ('2015-01-14T17:00:00-05:00', True),
-                ('2015-01-14T18:00:00-05:00', True),
+                ('2015-01-14T18:00:00-05:00', False),
                 ('2015-01-14T19:00:00-05:00', False),
                 ('2015-01-14T20:00:00-05:00', False),
                 ('2015-01-14T21:00:00-05:00', False),
@@ -361,9 +361,9 @@ class MyTestCase(unittest.TestCase):
                 ('2015-01-31T02:00:00-08:00', False),
                 ('2015-01-31T03:00:00-08:00', False),
                 ('2015-01-31T04:00:00-08:00', False),
-                ('2015-01-31T08:00:00-08:00', False),
-                ('2015-01-31T06:00:00-08:00', False),
-                ('2015-01-31T07:00:00-08:00', False),
+                ('2015-01-31T05:00:00-08:00', False),
+                ('2015-01-31T06:00:00-08:00', True),
+                ('2015-01-31T07:00:00-08:00', True),
                 ('2015-01-31T08:00:00-08:00', True),
                 ('2015-01-31T09:00:00-08:00', True),
                 ('2015-01-31T10:00:00-08:00', True),
@@ -388,9 +388,9 @@ class MyTestCase(unittest.TestCase):
                 ('2015-02-02T02:00:00-10:00', False),
                 ('2015-02-02T03:00:00-10:00', False),
                 ('2015-02-02T04:00:00-10:00', False),
-                ('2015-02-02T10:00:00-10:00', False),
+                ('2015-02-02T05:00:00-10:00', False),
                 ('2015-02-02T06:00:00-10:00', False),
-                ('2015-02-02T07:00:00-10:00', False),
+                ('2015-02-02T07:00:00-10:00', True),
                 ('2015-02-02T08:00:00-10:00', True),
                 ('2015-02-02T09:00:00-10:00', True),
                 ('2015-02-02T10:00:00-10:00', True),
@@ -402,7 +402,7 @@ class MyTestCase(unittest.TestCase):
                 ('2015-02-02T16:00:00-10:00', True),
                 ('2015-02-02T17:00:00-10:00', True),
                 ('2015-02-02T18:00:00-10:00', True),
-                ('2015-02-02T19:00:00-10:00', False),
+                ('2015-02-02T19:00:00-10:00', True),
                 ('2015-02-02T20:00:00-10:00', False),
                 ('2015-02-02T21:00:00-10:00', False),
                 ('2015-02-02T22:00:00-10:00', False),
@@ -413,7 +413,6 @@ class MyTestCase(unittest.TestCase):
             for startValidTimeText, expIsDaylight in startValidTimesIsDaylight:
                 dt = Forecast.parseStartValidTime(startValidTimeText)
                 isDaylight = Forecast.isDaylightDatetime(latLon, dt)
-                print('yy', latLon, startValidTimeText, '-', dt, expIsDaylight, isDaylight)
                 self.assertEqual(expIsDaylight, isDaylight)
             
         with self.assertRaisesRegex(ValueError, "datetime has no tzinfo"):
