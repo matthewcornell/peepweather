@@ -325,9 +325,27 @@ class MyTestCase(unittest.TestCase):
 
 
     def testIsDaylight(self):
-        for hour in range(24):
-            expIsDaylight = 7 < hour < 21
-            self.assertEqual(expIsDaylight, Forecast.isDaylightHour(hour))
+        isDaylightList = [True, True, False, False, False, False, False, False, False, False, False, False, False, True,
+                          True, True, True, True, True, True, True, True, True, True, True, True, False, False, False,
+                          False, False, False, False, False, False, False, False, True, True, True, True, True, True,
+                          True, True, True, True, True, True, True, False, False, False, False, False, False, False,
+                          False, False, False, False, True, True, True, True, True, True, True, True, True, True, True,
+                          True, True, False, False, False, False, False, False, False, False, False, False, False, True,
+                          True, True, True, True, True, True, True, True, True, True, True, True, False, False, False,
+                          False, False, False, False, False, False, False, False, True, True, True, True, True, True,
+                          True, True, True, True, True, True, True, False, False, False, False, False, False, False,
+                          False, False, False, False, True, True, True, True, True, True, True, True, True, True, True,
+                          True, True, False, False, False, False, False, False, False, False, False, False, False, True,
+                          True, True, True, True, True, True, True, True, True, True, True]
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        forecast = Forecast('01002', elementTree=elementTree)
+        print('xx', forecast.latLon)
+        for index, hour in enumerate(forecast.hours):
+            expIsDaylight = isDaylightList[index]
+            isDaylight = forecast.isDaylightHour(hour)
+            print('  ', repr(hour.datetime), expIsDaylight, isDaylight)
+            # self.assertEqual(expIsDaylight, isDaylight)
+        self.fail()
 
 
     def testHourDesirabilities(self):

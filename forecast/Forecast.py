@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 import re
 import logging
 
+import ephem
+
 from forecast.Hour import Hour
 from forecast import CACHED_ZIP_INFO_TUPLES
 
@@ -91,6 +93,22 @@ class Forecast:
               '&sky=sky' \
               '&Submit=Submit'.format(lat=self.latLon[0], lon=self.latLon[1])
         return url
+
+
+    def isDaylightHour(self, hour):
+        """
+        :return: True if hour is a daylight hour, and False o/w
+        """
+        observer = ephem.Observer()
+        observer.lat = self.latLon[0]
+        observer.lon = self.latLon[1]
+        observer.date = hour.datetime
+
+        sun = ephem.Sun()
+        sun.compute(observer)
+        twilight = -12 * ephem.degree
+        isDaylight = sun.alt > twilight
+        return isDaylight
 
 
     # ==== zipcode utilities ====
@@ -341,11 +359,3 @@ class Forecast:
                 hourRow.append(hour)
             calendarRows.append(hourRow)
         return calendarRows
-
-
-    @staticmethod
-    def isDaylightHour(hour):
-        """
-        :return: True if hour is a daylight hour. todo: this is a very rough initial hack to limit hours shown. doesn't handle timezone, ...
-        """
-        return 7 < hour < 21
