@@ -5,8 +5,7 @@
 {% block content %}
 
     <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
-
-    {% include 'pallete-select.html' %}
+    <link rel='stylesheet' href='{{ url_for('static', filename='hour-colors.css') }}'>
 
     <h2>Forecast for {{ forecast.location() }} </h2>
 

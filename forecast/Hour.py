@@ -74,7 +74,7 @@ class Hour():
 
     def cssClassForDesirability(self):
         """
-        :return: a css class from static/hour-styles/ff0000.css, factoring in my clouds
+        :return: a css class from /static/hour-colors.css, factoring in my clouds
         """
         if self.isMissingHour():
             return 'Missing'

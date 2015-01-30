@@ -9,7 +9,6 @@ from app import app
 # ==== routes ====
 
 RANGES_COOKIE_NAME = 'parameter_ranges'
-PALETTE_COOKIE_NAME = 'palette'
 
 
 @app.route('/')
@@ -37,25 +36,22 @@ def showForecast(zipOrLatLon):
             rangeDict = json.loads(rangesDictJson)
 
         forecast = Forecast(zipOrLatLonList, rangeDict)
-        useAlternatePalette = request.cookies.get(PALETTE_COOKIE_NAME)
         if request.values.get('list'):
-            return render_template("forecast-list.html", forecast=forecast, useAlternatePalette=useAlternatePalette)
+            return render_template("forecast-list.html", forecast=forecast)
         else:
-            return render_template("forecast.html", forecast=forecast, useAlternatePalette=useAlternatePalette)
+            return render_template("forecast.html", forecast=forecast)
     except ValueError as ve:
         return render_template("forecast-error.html", error=ve.args[0])
 
 
 @app.route('/settings')
 def editSettings():
-    useAlternatePalette = request.cookies.get(PALETTE_COOKIE_NAME)
     rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
     if rangesDictJson:
         rangesDict = json.loads(rangesDictJson)
     else:
         rangesDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
     return render_template("settings.html",
-                           useAlternatePalette=useAlternatePalette,
                            precipVals=rangesDict['precip'],
                            tempVals=rangesDict['temp'],
                            windVals=rangesDict['wind'],
@@ -127,16 +123,3 @@ def rangesDictFromEditFormValues():
 def do_zip_search_submit():
     queryVal = request.values.get('query_form_value', None)
     return redirect(url_for('searchForZip', query=queryVal))
-
-
-@app.route('/palette_submit', methods=['POST'])
-def do_palette_submit():
-    palette = request.values.get('palette_selection', None)
-    if palette == 'brown_hues':
-        response = make_response(redirect(url_for('editSettings')))
-        response.set_cookie(PALETTE_COOKIE_NAME, 'true')
-        return response  # todo flash saved and stay on page
-    else: # default - 'green_yellow_red'
-        response = make_response(redirect(url_for('editSettings')))
-        response.set_cookie(PALETTE_COOKIE_NAME, expires=0)
-        return response  # todo flash reset and stay on page

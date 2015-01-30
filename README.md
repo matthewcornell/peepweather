@@ -7,7 +7,7 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- ? remove palette selection feature -> ff0000.class to hour-palette.css
+- TBD
 
 
 # Bugs
