@@ -17,6 +17,12 @@ the hourly analysis-to-color algorithm.
     - /ranges : param values: not empty. ints. sorted
     - /search : not empty
 
+- ? sunrise/set off by an hour? current: twilight = -12 * ephem.degree
+  http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
+  http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
+  http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
+  fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
+
 - ~ clean up forecast TABLE HTML?
 
 - ~ todo: forecast.html: correct way to reserve width for three weather icons? 4em worked in Firefox but not Chrome, which wanted 5em
