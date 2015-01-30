@@ -307,15 +307,8 @@ class Forecast:
 
     # ==== calendar layout methods ====
 
-
-    def isDaylightHourOfDayRowIdx(self, hourOfDay):
-        """
-        :param hourOfDay: 0 through 23. indexes into hoursAsCalendarRows()
-        :return: True if the hour indexed by hourOfDay is daytime according to my latLon, and False o/w
-        """
-        hourOfDayRows = self.hoursAsCalendarRows()
-        hour0 = hourOfDayRows[hourOfDay][0]
-        return Forecast.isDaylightDatetime(self.latLon, hour0.datetime)
+    def isDaylightHour(self, hour):
+        return Forecast.isDaylightDatetime(self.latLon, hour.datetime)
 
 
     def calendarHeaderRow(self):
