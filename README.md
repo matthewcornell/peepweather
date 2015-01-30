@@ -27,16 +27,13 @@ the hourly analysis-to-color algorithm.
 # Feature Requests: Active
 
 ## Essential
-- daylight: factor in
-    - for nighttime hours, make hour number on left column gray
-    - add new setting for defining hours to show - start, end (inclusive). default: 8a-8p like current
-
-- show color and icon keys to the right, not below
-
 - modern appearance
     - mobile-friendly (responsive design)
+    - show color and icon keys to the right, not below
 
-- cookies: use secure?
+- ? cookies: use secure?
+
+- ~ daylight: add new setting for defining hours to show - start, end (inclusive), rather than current hard-coded default: 8a-8p
 
 
 ## Money to fund hosting?

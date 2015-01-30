@@ -1,19 +1,19 @@
-/* http://clrs.cc/ */
+/* current stoplight */
 
 .Poor {
-    background-color: #ff4136;
+    background-color: #ff0000;
 }
 
 .Fair {
-    background-color: #ff851b;
+    background-color: #ffaa00;
 }
 
 .Okay {
-    background-color: #ffdc00;
+    background-color: #d5ff00;
 }
 
 .Great {
-    background-color: #2ecc40;
+    background-color: #00ff00;
 }
 
 .Missing {
