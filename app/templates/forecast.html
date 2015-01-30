@@ -29,7 +29,7 @@
 
         </tr>
         {% for hourOfDayRow in forecast.hoursAsCalendarRows() %}
-            {% if forecast.isDaylightHour(loop.index0) %}
+            {% if forecast.isDaylightHourOfDayRowIdx(loop.index0) %}
                 <tr>
                     <th style="background-color:white;">{{ forecast.rowHeadingForHour(loop.index0) }}</th>
                     {% for hour in hourOfDayRow %}

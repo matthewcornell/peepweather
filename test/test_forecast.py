@@ -419,29 +419,6 @@ class MyTestCase(unittest.TestCase):
             Forecast.isDaylightDatetime(None, datetime.datetime.now())
 
 
-    def testIsDaylight(self):
-        isDaylightList = [True, True, False, False, False, False, False, False, False, False, False, False, False, True,
-                          True, True, True, True, True, True, True, True, True, True, True, True, False, False, False,
-                          False, False, False, False, False, False, False, False, True, True, True, True, True, True,
-                          True, True, True, True, True, True, True, False, False, False, False, False, False, False,
-                          False, False, False, False, True, True, True, True, True, True, True, True, True, True, True,
-                          True, True, False, False, False, False, False, False, False, False, False, False, False, True,
-                          True, True, True, True, True, True, True, True, True, True, True, True, False, False, False,
-                          False, False, False, False, False, False, False, False, True, True, True, True, True, True,
-                          True, True, True, True, True, True, True, False, False, False, False, False, False, False,
-                          False, False, False, False, True, True, True, True, True, True, True, True, True, True, True,
-                          True, True, False, False, False, False, False, False, False, False, False, False, False, True,
-                          True, True, True, True, True, True, True, True, True, True, True]
-        elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
-        print('xx', forecast.latLon)
-        for index, hour in enumerate(forecast.hours):
-            expIsDaylight = isDaylightList[index]
-            isDaylight = forecast.isDaylightHour(hour)
-            print('  ', repr(hour.datetime), expIsDaylight, isDaylight)
-            self.assertEqual(expIsDaylight, isDaylight)
-
-
     def testHourDesirabilities(self):
         # check individual parameter ratings
         expParamValRatings = {
