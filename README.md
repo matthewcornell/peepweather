@@ -7,8 +7,7 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- how it works
-- forecast list
+- ! table columns not fixed width in chrome and safari
 - see: todo integrate with bootstrap
 - zip/latlon input: remove spaces around comma
 - share icons
@@ -29,22 +28,11 @@ the hourly analysis-to-color algorithm.
   http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
   fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
-
-- ~ update https://github.com/erikflowers/weather-icons/tree/master/css
+- ? cookies: use secure?
 
 
 # Feature requests: Essential
-- modern appearance
-    - mobile-friendly (responsive design)
-    - show color and icon keys to the right, not below
-
-- geolocation :-). Here's how [Windalert](http://www.windalert.com/) does it:
-  1) home page asks location permission.
-  2) no permission: Just "Search for a location" button.
-  3) Yes permission: When available, adds a button xx.
-  City, Zip, Postal Code, Lat/Lon, Beach...
-
-- ? cookies: use secure?
+- geolocation :-)
 
 - ~ a checkbox controlling whether apparent or actual temp is used
 

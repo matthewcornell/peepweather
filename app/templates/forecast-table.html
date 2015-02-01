@@ -1,5 +1,5 @@
 <table class="table table-bordered">
-    <!-- todo background color needed? -->
+<!-- todo background color needed? -->
     <tr style="background-color:white;">
         {# first column blank for row/hour header #}
         <td></td>
@@ -15,7 +15,7 @@
         <tr>
             <th style="color:{{ rowHeadingColor }} ; background-color:white;">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
             {% for hour in hourOfDayRow %}
-                <td style="min-width:5em; color: black; font-family: monospace;"
+                <td style="min-width:3em; color: black; font-family: monospace;"
                     class="{{ hour.cssClassForDesirability() }}"
                     title="{{ hour.detailString() }}">
                     {% for wiClass in hour.charIconsForParams() %}

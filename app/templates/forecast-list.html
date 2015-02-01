@@ -8,13 +8,17 @@
     <link rel='stylesheet' href='{{ url_for('static', filename='hour-colors.css') }}'>
 
     <h2>Forecast for {{ forecast.location() }} </h2>
+    <div class="container">
+        <div class="row">
+            <span style="font-family: monospace">
+            {% for hour in forecast.hours %}
+                <span class="{{ hour.cssClassForDesirability() }}">&nbsp;</span> {{ hour.detailString() }}<br/>
+            {% endfor %}
+            </span>
+        </div>
+    </div>
 
-    <span style="font-family: monospace">
-    {% for hour in forecast.hours %}
-        <span class="{{ hour.cssClassForDesirability() }}">&nbsp;</span> {{ hour.detailString() }}<br/>
-    {% endfor %}
-    </span>
-
+    <!-- todo integrate with bootstrap -->
     {% include 'color-key.html' %}
 
 {% endblock %}
