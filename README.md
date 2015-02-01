@@ -7,8 +7,8 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- ! table columns not fixed width in chrome and safari
 - see: todo integrate with bootstrap
+- black lines between cells
 - zip/latlon input: remove spaces around comma
 - share icons
 - when done: geo!
