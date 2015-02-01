@@ -63,19 +63,17 @@ def searchForZip(query):
     return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))
 
 
+@app.route('/how-it-works')
+def showHowItWorks():
+    return render_template("how-it-works.html")
+
+
 # ==== forms ====
 
 @app.route('/submit_zip', methods=['POST'])
 def do_zip_submit():
-    zipVal = request.values.get('zip_form_value', None)
-    return redirect(url_for('showForecast', zipOrLatLon=zipVal))
-
-
-@app.route('/lat_lon_submit', methods=['POST'])
-def do_lat_lon_submit():
-    latVal = request.values.get('lat_form_value', None)
-    lonVal = request.values.get('lon_form_value', None)
-    return redirect(url_for('showForecast', zipOrLatLon=latVal + ',' + lonVal))
+    zipOrLatLon = request.values.get('zip_or_latlon_form_val', None)
+    return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
 
 
 @app.route('/edit_parameters_submit', methods=['POST'])
@@ -121,5 +119,5 @@ def rangesDictFromEditFormValues():
 
 @app.route('/zip_search_submit', methods=['POST'])
 def do_zip_search_submit():
-    queryVal = request.values.get('query_form_value', None)
+    queryVal = request.values.get('query_form_val', None)
     return redirect(url_for('searchForZip', query=queryVal))

@@ -7,7 +7,9 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- TBD
+- integrate bootstrap mockup
+- zip/latlon input: remove spaces around comma
+- ...
 
 
 # Bugs

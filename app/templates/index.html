@@ -4,61 +4,91 @@
 
 {% block content %}
 
-    <h2>Welcome to the RC Weather App!</h2>
+    <!-- upper half: action, screen shot, recent -->
+    <div class="container">
+        <div class="row">
+            <!-- left column: search -->
+            <div class="col-md-8">
+                <h1>In one glance, see how the flying looks for the upcoming week.</h1>
 
-    <p>
-        This is a proof-of-concept app that gives an "at a glance" view of the next seven days from the
-        perspective of an outdoor <a href="https://en.wikipedia.org/wiki/Radio-controlled_aircraft">radio control
-        aircraft</a> enthusiast.
-    </p>
+                <!-- todo enable once geolocation working -->
+                <div class="hidden">
+                    <form class="form-inline" action="{{ url_for('do_zip_submit') }}">
+                        <label class="h3 text-muted">Use your location:&nbsp;</label>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-crosshairs fa-lg"></i>
+                        </button>
 
-    <p>
-        <img src="{{ url_for('static', filename='EFLU4380_b0.jpg') }}" style="width:340px;" align="right">
-        Because the weather is a major factor, I thought showing a simple color-coded hourly
-        forecast would be useful. The table on this site has columns representing days of the week and has rows for
-        hours of the day. Each cell is an hour whose color is determined by a simple algorithm that takes into account
-        three forecast parameters: probability of precipitation, temperature, and wind speed. The forecast data is
-        currently US-only because it comes from the National Digital Forecast Database (NDFD)
-        <a href="http://graphical.weather.gov/xml/rest.php">REST Web Service</a>.
+                    </form>
+                    <p class="h4 text-muted"><em>&mdash; OR &mdash;</em></p>
 
-    </p>
+                </div>
 
-    <p>Feel free to <a href="http://www.matthewcornell.org/contact/">contact me</a> to ask questions or offer
-        constructive comments.
-    </p>
-    <p>Thanks for visiting! -- matt</p>
+                <h3 class="text-muted">Enter a location:</h3>
 
+                <form class="form-inline" method="POST" action="{{ url_for('do_zip_submit') }}">
+                    <input class="form-control" type="text" name="zip_or_latlon_form_val" placeholder="zip or lat,lon">
+                    <button type="submit" class="btn btn-primary">Go!</button>
+                </form>
+                <p class="h4 text-muted"><em>&mdash; OR &mdash;</em></p>
 
-    <h2>Get forecast</h2>
+                
+                <h3 class="text-muted">Search for a location:</h3>
 
-    <form method="POST" action="{{ url_for('do_zip_submit') }}">
-        <label for="zip-text">Zipcode: </label>
-        <input id="zip-text" type="text" name="zip_form_value">
-        <input type="submit" value="Go!">
-    </form>
+                <form class="form-inline" method="POST" action="{{ url_for('do_zip_search_submit') }}">
+                    <input class="form-control" type="text" name="query_form_val" placeholder="city or town">
+                    <button class="btn btn-primary" type="submit">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
 
+                </form>
+            </div>
 
-    <form method="POST" action="{{ url_for('do_lat_lon_submit') }}">
-        <label for="lat-text">Latitude: </label>
-        <input id="lat-text" type="text" name="lat_form_value">
-        <label for="lon-text">Longitude: </label>
-        <input id="lon-text" type="text" name="lon_form_value">
-        <input type="submit" value="Go!">
-    </form>
-
-
-    <h2>Edit weather settings</h2>
-
-    View and edit weather ranges on the <a href="{{ url_for('editSettings') }}">settings</a> page.
+            <!-- right column: screen shot, recent searches -->
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img src="{{ url_for('static', filename='screen-shot.png') }}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-    <h2>Search zip codes</h2>
+    <!-- lower half: info -->
+    <div class="container bg-success">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>What is RC Weather?</h2>
 
-    <form method="POST" action="{{ url_for('do_zip_search_submit') }}">
-        <label for="query-text">Query: </label>
-        <input id="query-text" type="text" name="query_form_value">
-        <input type="submit" value="Search">
-    </form>
+                <p>RC Weather is a web application that shows a color-coded <code>stoplight view</code> of the weather
+                    for
+                    the next seven days, hour-by-hour. In one glance you can quickly see what the flying looks like for
+                    the week, and plan accordingly.</p>
 
+                <p><a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it
+                    works &raquo;</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>Who is it for?</h2>
+
+                <p>From park fliers to 500 class helis to giant-scale warbirds, all RC pilots need to know the weather
+                    so
+                    we can know when is good to get out and fly. But we're busy and most forecasts take time to get what
+                    we really care about: a <code>go/no go</code> for each hour.</p>
+            </div>
+            <div class="col-md-4">
+                <h2>Why use it?</h2>
+
+                <p>Unlike other weather sites that either provide too little hourly information or way too much, RC
+                    Weather
+                    makes it easy for you to tell, in one look, how the week is stacking up.
+                    <strong class="text-danger">Lots of red?</strong> Relax and hit the sim.
+                    <strong class="text-success">Tons of green?</strong> Call a buddy and meet at the field!</p>
+            </div>
+        </div>
+
+    </div>
 
 {% endblock %}
