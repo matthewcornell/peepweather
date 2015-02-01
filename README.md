@@ -23,32 +23,35 @@ the hourly analysis-to-color algorithm.
   http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
   fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
-- ~ clean up forecast TABLE HTML?
-
-- ~ todo: forecast.html: correct way to reserve width for three weather icons? 4em worked in Firefox but not Chrome, which wanted 5em
 
 - ~ update https://github.com/erikflowers/weather-icons/tree/master/css
 
 
-# Feature Requests: Active
-
-## Essential
+# Feature requests: Essential
 - modern appearance
     - mobile-friendly (responsive design)
     - show color and icon keys to the right, not below
 
+- geolocation :-). Here's how [Windalert](http://www.windalert.com/) does it:
+  1) home page asks location permission.
+  2) no permission: Just "Search for a location" button.
+  3) Yes permission: When available, adds a button xx.
+  City, Zip, Postal Code, Lat/Lon, Beach...
+
 - ? cookies: use secure?
 
-- ~ daylight: add new setting for defining hours to show - start, end (inclusive), rather than current hard-coded default: 8a-8p
+- ~ a checkbox controlling whether apparent or actual temp is used
+
+- ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
 
 
-## Money to fund hosting?
+# Money to fund hosting?
 - paypal donate
 - ads
 
 
-## Maybe for fun
-- geolocation :-)
+# Feature requests: Maybe for fun
+- recently found on right - last 5 or so :-)
 
 - list/map AMA fields nearby :-)
   http://www.modelaircraft.org/clubsearch.aspx
@@ -71,24 +74,13 @@ the hourly analysis-to-color algorithm.
       a glance (and schedule everything for red times!)
 
 
-# Feature Requests: Future
-- colors: a gradient of each color to indicate really low wind (0-3,3-6,6-9), etc. that way we can really know a 1mph day vs 9 mph day?
-
-
 # Above includes suggestions and comments from forum postings on 2015-01-19
 - [Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!](http://helifreak.com/showthread.php?p=6307025#post6307025)
 - [RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!](http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR)
 
 
-## Technical
-- No login is required since this can be stored in a cookie
-
-
-## Site design ideas
+# Referenced apps/sites
 - [Windalert](http://www.windalert.com/)
-
-
-## Referenced apps/sites
 - ! [ETSU Observatory Clear Sky Chart](http://cleardarksky.com/c/ETSUObTNkey.html?1)
 - [WindAlert iOS App] (https://itunes.apple.com/us/app/windalert/id317992025?mt=8)
 - [Windalert](http://www.windalert.com/)
@@ -101,4 +93,4 @@ the hourly analysis-to-color algorithm.
 - [windalert.com] (http://windalert.com/map#42.375,-72.513,10,1)
 
 
-## Tagline: "Just look for the green and then go fly!"
+# Tagline: "Just look for the green and then go fly!"
