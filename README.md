@@ -7,10 +7,13 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- integrate bootstrap mockup
+- how it works
+- forecast list
+- see: todo integrate with bootstrap
 - zip/latlon input: remove spaces around comma
 - share icons
-- ...
+- when done: geo!
+- xx
 
 
 # Bugs

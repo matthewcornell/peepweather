@@ -3,7 +3,11 @@
 
 {% block content %}
 
-    <h2>Error getting forecast</h2>
-    The error message was: "{{ error }}"
+    <div class="container">
+        <div class="row">
+            <h1>Error getting forecast</h1>
+            <p>The error message was: <span class="alert-danger">{{ error }}</span></p>
+        </div>
+    </div>
 
 {% endblock %}
