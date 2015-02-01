@@ -1,66 +1,136 @@
 {% extends "base.html" %}
-{% block title %}Edit Settings{% endblock %}
+
+{% block title %}Settings{% endblock %}
 
 {% block content %}
 
-    <h2>Parameter Range Editor</h2>
+    <div class="container">
+        <div class="row">
+            <h1>Customize settings</h1>
 
-    <p>This page lets you view and edit the weather parameter ranges that combine to determine how each hour is
-        rated. They are saved as cookies. To clear them, use the Reset to Defaults button below.</p>
+            <p class="help-block">This page lets you view and edit the weather parameter ranges that combine to
+                determine how each hour is rated. They are saved as cookies. To clear them, use the Reset to Defaults
+                button below.</p>
 
-    <p>The condensed summary is that percent of precipitation, wind speed, and cloud cover are broken into three Low, Medium,
-    and High ranges that are identified by two numbers called "v1" and "v2" which mark out the Medium range. Anything below
-    v1 is High desirability and anything above v2 is Low desirability. Temperature is identified by four numbers, v1 through
-    v4, that delineate a "hat" shape where anything below v1 or above v4 is Low desirability, v1-to-v2 and v3-to-v4 are
-    Medium, and v2-to-v3 is the High sweet spot. The edit areas below let you view and change all these values.
-    </p>
+            <p class="help-block">The condensed summary is that percent of precipitation, wind speed, and cloud cover
+                are broken into three Low, Medium, and High ranges that are identified by two numbers called
+                <code>v1</code> and <code>v2</code> which mark out the Medium range. Anything below <code>v1</code> is
+                High desirability and anything above <code>v2</code> is Low desirability. Temperature is identified by
+                four numbers, <code>v1</code> through <code>v4</code>, that delineate a "hat" shape where anything
+                below <code>v1</code> or above <code>v4</code> is Low desirability, <code>v1 to v2</code> and
+                <code>v3 to v4</code> are Medium, and <code>v2 to v3</code> is the High sweet spot. The edit areas
+                below let you view and change all these values.
+            </p>
 
-    <p>At the bottom of this page is the detailed explanation.</p>
+            <p class="help-block">For a detailed explanation see:</p>
 
-
-    <h2>Parameter Functions</h2>
-
-    <form method="POST" action="{{ url_for('do_edit_parameters_submit') }}">
-        <label for='wind_v1_text'>Wind v1: </label>
-        <input id='wind_v1_text' type='text' name='wind_v1_value'>
-        <br>
-        <label for='wind_v2_text'>Wind v2: </label>
-        <input id='wind_v2_text' type='text' name='wind_v2_value'>
-        <br>
-        <br>
-        <label for='precip_v1_text'>Precip v1: </label>
-        <input id='precip_v1_text' type='text' name='precip_v1_value'>
-        <br>
-        <label for='precip_v2_text'>Precip v2: </label>
-        <input id='precip_v2_text' type='text' name='precip_v2_value'>
-        <br>
-        <br>
-        <label for='cloud_v1_text'>cloud v1: </label>
-        <input id='cloud_v1_text' type='text' name='cloud_v1_value'>
-        <br>
-        <label for='cloud_v2_text'>cloud v2: </label>
-        <input id='cloud_v2_text' type='text' name='cloud_v2_value'>
-        <br>
-        <br>
-        <label for='temp_v1_text'>Temp v1: </label>
-        <input id='temp_v1_text' type='text' name='temp_v1_value'>
-        <br>
-        <label for='temp_v2_text'>Temp v2: </label>
-        <input id='temp_v2_text' type='text' name='temp_v2_value'>
-        <br>
-        <label for='temp_v3_text'>Temp v3: </label>
-        <input id='temp_v3_text' type='text' name='temp_v3_value'>
-        <br>
-        <label for='temp_v4_text'>Temp v4: </label>
-        <input id='temp_v4_text' type='text' name='temp_v4_value'>
-        <br>
-        <br>
-        <input type='submit' name='submit_button' value='Save'>
-        <input type='submit' name='reset_button' value='Reset to Defaults'>
-    </form>
+            <p><a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
+            </p>
 
 
-    {# populate the range form with current values #}
+            <form class="form-group" method="POST" action="{{ url_for('do_edit_parameters_submit') }}">
+                <div>
+                    <h3>Wind</h3>
+
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='wind_v1_text' name="wind_v1_value" placeholder="v1">
+
+                                <div class="input-group-addon">MPH</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='wind_v2_text' name="wind_v2_value" placeholder="v2">
+
+                                <div class="input-group-addon">MPH</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Precipitation</h3>
+
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='precip_v1_text' name="precip_v1_value" placeholder="v1">
+
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='precip_v2_text' name="precip_v2_value" placeholder="v2">
+
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                   <h3>Clouds</h3>
+
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='cloud_v1_text' name="cloud_v1_value" placeholder="v1">
+
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='cloud_v2_text' name="cloud_v2_value" placeholder="v2">
+
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Temperature</h3>
+
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='temp_v1_text' name="temp_v1_value" placeholder="v1">
+
+                                <div class="input-group-addon">&deg;F</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='temp_v2_text' name="temp_v2_value" placeholder="v2">
+
+                                <div class="input-group-addon">&deg;F</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='temp_v3_text' name="temp_v3_value" placeholder="v3">
+
+                                <div class="input-group-addon">&deg;F</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id='temp_v4_text' name="temp_v4_value" placeholder="v4">
+
+                                <div class="input-group-addon">&deg;F</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <p class="h3 text-muted"></p>
+                <button name='submit_button' class="btn btn-success">Save</button>
+                <button name='reset_button' class="btn btn-warning">Reset to Defaults</button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- populate the range form with current values -->
     <script type="text/javascript">
         function set_parameter_text_values() {
             var precipVals = {{ precipVals }};
@@ -80,85 +150,5 @@
         }
         set_parameter_text_values();
     </script>
-
-
-    <h2>Color calculation details</h2>
-    Each hour's color is chosen in three steps: First, each weather parameter (percent of precipitation, temperature, and
-    wind speed - but *not* cloud cover) is assessed individually to get one of three desirability ratings - Low, Medium, and
-    High - based on a simple formula. Second, those three ratings are combined to get one of four overall desirability
-    ratings for the hour - Poor, Fair, Okay, and Great. Finally, the overall desirability rating is mapped to a color, such
-    as: Great = green, Okay = yellow, Fair = Orange, and Poor = red.
-
-    This means there are two types of functions ( http://en.wikipedia.org/wiki/Function_%28mathematics%29 ) involved:
-    One
-    to convert each of the three parameter values into a Low, Medium, and High rating, and a second one to combine
-    these into a Poor, Fair, Okay, and Great hour rating. Let's call these the <em>Parameter Function</em> and the
-    <em>Hourly Function</em>.
-
-
-    <h3>Parameter Function</h3>
-    On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, wind speed, or cloud
-    cover) into ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH then consider
-    that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher than 10 MPH
-    then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to 10% might be High
-    desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially three step ranges,
-    graphically shown as:
-
-    <pre>
-H +--+
-  |  |
-M |  +---+
-  |      |
-L +      +--->
-
-  0  v1  v2
-</pre>
-
-    This makes clear that all it takes is two parameter values (called v1 and v2 above) to identify the range. When
-    viewed
-    from left to right, v1 is the High-to-Medium transition, and v2 is the Medium-to-Low transition. In the wind
-    example, v1 = 5 MPH and v2 = 10 MPH. The precipitation example had 10% and 20% for v1 and v2, respectively. In
-    other words, these two numbers identify the 'breaks' where the steps go down from left to right. We call this
-    first type of Parameter Function a "H-M-L" step.
-
-    But what about temperature? Well, temperature is different because it has a low range too - it can't be too cold OR
-    too warm, but between those two Low-desirability extremes there are Medium and High values. Our Parameter Function
-    for temperature has this shape:
-
-    <pre>
-H         +---+
-          |   |
-M     +---+   +---+
-      |           |
-L <- -+           +--->
-
-      v1  v2  v3  v4
-</pre>
-
-    We call this Parameter Function a "L-M-H-M-L" hat, and it is characterized by four values, from left to right:
-    v1 (the L-to-M transition), v2 (Medium-to-High), v3 (High-to-Medium), and v4 (Medium-to-Low). For example, the
-    four values 32, 40, 70, and 85 (all °F) say that anything colder than 32°F or warmer than 85°F are considered Low
-    desirability, Medium is between 32 and 40, and between 70 and 85, and the 40 to 70 sweet spot is High desirability.
-    Simple!
-
-    That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly
-    Function.
-
-
-    <h3>Hourly Function</h3>
-    For each hour, once the program uses the Parameter Functions to get Low, Medium, and High values for the three
-    weather
-    parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour rating. Currently
-    this is determined by non-editable rules:
-
-    <ul>
-        <li>If any of the three parameters is Low, then the hour is considered Poor.</li>
-        <li>If all are High then the hour is Great.</li>
-        <li>If there are two High ratings and one Medium then the hour is Okay.</li>
-        <li>Otherwise (one High and two Medium) then the hour is Fair.</li>
-    </ul>
-
-    The weather parameters are treated equally and are not weighted in any way.
-
 
 {% endblock %}

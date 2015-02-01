@@ -6,53 +6,43 @@
 
     <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
     <link rel='stylesheet' href='{{ url_for('static', filename='hour-colors.css') }}'>
+    
+    <div class="container">
+        <!-- row 1/2: table on left, keys on right -->
+        <div class="row">
+            <h1>Forecast for {{ forecast.location() }} </h1>
+            
+            <!-- todo integrate with bootstrap -->
+            <p>
+                Time: <span id="time-id"></span><br>
+                Links: <a href="https://www.google.com/maps/place/{{ forecast.latLon[0] }},{{ forecast.latLon[1] }}">Google
+                Maps</a>,
+                <a href="http://forecast.weather.gov/MapClick.php?lat={{ forecast.latLon[0] }}&lon={{ forecast.latLon[1] }}">weather.gov</a>
+            </p>
 
-    <h2>Forecast for {{ forecast.location() }} </h2>
+            <!-- col 1/2: colors table! -->
+            <div class="col-md-8">
+                {% include "forecast-table.html" %}
+            </div>
 
-    <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
-    <p>
-        Time: <span id="time-id"></span><br>
-        Links: <a href="https://www.google.com/maps/place/{{ forecast.latLon[0] }},{{ forecast.latLon[1] }}">Google
-        Maps</a>,
-        <a href="http://forecast.weather.gov/MapClick.php?lat={{ forecast.latLon[0] }}&lon={{ forecast.latLon[1] }}">weather.gov</a>
-        <img src="{{ url_for('static', filename='_MG_5049.jpg') }}" style="width:300px;" align="right">
-    </p>
+            <!-- col 2/2: keys -->
+            <div class="col-md-4">
+                {% include "color-key.html" %}
+                {% include "icon-key.html" %}
+            </div>
+        </div>
 
-    <table style="background-color:black; font-size:medium" border="0" cellspacing="1" cellpadding="8" width="10">
-        <tr style="background-color:white;">
-            {# first column blank for row/hour header #}
-            <td></td>
-            {% for header in forecast.calendarHeaderRow() %}
-                <th>{{ header }}</th>
-            {% endfor %}
-        </tr>
-        {% set hoursAsCalendarRows = forecast.hoursAsCalendarRows() %}
-        {% for hourOfDayIndex in range(8, 21) %}
-            {% set hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex] %}
-            {% set hour0 = hourOfDayRow[0] %}
-            {% set rowHeadingColor = 'black' if forecast.isDaylightHour(hour0) else 'gray' %}
-            <tr>
-                <th style="color:{{ rowHeadingColor }} ; background-color:white;">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
-                {% for hour in hourOfDayRow %}
-                    <td style="min-width:5em; color: black; font-family: monospace;"
-                        class="{{ hour.cssClassForDesirability() }}"
-                        title="{{ hour.detailString() }}">
-                        {% for wiClass in hour.charIconsForParams() %}
-                            {% if wiClass %} <i class="wi {{ wiClass }}"></i> {% endif %}
-                        {% endfor %}
-                    </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+        <!-- row 2/2: settings link -->
+        <div class="row">
+            <p>Settings:
+                <a class="btn btn-default" href="{{ url_for('editSettings') }}" role="button">Settings&nbsp;&nbsp;<span
+                        class="glyphicon glyphicon-cog"></span></a>
+            </p>
+        </div>
+    </div>
 
-    <script type="text/javascript">
-        document.getElementById('time-id').innerHTML = new Date();
-    </script>
-
-    {% include 'color-key.html' %}
-
-
+    
+    <!-- todo integrate with bootstrap -->
     <h2>Debuging tools</h2>
 
     {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + ',' + forecast.latLon[1] %}
@@ -60,5 +50,12 @@
     For debugging purposes you can download the raw weather data for this forecast
     <a href="{{ forecast.weatherDotGovUrl() }}">here</a>. To show the hours in a list format, click
     <a href="{{ url_for('showForecast', zipOrLatLon=zipOrLatLon, list=true) }}">here</a>.
+
+
+    <!-- todo on document ready -->
+    <script type="text/javascript">
+        document.getElementById('time-id').innerHTML = new Date();
+    </script>
+
 
 {% endblock %}

@@ -1,0 +1,28 @@
+<table class="table table-bordered">
+    <!-- todo background color needed? -->
+    <tr style="background-color:white;">
+        {# first column blank for row/hour header #}
+        <td></td>
+        {% for header in forecast.calendarHeaderRow() %}
+            <th>{{ header }}</th>
+        {% endfor %}
+    </tr>
+    {% set hoursAsCalendarRows = forecast.hoursAsCalendarRows() %}
+    {% for hourOfDayIndex in range(8, 21) %}
+        {% set hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex] %}
+        {% set hour0 = hourOfDayRow[0] %}
+        {% set rowHeadingColor = 'black' if forecast.isDaylightHour(hour0) else 'gray' %}
+        <tr>
+            <th style="color:{{ rowHeadingColor }} ; background-color:white;">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
+            {% for hour in hourOfDayRow %}
+                <td style="min-width:5em; color: black; font-family: monospace;"
+                    class="{{ hour.cssClassForDesirability() }}"
+                    title="{{ hour.detailString() }}">
+                    {% for wiClass in hour.charIconsForParams() %}
+                        {% if wiClass %} <i class="wi {{ wiClass }}"></i> {% endif %}
+                    {% endfor %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>

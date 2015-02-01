@@ -9,11 +9,12 @@ the hourly analysis-to-color algorithm.
 # current branch todo
 - integrate bootstrap mockup
 - zip/latlon input: remove spaces around comma
+- share icons
 - ...
 
 
 # Bugs
-- form validation:
+- ! form validation:
     - /       : zipcode: not empty. five numbers. exists in zipcode file.
     - /       : lat/lon: not empty. lat/lon pattern
     - /ranges : param values: not empty. ints. sorted
