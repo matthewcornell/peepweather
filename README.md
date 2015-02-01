@@ -8,9 +8,9 @@ the hourly analysis-to-color algorithm.
 
 # current branch todo
 - see: todo integrate with bootstrap
-- black lines between cells
 - zip/latlon input: remove spaces around comma
 - share icons
+- black lines between cells instead of gray?
 - when done: geo!
 - xx
 

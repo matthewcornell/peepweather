@@ -13,13 +13,14 @@
                 button below.</p>
 
             <p class="help-block">The condensed summary is that percent of precipitation, wind speed, and cloud cover
-                are broken into three Low, Medium, and High ranges that are identified by two numbers called
-                <code>v1</code> and <code>v2</code> which mark out the Medium range. Anything below <code>v1</code> is
-                High desirability and anything above <code>v2</code> is Low desirability. Temperature is identified by
-                four numbers, <code>v1</code> through <code>v4</code>, that delineate a "hat" shape where anything
-                below <code>v1</code> or above <code>v4</code> is Low desirability, <code>v1 to v2</code> and
-                <code>v3 to v4</code> are Medium, and <code>v2 to v3</code> is the High sweet spot. The edit areas
-                below let you view and change all these values.
+                are broken into three <code>Low</code>, <code>Medium</code>, and <code>High</code> ranges that are
+                identified by two numbers called <code>v1</code> and <code>v2</code> which mark out the
+                <code>Medium</code> range. Anything below <code>v1</code> is <code>High</code> desirability and anything
+                above <code>v2</code> is <code>Low</code> desirability. Temperature is identified by four numbers,
+                <code>v1</code> through <code>v4</code>, that delineate a "hat" shape where anything below
+                <code>v1</code> or above <code>v4</code> is <code>Low</code> desirability, <code>v1 to v2</code> and
+                <code>v3 to v4</code> are <code>Medium</code>, and <code>v2 to v3</code> is the <code>High</code> sweet
+                spot. The edit areas below let you view and change all these values.
             </p>
 
             <p class="help-block">For a detailed explanation see:</p>
@@ -32,17 +33,22 @@
                 <div>
                     <h3>Wind</h3>
 
+                    <p class="help-block">The first number is where the rating goes down from <code>High</code> to
+                        <code>Medium</code>, and the second down again to <code>Low</code>.</p>
+
                     <div class="form-inline">
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='wind_v1_text' name="wind_v1_value" placeholder="v1">
+                                <input type="text" class="form-control" id='wind_v1_text' name="wind_v1_value"
+                                       placeholder="v1">
 
                                 <div class="input-group-addon">MPH</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='wind_v2_text' name="wind_v2_value" placeholder="v2">
+                                <input type="text" class="form-control" id='wind_v2_text' name="wind_v2_value"
+                                       placeholder="v2">
 
                                 <div class="input-group-addon">MPH</div>
                             </div>
@@ -51,36 +57,44 @@
 
                     <h3>Precipitation</h3>
 
+                    <p class="help-block">The two numbers work similar to Wind.</p>
+
                     <div class="form-inline">
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='precip_v1_text' name="precip_v1_value" placeholder="v1">
+                                <input type="text" class="form-control" id='precip_v1_text' name="precip_v1_value"
+                                       placeholder="v1">
 
                                 <div class="input-group-addon">%</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='precip_v2_text' name="precip_v2_value" placeholder="v2">
+                                <input type="text" class="form-control" id='precip_v2_text' name="precip_v2_value"
+                                       placeholder="v2">
 
                                 <div class="input-group-addon">%</div>
                             </div>
                         </div>
                     </div>
 
-                   <h3>Clouds</h3>
+                    <h3>Clouds</h3>
+
+                    <p class="help-block">Similar to Wind.</p>
 
                     <div class="form-inline">
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='cloud_v1_text' name="cloud_v1_value" placeholder="v1">
+                                <input type="text" class="form-control" id='cloud_v1_text' name="cloud_v1_value"
+                                       placeholder="v1">
 
                                 <div class="input-group-addon">%</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='cloud_v2_text' name="cloud_v2_value" placeholder="v2">
+                                <input type="text" class="form-control" id='cloud_v2_text' name="cloud_v2_value"
+                                       placeholder="v2">
 
                                 <div class="input-group-addon">%</div>
                             </div>
@@ -89,31 +103,40 @@
 
                     <h3>Temperature</h3>
 
+                    <p class="help-block">The first number is where the rating goes up from <code>Low</code> to
+                        <code>Medium</code>, the second is from <code>Medium</code> to <code>High</code>, the
+                    third is where it goes back down again to <code>Medium</code>, and the last number is down again
+                    to <code>Low</code></p>
+
                     <div class="form-inline">
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='temp_v1_text' name="temp_v1_value" placeholder="v1">
+                                <input type="text" class="form-control" id='temp_v1_text' name="temp_v1_value"
+                                       placeholder="v1">
 
                                 <div class="input-group-addon">&deg;F</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='temp_v2_text' name="temp_v2_value" placeholder="v2">
+                                <input type="text" class="form-control" id='temp_v2_text' name="temp_v2_value"
+                                       placeholder="v2">
 
                                 <div class="input-group-addon">&deg;F</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='temp_v3_text' name="temp_v3_value" placeholder="v3">
+                                <input type="text" class="form-control" id='temp_v3_text' name="temp_v3_value"
+                                       placeholder="v3">
 
                                 <div class="input-group-addon">&deg;F</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" id='temp_v4_text' name="temp_v4_value" placeholder="v4">
+                                <input type="text" class="form-control" id='temp_v4_text' name="temp_v4_value"
+                                       placeholder="v4">
 
                                 <div class="input-group-addon">&deg;F</div>
                             </div>
