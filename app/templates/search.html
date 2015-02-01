@@ -3,25 +3,30 @@
 
 {% block content %}
 
-    <h2>Zipcode search for: {{ query }}: {{ zipNameLatLonTuples | length }} results</h2>
+    <div class="container">
+        <div class="row">
 
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Zipcode</th>
-            <th>Name</th>
-            <th>Lat/Lon</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for zip, name, lat, lon in zipNameLatLonTuples %}
-            <tr>
-                <td><a href="/forecast/{{ zip }}">{{ zip }}</a></td>
-                <td>{{ name }}</td>
-                <td><a href="https://www.google.com/maps/place/{{ lat }},{{ lon }}">{{ lat }}, {{ lon }}</a></td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            <h1>Zipcode search for: {{ query }}: {{ zipNameLatLonTuples | length }} results</h1>
+
+            <table class="table table-condensed table-striped">
+                <thead>
+                <tr>
+                    <th>Zipcode</th>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for zip, name, lat, lon in zipNameLatLonTuples %}
+                    <tr>
+                        <td><a href="/forecast/{{ zip }}">{{ zip }}</a></td>
+                        <td>{{ name }}</td>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
 
 {% endblock %}
