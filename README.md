@@ -7,7 +7,6 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- see: todo integrate with bootstrap
 - share icons
 - keys: take up less width (not 100%)
 - when done: geo!
@@ -15,6 +14,8 @@ the hourly analysis-to-color algorithm.
 
 
 # Bugs
+- clicking submit without text entered -> error: http://127.0.0.1:5000/forecast/
+
 - zip/latlon input: remove spaces around comma
 
 - ! form validation:
