@@ -7,8 +7,6 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- share icons
-- keys: take up less width (not 100%)
 - when done: geo!
 - xx
 
@@ -35,10 +33,8 @@ the hourly analysis-to-color algorithm.
 - ? cookies: use secure?
 
 
-# Feature requests: Essential
+# Features: To do
 - geolocation :-)
-
-- ~ a checkbox controlling whether apparent or actual temp is used
 
 - ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
 
@@ -48,12 +44,14 @@ the hourly analysis-to-color algorithm.
 - ads
 
 
-# Feature requests: Maybe for fun
+# Features: Maybe
 - recently found on right - last 5 or so :-)
 
 - list/map AMA fields nearby :-)
   http://www.modelaircraft.org/clubsearch.aspx
   python screen scraper - http://www.crummy.com/software/BeautifulSoup/
+
+- ~ a checkbox controlling whether apparent or actual temp is used
 
 - ~ click a square to show details
 
