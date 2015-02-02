@@ -7,7 +7,6 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- xx
 
 
 # Bugs
@@ -33,8 +32,6 @@ the hourly analysis-to-color algorithm.
 
 
 # Features: To do
-- geolocation :-)
-
 - ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
 
 
