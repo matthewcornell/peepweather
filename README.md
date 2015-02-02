@@ -7,6 +7,7 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
+- add blurb about service: The forecast data is currently US-only because it comes from the National Digital Forecast Database (NDFD) REST Web Service. http://graphical.weather.gov/xml/rest.php
 
 
 # Bugs
@@ -32,12 +33,11 @@ the hourly analysis-to-color algorithm.
 
 
 # Features: To do
-- ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
+- add some graphics :-)
 
+- move to own domain!
 
-# Money to fund hosting?
-- paypal donate
-- ads
+- adds/donate?
 
 
 # Features: Maybe
@@ -52,6 +52,8 @@ the hourly analysis-to-color algorithm.
 - ~ click a square to show details
 
 - ~ editable parameter weights for combined importance to the final rating
+
+- ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
 
 - international. I don't know the details myself, but drop Benny Wydooghe a line on google+, or in the Meteogram Widget
   group on google+. He's the developer of the widget I posted a screenshot of earlier, and has a great international
