@@ -3,6 +3,21 @@
 {% block title %}Welcome to the RC Weather App!{% endblock %}
 
 {% block content %}
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <script>
+        jQuery(window).ready(function () {
+            navigator.geolocation.getCurrentPosition(handle_geolocation_query);
+        });
+
+        function handle_geolocation_query(position) {
+            var latLon = position.coords.latitude + ',' + position.coords.longitude;
+            jQuery("#latlon_input_id").val(latLon);
+            jQuery("#latlon_form_id").attr("class","show");
+        }
+    </script>
+    
 
     <!-- upper half: action, screen shot, recent -->
     <div class="container">
@@ -11,10 +26,11 @@
             <div class="col-md-8">
                 <h1>In one glance, see how the flying looks for the upcoming week.</h1>
 
-                <!-- todo enable once geolocation working -->
-                <div class="hidden">
-                    <form class="form-inline" action="{{ url_for('do_zip_submit') }}">
-                        <label class="h3 text-muted">Use your location:&nbsp;</label>
+                <!-- enabled if geolocation permission given -->
+                <div id="latlon_form_id" class="hidden">
+                    <form class="form-inline" method="POST" action="{{ url_for('do_zip_submit') }}">
+                        <label class="h3 text-muted" for="latlon_input_id">Use your location:&nbsp;</label>
+                        <input class="form-control hidden" id="latlon_input_id" type="text" name="zip_or_latlon_form_val">
                         <button type="submit" class="btn btn-primary">
                             <i class="fa fa-crosshairs fa-lg"></i>
                         </button>
@@ -32,7 +48,7 @@
                 </form>
                 <p class="h4 text-muted"><em>&mdash; OR &mdash;</em></p>
 
-                
+
                 <h3 class="text-muted">Search for a location:</h3>
 
                 <form class="form-inline" method="POST" action="{{ url_for('do_zip_search_submit') }}">

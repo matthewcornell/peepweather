@@ -7,7 +7,6 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- when done: geo!
 - xx
 
 
