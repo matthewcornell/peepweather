@@ -7,15 +7,23 @@ the hourly analysis-to-color algorithm.
 
 
 # current branch todo
-- add blurb about service: The forecast data is currently US-only because it comes from the National Digital Forecast Database (NDFD) REST Web Service. http://graphical.weather.gov/xml/rest.php
 
 
 # Bugs
-- clicking submit without text entered -> error: http://127.0.0.1:5000/forecast/
+- cookies bug
+
+- table light gray: doesn't need to be black, but could be darker, IMO.
+
+- colors: show what triggered the block to be yellow instead of green
 
 - zip/latlon input: remove spaces around comma
 
+- don't show first column if all white
+
+- ? cookies: use secure?
+
 - ! form validation:
+    - clicking submit without text entered -> error: http://127.0.0.1:5000/forecast/
     - /       : zipcode: not empty. five numbers. exists in zipcode file.
     - /       : lat/lon: not empty. lat/lon pattern
     - /ranges : param values: not empty. ints. sorted
@@ -26,10 +34,6 @@ the hourly analysis-to-color algorithm.
   http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
   http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
   fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
-
-- don't show first column if all white
-
-- ? cookies: use secure?
 
 
 # Features: To do

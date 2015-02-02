@@ -11,15 +11,26 @@
 
             <p class="help-block">RC Weather's algorithm for deciding each hour's color is as follows.</p>
 
+            <h3>Overall operation</h3>
+
+            <p>When you enter a location, RC Weather converts it to a latitude and longitude (if it's a zip code, using
+                a data file of U.S. towns) then passes that to a query of the U.S. Government's
+                <a href="http://www.nws.noaa.gov/ndfd/">National Digital Forecast Database</a> 
+                <a href="http://graphical.weather.gov/xml/rest.php">REST Web Service</a>. It parses the resulting file
+                to find hourly data, filling in gaps for missing hours. (Different parameters are sampled at different
+                rates, e.g., every three hours for some and every 12 hours for others.) Finally it builds a hourly
+                calendar-like HTML table for display, coloring in each hour using the below algorithm.
+            </p>
+
             <h3>Color calculation details</h3>
 
             <p>Each hour's color is chosen in three steps: </p>
 
             <ol>
                 <li>
-                    First, each weather parameter (percent of precipitation, temperature, and wind speed - but <strong>not</strong>
-                    cloud cover) is assessed individually to get one of three desirability ratings - <code>Low</code>,
-                    <code>Medium</code>, and <code>High</code> - based on a simple formula.
+                    First, each weather parameter (percent of precipitation, temperature, and wind speed - but
+                    <strong>not</strong> cloud cover) is assessed individually to get one of three desirability ratings
+                    - <code>Low</code>, <code>Medium</code>, and <code>High</code> - based on a simple formula.
                 </li>
                 <li>Second, those three ratings are combined to get one of four overall desirability ratings for the
                     hour - <code>Poor</code>, <code>Fair</code>, <code>Okay</code>, and <code>Great</code>.
@@ -38,18 +49,14 @@
 
             <h3>Parameter Function</h3>
             On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, wind
-            speed, or cloud
-            cover) into ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH
-            then consider
-            that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher
-            than 10 MPH
-            then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to 10% might be
-            High
-            desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially three
-            step ranges,
-            graphically shown as:
+            speed, or cloud cover) into ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH
+            then consider that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher
+            than 10 MPH then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to 10% might be
+            High desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially three
+            step ranges, graphically shown as:
 
-<pre>
+            <div class="row">
+<pre class="col-md-3 col-md-offset-1">
 H +--+
   |  |
 M |  +---+
@@ -58,24 +65,20 @@ L +      +--->
 
   0  v1  v2
 </pre>
+            </div>
 
             This makes clear that all it takes is two parameter values (called v1 and v2 above) to identify the range.
-            When
-            viewed
-            from left to right, v1 is the High-to-Medium transition, and v2 is the Medium-to-Low transition. In the wind
+            When viewed from left to right, v1 is the High-to-Medium transition, and v2 is the Medium-to-Low transition. In the wind
             example, v1 = 5 MPH and v2 = 10 MPH. The precipitation example had 10% and 20% for v1 and v2, respectively.
-            In
-            other words, these two numbers identify the 'breaks' where the steps go down from left to right. We call
-            this
-            first type of Parameter Function a "H-M-L" step.
+            In other words, these two numbers identify the 'breaks' where the steps go down from left to right. We call
+            this first type of Parameter Function a "H-M-L" step.
 
             But what about temperature? Well, temperature is different because it has a low range too - it can't be too
-            cold OR
-            too warm, but between those two Low-desirability extremes there are Medium and High values. Our Parameter
-            Function
-            for temperature has this shape:
+            cold OR too warm, but between those two Low-desirability extremes there are Medium and High values. Our Parameter
+            Function for temperature has this shape:
 
-<pre>
+            <div class="row">
+<pre class="col-md-3 col-md-offset-1">
 H         +---+
           |   |
 M     +---+   +---+
@@ -84,28 +87,21 @@ L <- -+           +--->
 
       v1  v2  v3  v4
 </pre>
+            </div>
 
             We call this Parameter Function a "L-M-H-M-L" hat, and it is characterized by four values, from left to
-            right:
-            v1 (the L-to-M transition), v2 (Medium-to-High), v3 (High-to-Medium), and v4 (Medium-to-Low). For example,
-            the
-            four values 32, 40, 70, and 85 (all °F) say that anything colder than 32°F or warmer than 85°F are
-            considered Low
-            desirability, Medium is between 32 and 40, and between 70 and 85, and the 40 to 70 sweet spot is High
-            desirability.
-            Simple!
+            right: v1 (the L-to-M transition), v2 (Medium-to-High), v3 (High-to-Medium), and v4 (Medium-to-Low). For example,
+            the four values 32, 40, 70, and 85 (all °F) say that anything colder than 32°F or warmer than 85°F are
+            considered Low desirability, Medium is between 32 and 40, and between 70 and 85, and the 40 to 70 sweet spot is High
+            desirability. Simple!
 
-            That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly
-            Function.
+            That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly Function.
 
 
             <h3>Hourly Function</h3>
             For each hour, once the program uses the Parameter Functions to get Low, Medium, and High values for the
-            three
-            weather
-            parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour rating.
-            Currently
-            this is determined by non-editable rules:
+            three weather parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour rating.
+            Currently this is determined by non-editable rules:
 
             <ul>
                 <li>If any of the three parameters is Low, then the hour is considered Poor.</li>
@@ -115,7 +111,7 @@ L <- -+           +--->
             </ul>
 
             The weather parameters are treated equally and are not weighted in any way.
-            
+
             <h3>Changing the defaults</h3>
 
             <p>To change the default values shown above, use the settings page:</p>
