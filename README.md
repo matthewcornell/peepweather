@@ -8,14 +8,15 @@ the hourly analysis-to-color algorithm.
 
 # current branch todo
 - see: todo integrate with bootstrap
-- zip/latlon input: remove spaces around comma
 - share icons
-- black lines between cells instead of gray?
+- keys: take up less width (not 100%)
 - when done: geo!
 - xx
 
 
 # Bugs
+- zip/latlon input: remove spaces around comma
+
 - ! form validation:
     - /       : zipcode: not empty. five numbers. exists in zipcode file.
     - /       : lat/lon: not empty. lat/lon pattern
@@ -27,6 +28,8 @@ the hourly analysis-to-color algorithm.
   http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
   http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
   fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
+
+- don't show first column if all white
 
 - ? cookies: use secure?
 

@@ -7,14 +7,18 @@
     <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
     <link rel='stylesheet' href='{{ url_for('static', filename='hour-colors.css') }}'>
 
-    <h2>Forecast for {{ forecast.location() }} </h2>
     <div class="container">
         <div class="row">
-            <span style="font-family: monospace">
-            {% for hour in forecast.hours %}
-                <span class="{{ hour.cssClassForDesirability() }}">&nbsp;</span> {{ hour.detailString() }}<br/>
-            {% endfor %}
-            </span>
+            <h1>Forecast for {{ forecast.location() }} </h1>
+            <table class="table table-bordered table-condensed table-striped" style="font-family: monospace">
+                {% for hour in forecast.hours %}
+                    <tr>
+                        <td>
+                            <span class="{{ hour.cssClassForDesirability() }}">&nbsp;</span> {{ hour.detailString() }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
         </div>
     </div>
 
