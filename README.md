@@ -10,12 +10,6 @@ the hourly analysis-to-color algorithm.
 
 
 # Bugs
-- cookies bug
-
-- table light gray: doesn't need to be black, but could be darker, IMO.
-
-- colors: show what triggered the block to be yellow instead of green
-
 - zip/latlon input: remove spaces around comma
 
 - don't show first column if all white

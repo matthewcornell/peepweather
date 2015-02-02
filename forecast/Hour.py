@@ -98,16 +98,9 @@ class Hour():
         if self.isMissingHour():
             return chars
         
-        cloudsDes = self.paramDesirabilityForValue('clouds', self.clouds)
-        if desirability == Hour.H_DES_HIGH or desirability == Hour.H_DES_MED_HIGH:
-            if cloudsDes == Hour.P_DES_LOW:
-                chars[0] = 'wi-cloudy'  # double clouds
-            elif cloudsDes == Hour.P_DES_MED:
-                chars[0] = 'wi-cloud'   # single cloud
-            return chars
-
         # add precip or clouds
         precipDes = self.paramDesirabilityForValue('precip', self.precip)
+        cloudsDes = self.paramDesirabilityForValue('clouds', self.clouds)
         if precipDes == Hour.P_DES_LOW:
             chars[0] = 'wi-rain'
         elif precipDes == Hour.P_DES_MED:

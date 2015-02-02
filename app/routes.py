@@ -79,9 +79,7 @@ def do_zip_submit():
 @app.route('/edit_parameters_submit', methods=['POST'])
 def do_edit_parameters_submit():
     isReset = request.values.get('reset_button')
-    print('xx', request.values)
     if isReset:
-        print('xx reset')
         response = make_response(redirect(url_for('editSettings')))
         response.set_cookie(RANGES_COOKIE_NAME, expires=0)
         return response  # todo flash reset and stay on page
@@ -89,7 +87,6 @@ def do_edit_parameters_submit():
         # save form values as a json dict in the cookie
         try:
             rangesDict = rangesDictFromEditFormValues()
-            print('xx save', rangesDict)
             # todo validate rangeDict - all ints increasing, for example
             rangesDictJson = json.dumps(rangesDict)
             response = make_response(redirect(url_for('editSettings')))
