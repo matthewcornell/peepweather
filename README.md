@@ -41,10 +41,6 @@ the hourly analysis-to-color algorithm.
 # Features: Maybe
 - recently found on right - last 5 or so :-)
 
-- list/map AMA fields nearby :-)
-  http://www.modelaircraft.org/clubsearch.aspx
-  python screen scraper - http://www.crummy.com/software/BeautifulSoup/
-
 - ~ a checkbox controlling whether apparent or actual temp is used
 
 - ~ click a square to show details
@@ -84,5 +80,3 @@ the hourly analysis-to-color algorithm.
 - [1Weather:Widget Forecast Radar | 1mobile.com] (http://www.1mobile.com/1weather-widget-forecast-radar-336436.html)
 - [windalert.com] (http://windalert.com/map#42.375,-72.513,10,1)
 
-
-# Tagline: "Just look for the green and then go fly!"
