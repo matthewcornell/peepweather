@@ -30,12 +30,35 @@ the hourly analysis-to-color algorithm.
   fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 
+# Todo: Move to own domain!
+## v! decide and register domain name
+forecastpeek.com
+https://www.namecheap.com/cart/checkout/orderconfirmation.aspx?id=14566191
+Your order 14566191, placed on Feb 03, 2015 09:03 AM is completed. Use the order number if you contact our support. Below you find your order summary and next steps to help you get started.
+
+## Q: start right away with subdomains?
+    fly.forecastpeek.com
+    rc.forecastpeek.com
+    bike.forecastpeek.com
+    cycle.forecastpeek.com
+    run.forecastpeek.com
+    shoot.forecastpeek.com
++: prep for other audiences
+-: extra step and more to remember for currently just one audience
+
+## set up forwarding to rc-weather.herokuapp.com
+https://devcenter.heroku.com/articles/custom-domains
+https://www.namecheap.com/support/knowledgebase/article.aspx/767/10/how-can-i-change-the-nameservers-for-my-domain
+https://www.namecheap.com/support/knowledgebase/article.aspx/385
+
+## announce
+## continue - adds
+
+
 # Features: To do
-- add some graphics :-)
+## add some graphics
 
-- move to own domain!
-
-- adds/donate?
+## ads
 
 
 # Features: Maybe
