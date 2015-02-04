@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% block title %}{% endblock %} - RC Weather App</title>
+    <title>{% block title %}{% endblock %} - PeepWeather.com</title>
 
     <!-- favicon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -27,16 +27,22 @@
     <![endif]-->
 
     <!-- sharethis support -->
-    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript">var switchTo5x = true;</script>
     <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
-    <script type="text/javascript">stLight.options({publisher: "e090feea-74a7-4517-b9d7-4eb103469c2a", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+    <script type="text/javascript">stLight.options({
+        publisher: "e090feea-74a7-4517-b9d7-4eb103469c2a",
+        doNotHash: false,
+        doNotCopy: false,
+        hashAddressBar: false
+    });</script>
 
 </head>
 <body>
 
 <!-- navbar -->
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-fixed-top">
     <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}" title="PeepWeather"> <img style="margin-top: -14px;" src="{{ url_for('static', filename='chick.png') }}"> </a>
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
@@ -45,7 +51,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('index') }}">RC Weather</a>
+            <a class="navbar-brand" href="{{ url_for('index') }}" title="PeepWeather">PeepWeather</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <form class="navbar-form navbar-right">

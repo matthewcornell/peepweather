@@ -1,13 +1,14 @@
 /* from jumbotron.css: Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 50px;
-  padding-bottom: 20px;
+    padding-top: 50px;
+    padding-bottom: 20px;
 }
 
 /* the default gray did not delineate cells well enough */
 .table-bordered {
-  border: 1px solid black;
+    border: 1px solid black;
 }
+
 .table-bordered > thead > tr > th,
 .table-bordered > tbody > tr > th,
 .table-bordered > tfoot > tr > th,
@@ -16,3 +17,14 @@ body {
 .table-bordered > tfoot > tr > td {
     border: 1px solid black;
 }
+
+.navbar {
+    background-color: #FFF200;
+}
+
+.navbar-brand {
+    color: #231F20;
+    font-size: 24px;
+    font-weight: 500;
+}
+
