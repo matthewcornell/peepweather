@@ -19,12 +19,11 @@ body {
 }
 
 .navbar {
-    background-color: #FFF200;
+    background-color: white;
+    border-color: black;
 }
 
 .navbar-brand {
-    color: #231F20;
     font-size: 24px;
     font-weight: 500;
 }
-

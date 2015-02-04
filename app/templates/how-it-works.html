@@ -9,9 +9,7 @@
 
             <h1>How does it work?</h1>
 
-            <p class="help-block">PeepWeather's algorithm for deciding each hour's color is as follows.</p>
-
-            <h3>Overall operation</h3>
+            <h2>Overall operation</h2>
 
             <p>When you enter a location, PeepWeather converts it to a latitude and longitude (if it's a zip code, using
                 a data file of U.S. towns) then passes that to a query of the U.S. Government's
@@ -22,7 +20,7 @@
                 calendar-like HTML table for display, coloring in each hour using the below algorithm.
             </p>
 
-            <h3>Color calculation details</h3>
+            <h2>Color calculation details</h2>
 
             <p>Each hour's color is chosen in three steps: </p>
 
@@ -47,7 +45,7 @@
                 <code>Parameter Function</code> and the <code>Hourly Function</code>.</p>
 
 
-            <h3>Parameter Function</h3>
+            <h2>Parameter Function</h2>
             On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, wind
             speed, or cloud cover) into ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH
             then consider that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher
@@ -98,7 +96,7 @@ L <- -+           +--->
             That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly Function.
 
 
-            <h3>Hourly Function</h3>
+            <h2>Hourly Function</h2>
             For each hour, once the program uses the Parameter Functions to get Low, Medium, and High values for the
             three weather parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour rating.
             Currently this is determined by non-editable rules:
@@ -112,7 +110,7 @@ L <- -+           +--->
 
             The weather parameters are treated equally and are not weighted in any way.
 
-            <h3>Changing the defaults</h3>
+            <h2>Changing the defaults</h2>
 
             <p>To change the default values shown above, use the settings page:</p>
             <p><a class="btn btn-default" href="{{ url_for('editSettings') }}" role="button">Settings&nbsp;&nbsp;<span
