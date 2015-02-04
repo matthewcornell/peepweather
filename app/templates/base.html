@@ -27,22 +27,23 @@
     <![endif]-->
 
     <!-- sharethis support -->
-    <script type="text/javascript">var switchTo5x = true;</script>
     <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
     <script type="text/javascript">stLight.options({
         publisher: "e090feea-74a7-4517-b9d7-4eb103469c2a",
-        doNotHash: false,
-        doNotCopy: false,
+        doNotHash: true,
+        doNotCopy: true,
         hashAddressBar: false
     });</script>
-
 </head>
 <body>
 
 <!-- navbar -->
 <nav class="navbar navbar-fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}" title="PeepWeather"> <img style="margin-top: -14px;" src="{{ url_for('static', filename='chick.png') }}"> </a>
+        <a class="navbar-brand" href="{{ url_for('index') }}" title="PeepWeather"> <img style="margin-top: -14px;"
+                                                                                        src="{{ url_for('static', filename='chick.png') }}">
+        </a>
+
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
@@ -55,9 +56,8 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <form class="navbar-form navbar-right">
-                <span class='st_facebook_large' displayText='Facebook'></span>
-                <span class='st_twitter_large' displayText='Tweet'></span>
-                <span class='st_email_large' displayText='Email'></span>
+                <a class="btn btn-default" href="{{ url_for('editSettings') }}" role="button">Settings&nbsp;&nbsp;<span
+                        class="glyphicon glyphicon-cog"></span></a>
             </form>
         </div>
         <!--/.navbar-collapse -->
@@ -72,7 +72,14 @@
 <hr>
 <footer>
     <p class="text-center">&copy; 2015 Matthew Cornell | <a
-            href="http://www.matthewcornell.org/contact/">Contact</a></p>
+            href="http://www.matthewcornell.org/contact/">Contact</a>
+    <span id="sharethis">
+{#        <span class='st_facebook_hcount'></span>#}
+        <span class='st_facebook_button'></span>
+{#        <span class='st_twitter_hcount'></span>#}
+        <span class='st_twitter_button'></span>
+    </span>
+    </p>
 </footer>
 
 

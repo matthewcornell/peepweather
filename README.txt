@@ -1,6 +1,6 @@
 ;; -*- mode: outline -*-
 
-* current branch todo
+* >> current branch todo
 xx
 
 * >> set up forwarding to rc-weather.herokuapp.com <- www.peepweather.com
@@ -93,7 +93,7 @@ DEC: wait on subdomains - use root domain
 ** continue - adds, etc.
 
 
-* bugs
+* >> bugs
 - zip/latlon input: remove spaces around comma
 
 - don't show first column if all white
@@ -114,11 +114,10 @@ DEC: wait on subdomains - use root domain
   fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 
-* features: to do
+* >> features: to do
 ** preference to show/hide icons
-** change navbar - too heavy, to large for mobile, etc.
-** some graphics?
-** ads!
+** add settings icon to navbar. 'how it works' too?
+** change navbar - too large for mobile?
 
 
 * features: someday/maybe
