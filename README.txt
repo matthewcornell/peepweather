@@ -115,7 +115,6 @@ DEC: wait on subdomains - use root domain
 
 
 * >> features: to do
-** preference to show/hide icons
 ** add settings icon to navbar. 'how it works' too?
 ** change navbar - too large for mobile?
 

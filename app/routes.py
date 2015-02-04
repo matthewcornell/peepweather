@@ -8,6 +8,7 @@ from app import app
 
 # ==== routes ====
 
+HIDE_ICONS_COOKIE_NAME = 'display_preferences'
 RANGES_COOKIE_NAME = 'parameter_ranges'
 
 
@@ -39,7 +40,8 @@ def showForecast(zipOrLatLon):
         if request.values.get('list'):
             return render_template("forecast-list.html", forecast=forecast)
         else:
-            return render_template("forecast.html", forecast=forecast)
+            hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
+            return render_template("forecast.html", forecast=forecast, hideIcons=hideIcons)
     except ValueError as ve:
         return render_template("forecast-error.html", error=ve.args[0])
 
@@ -47,11 +49,13 @@ def showForecast(zipOrLatLon):
 @app.route('/settings')
 def editSettings():
     rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
+    hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
     if rangesDictJson:
         rangesDict = json.loads(rangesDictJson)
     else:
         rangesDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
     return render_template("settings.html",
+                           hideIcons='true' if hideIcons else 'false',
                            precipVals=rangesDict['precip'],
                            tempVals=rangesDict['temp'],
                            windVals=rangesDict['wind'],
@@ -74,6 +78,19 @@ def showHowItWorks():
 def do_zip_submit():
     zipOrLatLon = request.values.get('zip_or_latlon_form_val', None)
     return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
+
+
+@app.route('/edit_display_submit', methods=['POST'])
+def do_edit_display_submit():
+    isChecked = request.values.get('show_icons_value')
+    if isChecked:   # default -> clear cookie
+        response = make_response(redirect(url_for('editSettings')))
+        response.set_cookie(HIDE_ICONS_COOKIE_NAME, expires=0)
+        return response  # todo flash reset and stay on page
+    else:           # customized -> set cookie
+        response = make_response(redirect(url_for('editSettings')))
+        response.set_cookie(HIDE_ICONS_COOKIE_NAME, 'true')
+        return response  # todo flash saved and stay on page
 
 
 @app.route('/edit_parameters_submit', methods=['POST'])

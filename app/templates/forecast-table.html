@@ -16,9 +16,11 @@
             {% for hour in hourOfDayRow %}
                 <td class="{{ hour.cssClassForDesirability() }}"
                     title="{{ hour.detailString() }}">
-                    {% for wiClass in hour.charIconsForParams() %}
-                        {% if wiClass %} <i class="wi {{ wiClass }}"></i> {% endif %}
-                    {% endfor %}
+                    {% if not hideIcons %}
+                        {% for wiClass in hour.charIconsForParams() %}
+                            {% if wiClass %} <i class="wi {{ wiClass }}"></i> {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </td>
             {% endfor %}
         </tr>
