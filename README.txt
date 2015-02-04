@@ -94,6 +94,9 @@ DEC: wait on subdomains - use root domain
 
 
 * >> bugs
+o navbar: 1) I lost the menubar feature at some point. 2) too large for mobile?
+  -> when done: debug chick pic causing mobile navbar to cover top of content
+
 - zip/latlon input: remove spaces around comma
 
 - don't show first column if all white
@@ -115,8 +118,6 @@ DEC: wait on subdomains - use root domain
 
 
 * >> features: to do
-** add settings icon to navbar. 'how it works' too?
-** change navbar - too large for mobile?
 
 
 * features: someday/maybe
