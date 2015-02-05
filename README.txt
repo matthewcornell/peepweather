@@ -27,15 +27,11 @@ o zip/latlon:
 
 o search:
   o not empty, matches zipcode file. ideally: completion
+    http://stackoverflow.com/questions/9232748/twitter-bootstrap-typeahead-ajax-example
   o trim space from ends
   o bug: empty -> Not Found
 
 o ranges : param values: not empty. ints. sorted
-
-** 1 "Colors & Icons": switch Medium and Low columns, so that the medium column is to the left and low is to the right?
-And maybe add a title above that chart: "Desirability:" currently it's slightly confusing (until seeing "how it works" link).
-
-"Low" and a wind icon would, not knowing otherwise" mean low wind, where in this context it means low desirability to fly, right? Maybe "Light" and "Heavy" would be better terms for the gen pop.... Doesn't sound right either, but point remains...
 
 ** 1 mobile: tap for pop up detail (can't hover)
 
