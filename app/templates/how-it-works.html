@@ -9,20 +9,41 @@
 
             <h1>How does it work?</h1>
 
+            <p><img src="{{ url_for('static', filename='traffic-light.png') }}" align="left"/> PeepWeather shows the
+                upcoming week's forecast in a familiar four-color "traffic light" coding of each hour, formatted as a
+                calendar-like table. A green square means the weather looks Great, yellow is Okay, orange is Fair, and
+                red is just plain Poor. By simply looking at the colors you can tell at a glance how the week is
+                shaping up.</p>
+
+            <p>In addition, PeepWeather augment the colors by showing icons in each square that indicate concerns,
+                including increased probability of precipitation, low or high temperatures, windiness, and cloud
+                cover. These give you some additional detail if you want it. Think of the icons as hints about what
+                made an hour not green. (Note that icons can be disabled in settings.)</p>
+
+            <p>Details about how those weather parameters - probability of precipitation, temperature, and
+                windiness - get combined into once color are below, but in a nutshell parameters "add up" - the more
+                bad ones there are, the worse the color is.</p>
+
+            <p>Cloud cover is treated specially and does not influence color. Instead it's a secondary consideration
+                for you and is shown as adjunct information in the form of an icon. That's why some green days will
+                have a cloud icon. They are terrific for precip, temp, and wind, but there's some sky cover that you
+                may have a preference about.</p>
+
+
             <h2>Overall operation</h2>
 
-            <p>When you enter a location, PeepWeather converts it to a latitude and longitude (if it's a zip code, using
-                a data file of U.S. towns) then passes that to a query of the U.S. Government's
-                <a href="http://www.nws.noaa.gov/ndfd/">National Digital Forecast Database</a> 
-                <a href="http://graphical.weather.gov/xml/rest.php">REST Web Service</a>. It parses the resulting file
-                to find hourly data, filling in gaps for missing hours. (Different parameters are sampled at different
-                rates, e.g., every three hours for some and every 12 hours for others.) Finally it builds a hourly
-                calendar-like HTML table for display, coloring in each hour using the below algorithm.
+            <p><img src="{{ url_for('static', filename='noaa-logo.png') }}" align="right"/> When you enter a location, PeepWeather converts it to a latitude and longitude (if it's a zip code then
+                it uses a data file of U.S. towns) and then passes that to a query of the U.S. Government's
+                <a href="http://www.nws.noaa.gov/ndfd/">National Digital Forecast Database</a>
+                <a href="http://graphical.weather.gov/xml/rest.php">REST Web Service</a>. It processes the resulting
+                file to find hourly data, filling in gaps for missing hours. (Different parameters are sampled at 
+                different rates, e.g., every three hours for some and every 12 hours for others.) Finally it builds
+                a hourly calendar-like table for display on the page, coloring in each hour using the below algorithm.
             </p>
 
             <h2>Color calculation details</h2>
 
-            <p>Each hour's color is chosen in three steps: </p>
+            <p>Each hour's color is chosen in three steps:</p>
 
             <ol>
                 <li>
@@ -33,8 +54,8 @@
                 <li>Second, those three ratings are combined to get one of four overall desirability ratings for the
                     hour - <code>Poor</code>, <code>Fair</code>, <code>Okay</code>, and <code>Great</code>.
                 </li>
-                <li>Finally, the overall desirability rating is mapped to a color, such as: <code>Great</code> = green,
-                    <code>Okay</code> = yellow, <code>Fair</code> = Orange, and <code>Poor</code> = red.
+                <li>Finally, the overall desirability rating is mapped to a color, such as: Great = green,
+                    Okay = yellow, Fair = Orange, and Poor = red.
                 </li>
             </ol>
 
@@ -47,10 +68,14 @@
 
             <h2>Parameter Function</h2>
             On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, wind
-            speed, or cloud cover) into ranges that determine the rating. An example might be that if wind is between 0 MPH and 5 MPH
-            then consider that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if it's higher
-            than 10 MPH then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to 10% might be
-            High desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially three
+            speed, or cloud cover) into ranges that determine the rating. An example might be that if wind is between 0
+            MPH and 5 MPH
+            then consider that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if
+            it's higher
+            than 10 MPH then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to
+            10% might be
+            High desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially
+            three
             step ranges, graphically shown as:
 
             <div class="row">
@@ -66,13 +91,15 @@ L +      +--->
             </div>
 
             This makes clear that all it takes is two parameter values (called v1 and v2 above) to identify the range.
-            When viewed from left to right, v1 is the High-to-Medium transition, and v2 is the Medium-to-Low transition. In the wind
+            When viewed from left to right, v1 is the High-to-Medium transition, and v2 is the Medium-to-Low transition.
+            In the wind
             example, v1 = 5 MPH and v2 = 10 MPH. The precipitation example had 10% and 20% for v1 and v2, respectively.
             In other words, these two numbers identify the 'breaks' where the steps go down from left to right. We call
             this first type of Parameter Function a "H-M-L" step.
 
             But what about temperature? Well, temperature is different because it has a low range too - it can't be too
-            cold OR too warm, but between those two Low-desirability extremes there are Medium and High values. Our Parameter
+            cold OR too warm, but between those two Low-desirability extremes there are Medium and High values. Our
+            Parameter
             Function for temperature has this shape:
 
             <div class="row">
@@ -88,17 +115,21 @@ L <- -+           +--->
             </div>
 
             We call this Parameter Function a "L-M-H-M-L" hat, and it is characterized by four values, from left to
-            right: v1 (the L-to-M transition), v2 (Medium-to-High), v3 (High-to-Medium), and v4 (Medium-to-Low). For example,
+            right: v1 (the L-to-M transition), v2 (Medium-to-High), v3 (High-to-Medium), and v4 (Medium-to-Low). For
+            example,
             the four values 32, 40, 70, and 85 (all °F) say that anything colder than 32°F or warmer than 85°F are
-            considered Low desirability, Medium is between 32 and 40, and between 70 and 85, and the 40 to 70 sweet spot is High
+            considered Low desirability, Medium is between 32 and 40, and between 70 and 85, and the 40 to 70 sweet spot
+            is High
             desirability. Simple!
 
-            That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly Function.
+            That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly
+            Function.
 
 
             <h2>Hourly Function</h2>
             For each hour, once the program uses the Parameter Functions to get Low, Medium, and High values for the
-            three weather parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour rating.
+            three weather parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour
+            rating.
             Currently this is determined by non-editable rules:
 
             <ul>
@@ -113,6 +144,7 @@ L <- -+           +--->
             <h2>Changing the defaults</h2>
 
             <p>To change the default values shown above, use the settings page:</p>
+
             <p><a class="btn btn-default" href="{{ url_for('editSettings') }}" role="button">Settings&nbsp;&nbsp;<span
                     class="glyphicon glyphicon-cog"></span></a>
             </p>

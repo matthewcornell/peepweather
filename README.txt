@@ -1,14 +1,13 @@
 ;; -*- mode: outline -*-
 
 * >> bugs
-** >> 1 navbar: 1) I lost the menubar feature at some point. 2) too large for mobile?
+** 1 navbar: banner too tall for mobile?
 
 ** 2 sunrise/set off by an hour? current: twilight = -12 * ephem.degree
 http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
 http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
 http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
 fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
-
 
 ** 3 responsive: when key goes below table, it stretches full width. problem?
 
@@ -17,6 +16,9 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 ** ? cookies: use secure?
 
 * >> features: to do
+** 1 add chick pic image in header!
+was causing problems - mobile navbar to cover top of content, etc.
+
 ** 1 text input error-checking (and forgiveness, validation)
 o zip/latlon:
   o validation: not empty. zip or lat/lon pattern (zip: five numbers, exists in zipcode file)
@@ -29,9 +31,6 @@ o search:
   o bug: empty -> Not Found
 
 o ranges : param values: not empty. ints. sorted
-
-** 1 how-it-works: explain how to read, icons (cloud cover)
-Cloud cover does not influence color. It's secondary and is shown as adjunct information in the form of an icon.
 
 ** 1 "Colors & Icons": switch Medium and Low columns, so that the medium column is to the left and low is to the right?
 And maybe add a title above that chart: "Desirability:" currently it's slightly confusing (until seeing "how it works" link).
@@ -53,18 +52,10 @@ Slyster suggests temp:
 
 ** 3 use jQuery everywhere
 
-* todo: branding, ads, etc.
+** continue: ads, subdomains, etc.
+
 ** when good enough -> announce
 rc sites, clubs, etc.
-
-
-** branding!
-o css challenges, responsive, big heavy navbar, etc.
-
-o add chick pic image in header
-  was causing problems - mobile navbar to cover top of content, etc.
-
-** continue: ads, subdomains, etc.
 
 
 * features: someday/maybe
