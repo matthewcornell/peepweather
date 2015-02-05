@@ -1,23 +1,7 @@
 ;; -*- mode: outline -*-
 
-* >> bugs
-** 2 don't show first column if all white?
-
-** 2 sunrise/set off by an hour? current: twilight = -12 * ephem.degree
-http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
-http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
-http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
-fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
-
-** 3 responsive: when key goes below table, it stretches full width. problem?
-
-** ? cookies: use secure?
-
-* >> features: to do
-** 1 add chick pic image in header!
-was causing problems - mobile navbar to cover top of content, etc.
-
-** 1 text input error-checking (and forgiveness, validation)
+* bugs
+** 2d text input error-checking (and forgiveness, validation)
 o zip/latlon:
   o validation: not empty. zip or lat/lon pattern (zip: five numbers, exists in zipcode file)
   o trip spaces around comma, ends
@@ -31,32 +15,104 @@ o search:
 
 o ranges : param values: not empty. ints. sorted
 
-** 1 mobile: tap for pop up detail (can't hover)
+** 3d appearance: navbar: mobile: expanded menubar has double lines above and below
+should be like this:
+http://getbootstrap.com/javascript/
 
-** 2 search: decide what I want it to do
+** 3d sunrise/set off by an hour? current: twilight = -12 * ephem.degree
+http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
+http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
+http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
+fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
+
+** 3d appearance: responsive: when key goes below table, it stretches full width
+
+* features: to do
+** >> 1e default ranges: rethink
+current temp:
+    'precip': [10, 30],
+    'temp': [32, 41, 70, 85],
+    'wind': [8, 12],
+    'clouds': [33, 66]
+
+Slyster suggests:
+    <35 = poor
+    35-59 = medium
+    60-89 = great
+    >90 = medium
+
+
+** 1m change terminology - confusion over Low/Med/High: desirability vs. amount
+o low rain vs. low desirability - high rain
+o Low means Low Desirability (like Orange or Red) not low amounts of clouds
+
+-> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
+
+** 1d click/tap to show popover
+http://getbootstrap.com/javascript/#popovers
+
+** 1d think: a way to pass my defaults in as a part of a URL link
+My flying buddies and I have a different idea for what the low/medium/high is and to be able to pass a link around showing the settings would be nice. As it is, I adjust the defaults to what We're willing to fly in, but when I send them the link, it seems to go back to the defaults.
+
+
+Maybe it would be cool instead of storing preferences in cookies if you could pass them all in the query string. That way you could just set up your favorites locally on whichever devices you have and pass any non default settings that way. Maybe make something like the settings page to allow the full URL and query string to be built and copied from there. Anyways, just another way to do it without having use cookies or store any data server side.
+
+
+You could always do like Mr. Mel did with the headspeed calculator. It doesn't require a log-in per se, but stores on the site's side based on an email address entered. Then just allow a way for the email addy to be passed in the URL query parameters.
+
+Nothing confidential, so no password needed, but using email allows a unique way to store personal preferences without needing cookies (well, you can still use a cookie and keep the email addy so user doesn't need to enter if visiting from the same device) and changes will be always available to a user across devices...
+
+This would also be a good solution for club websites... Just pass the email used in the query parameter and the right zip's info will always be displayed with the chosen settings.
+
+** 2e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
+(wind, precip, etc.) that updates to show a sentence incorporating the current values
+
+ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."
+
+** 2m use jQuery everywhere
+
+** 2m search: decide what I want it to do
 whole state name. completion. sort by name
 
-** 2 rethink default ranges
-Slyster suggests temp:
+** 2d add chick pic image in header
+was causing problems - mobile navbar to cover top of content, etc.
 
-<35 = poor
-35-59 = medium
-60-89 = great
->90 = medium
 
-** 3 use jQuery everywhere
+* promotion ideas, branding
+** ! think: embed feature for clubs' sites :-)
+Have you considered an embed option for clubs to use that has a link to your site when clicked? For example, a club with 60 members regularly checks the club page for news, rules, ETC. They can always see the conditions for flight.
 
-** continue: ads, subdomains, etc.
+A one-line filled-in HTML text field that a webmaster can copy that shows the forecast page embedded in their site in a frame, like this from youtube:
+
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/RPBX47zSktc" frameborder="0" allowfullscreen></iframe>
+
+** think: what other integration opportunities are there?
+see [embed feature for clubs' sites]
+
+calendar integration - google or ical? see [mobile app]
+
+helifreak and other boards (hunting, etc): a widget/link in their signature based on their profile location. maybe it shows a shrunken snapshot of the current weather? would reload every time...
+
+** appearance: animation where chick peeks over/around something (heli, etc.) :-)
+
+** continue: subdomains, ads, etc.
 
 ** when good enough -> announce
 rc sites, clubs, etc.
 
 
-* features: someday/maybe
-** favorite flying locations :-)
-add my favorite locations to a list, and have that list saved for when I come back to the page
+* features: to consider
+** appearance: don't show first column if all white?
 
-** recently found - last 5 or so :-)
+** ~ favorite flying locations (like bookmarks)
+add my favorite locations to a list, and have that list saved for when I come back to the home page
+
+
+It could be as simple as a dropdown list somewhere. For example, a small drop down list in the header next to settings or something. It doesn't even need to have a title; an icon that represents favorites would be fine. You could then show a text hint when hovered over, or simply have it be at the top of the pop-up before your list of favorites.
+
+I'd personally rather have one bookmark to get to all the places I care about instead of one for each location. (OK, I've only got two so far, but, hey, that could always change... )
+
+** ~ recently found - last 5 or so :-)
 
 ** ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
 

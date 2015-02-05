@@ -21,10 +21,10 @@ class Forecast:
     """
 
     # default ranges (AKA a 'range dict'). see range-documentation.txt for detail
-    PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H-M-L
-                                 'temp': [32, 41, 70, 85],  # L-M-H-M-L
-                                 'wind': [8, 12],  # H-M-L
-                                 'clouds': [33, 66],  # H-M-L
+    PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],  # H->M, M->L
+                                 'temp': [35, 59, 89, 100],  # L->, M->H, H->, M->L
+                                 'wind': [8, 12],  # H->M, M->L
+                                 'clouds': [33, 66],  # H->M, M->L
     }
 
 
@@ -80,8 +80,8 @@ class Forecast:
             # truncate to four digits after decimal
             latStr = self.latLon[0]
             lonStr = self.latLon[1]
-            latStr = latStr[:latStr.index('.')+5]
-            lonStr = lonStr[:lonStr.index('.')+5]
+            latStr = latStr[:latStr.index('.') + 5]
+            lonStr = lonStr[:lonStr.index('.') + 5]
             return '{}, {}'.format(latStr, lonStr)
 
 
@@ -108,12 +108,12 @@ class Forecast:
         :return: True if dt is daytime according to my latLon, and False o/w
         """
         if not dt.tzinfo:
-            raise ValueError("datetime has no tzinfo: {!r}".format(dt)) # 'naive' datetime
-        
+            raise ValueError("datetime has no tzinfo: {!r}".format(dt))  # 'naive' datetime
+
         observer = ephem.Observer()
         observer.lat = latLon[0]
         observer.lon = latLon[1]
-        
+
         # now set observer.date. Note: because forecast times are local to the lat/lon (<time-layout time-coordinate="local" ...">),
         # and because ephem requires all dates in UTC and does not honor time zones, we need to covert to UTC. do so by
         # adding the # hours represented by the included datetime timezone
@@ -265,7 +265,7 @@ class Forecast:
             layoutKey = timeLayoutEle.find('layout-key')
             startValidTimes = []
             for startValidTimeEle in timeLayoutEle.findall('start-valid-time'):
-                dt = Forecast.parseStartValidTime(startValidTimeEle.text)                
+                dt = Forecast.parseStartValidTime(startValidTimeEle.text)
                 startValidTimes.append(dt)
             timeLayoutDict[layoutKey.text] = startValidTimes
         return timeLayoutDict
