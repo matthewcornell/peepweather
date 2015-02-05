@@ -50,7 +50,7 @@
                 <h3 class="text-muted">Search for a location:</h3>
 
                 <form class="form-inline" method="POST" action="{{ url_for('do_zip_search_submit') }}">
-                    <input class="form-control" type="text" name="query_form_val" placeholder="city or town">
+                    <input class="form-control" type="text" name="query_form_val" placeholder="city or town (not state)">
                     <button class="btn btn-primary" type="submit">
                         <span class="glyphicon glyphicon-search"></span>
                     </button>
@@ -76,10 +76,9 @@
             <div class="col-md-4">
                 <h2>What is PeepWeather?</h2>
 
-                <p>PeepWeather is a web application that shows a color-coded <code>stoplight view</code> of the weather
-                    for
-                    the next seven days, hour-by-hour. In one glance you can quickly see what the flying looks like for
-                    the week and plan accordingly.</p>
+                <p>PeepWeather is a web application that shows a color-coded <code>traffic light</code> view of the
+                    weather for the next seven days, hour-by-hour. In one glance you can quickly see what the flying
+                    looks like for the week and plan accordingly.</p>
 
                 <p><a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it
                     works &raquo;</a></p>
@@ -87,16 +86,15 @@
             <div class="col-md-4">
                 <h2>Who is it for?</h2>
 
-                <p>From park fliers to 500 class helis to giant-scale warbirds, all RC pilots need to know the weather
+                <p>From park fliers to 500 class helis to giant scale, all RC pilots need to know the weather
                     to decide when is good for flying. The problem is we're busy, but most forecast sites take too
                     much time to figure out what we really care about: a <code>go/no go</code> for each hour.</p>
             </div>
             <div class="col-md-4">
                 <h2>Why use it?</h2>
 
-                <p>Unlike other weather sites that either provide too little hourly information or way too much, RC
-                    Weather
-                    makes it easy for you to tell, in one look, how the week is stacking up.
+                <p>Unlike other weather sites that either provide too little hourly information or way too much,
+                    PeepWeather makes it easy for you to tell, in one look, how the week is stacking up.
                     <strong class="text-danger">Lots of red?</strong> Relax and hit the sim.
                     <strong class="text-success">Tons of green?</strong> Call a buddy and meet at the field!</p>
             </div>

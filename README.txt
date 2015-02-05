@@ -1,15 +1,119 @@
 ;; -*- mode: outline -*-
 
-* >> current branch todo
-xx
+* >> bugs
+** >> 1 navbar: 1) I lost the menubar feature at some point. 2) too large for mobile?
 
-* >> set up forwarding to rc-weather.herokuapp.com <- www.peepweather.com
+** 2 sunrise/set off by an hour? current: twilight = -12 * ephem.degree
+http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
+http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
+http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
+fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
+
+
+** 3 responsive: when key goes below table, it stretches full width. problem?
+
+** ? don't show first column if all white
+
+** ? cookies: use secure?
+
+* >> features: to do
+** 1 text input error-checking (and forgiveness, validation)
+o zip/latlon:
+  o validation: not empty. zip or lat/lon pattern (zip: five numbers, exists in zipcode file)
+  o trip spaces around comma, ends
+  o bug: empty -> Not Found
+
+o search:
+  o not empty, matches zipcode file. ideally: completion
+  o trim space from ends
+  o bug: empty -> Not Found
+
+o ranges : param values: not empty. ints. sorted
+
+** 1 how-it-works: explain how to read, icons (cloud cover)
+Cloud cover does not influence color. It's secondary and is shown as adjunct information in the form of an icon.
+
+** 1 "Colors & Icons": switch Medium and Low columns, so that the medium column is to the left and low is to the right?
+And maybe add a title above that chart: "Desirability:" currently it's slightly confusing (until seeing "how it works" link).
+
+"Low" and a wind icon would, not knowing otherwise" mean low wind, where in this context it means low desirability to fly, right? Maybe "Light" and "Heavy" would be better terms for the gen pop.... Doesn't sound right either, but point remains...
+
+** 1 mobile: tap for pop up detail (can't hover)
+
+** 2 search: decide what I want it to do
+whole state name. completion. sort by name
+
+** 2 rethink default ranges
+Slyster suggests temp:
+
+<35 = poor
+35-59 = medium
+60-89 = great
+>90 = medium
+
+** 3 use jQuery everywhere
+
+* todo: branding, ads, etc.
+** when good enough -> announce
+rc sites, clubs, etc.
+
+
+** branding!
+o css challenges, responsive, big heavy navbar, etc.
+
+o add chick pic image in header
+  was causing problems - mobile navbar to cover top of content, etc.
+
+** continue: ads, subdomains, etc.
+
+
+* features: someday/maybe
+** favorite flying locations :-)
+add my favorite locations to a list, and have that list saved for when I come back to the page
+
+** recently found - last 5 or so :-)
+
+** ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
+
+** ~ a checkbox controlling whether apparent or actual temp is used
+
+** ~ editable parameter weights for combined importance to the final rating
+
+* future: major features
+** international. I don't know the details myself, but drop Benny Wydooghe a line on google+, or in the Meteogram Widget
+group on google+. He's the developer of the widget I posted a screenshot of earlier, and has a great international weather service he uses. He's had to work through all these timezone issues, provider issues, etc himself so he'd  probably be a good contact for you. - http://helifreak.com/showpost.php?p=6317185&postcount=89
+
+** mobile app
+o widget
+o alerts: mobile app that alerts me when local conditions are "green"
+o the integrate it with the existing android/iOS calendars (shade the background of your calendar's hourly blocks with flying condition colors). could see my actual appointments etc while being able to see flying conditions at a glance (and schedule everything for red times!)
+
+
+* 2015-01-19: forum postings
+[Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!](http://helifreak.com/showthread.php?p=6307025#post6307025)
+
+[RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!](http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR)
+
+
+** referenced apps/sites
+** ! [Windalert](http://www.windalert.com/)
+** ! [ETSU Observatory Clear Sky Chart](http://cleardarksky.com/c/ETSUObTNkey.html?1)
+** [WindAlert iOS App] (https://itunes.apple.com/us/app/windalert/id317992025?mt=8)
+** [Windalert](http://www.windalert.com/)
+** [Meteogram weather widget](https://play.google.com/store/apps/details?id=be.inet.rainwidget)
+   yellow for wind, blue bars for rainfall, and colour coded temperature
+** [Windyty, wind forecast](https://www.windyty.com/spot/location/42.374/-72.518/name/Amherst?surface,wind,now,42.374,-72.264,11)
+** [Aviation Weather Report and Forecast - Wind Speed, Temperature, Wind Direction, Precipitation Forecast](http://www.usairnet.com/cgi-bin/launch/code.cgi?state=TX&sta=KTKI)
+** [meteocons](http://www.alessioatzeni.com/meteocons/res/img/screen.png)
+** [1Weather:Widget Forecast Radar | 1mobile.com] (http://www.1mobile.com/1weather-widget-forecast-radar-336436.html)
+** [windalert.com] (http://windalert.com/map#42.375,-72.513,10,1)
+
+
+* v! set up forwarding to rc-weather.herokuapp.com <- www.peepweather.com
 heroku domains:add example.com
 
-xx
 
-
-** >> w/f DNS settings usually take up to 24 hours to propagate everywhere, so you may not be able to access your site immediately using your domain name.
+** v! w/f DNS settings usually take up to 24 hours to propagate everywhere, so you may not be able to access your site immediately using your domain name.
 
 ** v what I did
 *** v namecheap side
@@ -64,7 +168,7 @@ https://devcenter.heroku.com/articles/apex-domains
 avoid using DNS A-records and instead use a DNS provider that supports CNAME functionality at the apex, or use sub-domains exclusively.
 
 
-* >> move to own domain :-)
+* v move to own domain :-)
 ** v! decide and register domain name
 DEC: peepweather.com ! (second choice: forecastpeek.com)
 https://www.namecheap.com/cart/checkout/orderconfirmation.aspx?id=14574036
@@ -86,88 +190,5 @@ hunt.peepweather.com
 DEC: wait on subdomains - use root domain
 
 
-** >> see [set up forwarding to rc-weather.herokuapp.com]
-
-** announce
-
-** continue - adds, etc.
-
-
-* >> bugs
-o navbar: 1) I lost the menubar feature at some point. 2) too large for mobile?
-  -> when done: debug chick pic causing mobile navbar to cover top of content
-
-- zip/latlon input: remove spaces around comma
-
-- don't show first column if all white
-
-- ? cookies: use secure?
-
-- ! form validation:
-    - clicking submit without text entered -> error: http://127.0.0.1:5000/forecast/
-    - /       : zipcode: not empty. five numbers. exists in zipcode file.
-    - /       : lat/lon: not empty. lat/lon pattern
-    - /ranges : param values: not empty. ints. sorted
-    - /search : not empty
-
-- ? sunrise/set off by an hour? current: twilight = -12 * ephem.degree
-  http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
-  http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
-  http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
-  fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
-
-
-* >> features: to do
-
-
-* features: someday/maybe
-- better share icons: https://www.namecheap.com/cart/checkout/orderconfirmation.aspx?id=14574036
-
-- recently found on right - last 5 or so :-)
-
-- ~ a checkbox controlling whether apparent or actual temp is used
-
-- ~ click a square to show details
-
-- ~ editable parameter weights for combined importance to the final rating
-
-- ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
-
-- international. I don't know the details myself, but drop Benny Wydooghe a line on google+, or in the Meteogram Widget
-  group on google+. He's the developer of the widget I posted a screenshot of earlier, and has a great international
-  weather service he uses. He's had to work through all these timezone issues, provider issues, etc himself so he'd
-  probably be a good contact for you. - http://helifreak.com/showpost.php?p=6317185&postcount=89
-
-- mobile app
-    - widget
-    - alerts: mobile app that alerts me when local conditions are "green"
-    - the integrate it with the existing android/iOS calendars (shade the background of your calendar's hourly blocks
-      with flying condition colors). could see my actual appointments etc while being able to see flying conditions at
-      a glance (and schedule everything for red times!)
-
-
-* 2015-01-19: forum postings
-[Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!](http://helifreak.com/showthread.php?p=6307025#post6307025)
-
-[RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!](http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR)
-
-
-** referenced apps/sites
-- ! [Windalert](http://www.windalert.com/)
-- ! [ETSU Observatory Clear Sky Chart](http://cleardarksky.com/c/ETSUObTNkey.html?1)
-- [WindAlert iOS App] (https://itunes.apple.com/us/app/windalert/id317992025?mt=8)
-- [Windalert](http://www.windalert.com/)
-- [Meteogram weather widget](https://play.google.com/store/apps/details?id=be.inet.rainwidget)
-   yellow for wind, blue bars for rainfall, and colour coded temperature
-- [Windyty, wind forecast](https://www.windyty.com/spot/location/42.374/-72.518/name/Amherst?surface,wind,now,42.374,-72.264,11)
-- [Aviation Weather Report and Forecast - Wind Speed, Temperature, Wind Direction, Precipitation Forecast](http://www.usairnet.com/cgi-bin/launch/code.cgi?state=TX&sta=KTKI)
-- [meteocons](http://www.alessioatzeni.com/meteocons/res/img/screen.png)
-- [1Weather:Widget Forecast Radar | 1mobile.com] (http://www.1mobile.com/1weather-widget-forecast-radar-336436.html)
-- [windalert.com] (http://windalert.com/map#42.375,-72.513,10,1)
-
-
-* ongoing
-Obviously the two big factors in how useful this app is are:
-1) quality of underlying weather data, and
-2) quality of the hourly analysis-to-color algorithm
+** v see [set up forwarding to rc-weather.herokuapp.com]
 
