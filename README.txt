@@ -1,7 +1,7 @@
 ;; -*- mode: outline -*-
 
 * >> bugs
-** 1 navbar: banner too tall for mobile?
+** 2 don't show first column if all white?
 
 ** 2 sunrise/set off by an hour? current: twilight = -12 * ephem.degree
 http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
@@ -10,8 +10,6 @@ http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-usi
 fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 ** 3 responsive: when key goes below table, it stretches full width. problem?
-
-** ? don't show first column if all white
 
 ** ? cookies: use secure?
 
