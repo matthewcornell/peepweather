@@ -15,8 +15,9 @@
             <th style="color:{{ rowHeadingColor }}">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
             {% for hour in hourOfDayRow %}
                 <td class="{{ hour.cssClassForDesirability() }}"
-                    title="{{ hour.detailString() }}"
-                    data-content="And here's some <b>amazing</b> content. It's very engaging. Right?"
+                    title="{{ hour.detailString()[0] }}"
+                    data-content="{{ hour.detailString()[1] }}"
+                    data-html="true"
                     data-toggle="popover"
                     data-placement="bottom"
                     data-trigger="focus"

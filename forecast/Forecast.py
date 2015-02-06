@@ -327,7 +327,8 @@ class Forecast:
         return headerRow
 
 
-    def rowHeadingForHour(self, hourOfDay):
+    @staticmethod
+    def rowHeadingForHour(hourOfDay):
         """
         :param hourOfDay: 0 through 23. indexes into hoursAsCalendarRows()
         :return: AM/PM version of hour

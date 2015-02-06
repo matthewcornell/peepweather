@@ -60,16 +60,22 @@ class Hour():
     # ==== UI methods ====
 
     def detailString(self):
+        """
+        :return: 2-tuple of strings for popover display: (title, body)
+        """
+        titleStr = '{} - {}'.format(self.datetime.strftime('%a %m/%d %I:%M %p'), self.cssClassForDesirability())
         if self.isMissingHour():
-            return str(self)
+            return titleStr, "No data"
         else:
-            desirabilityToChar = {Hour.P_DES_HIGH: 'H', Hour.P_DES_MED: 'M', Hour.P_DES_LOW: 'L', }
-            return '{} | P:{}% ({}), T:{}°F ({}), W:{} MPH ({}), C:{}% ({})'.format(
-                self.datetime.strftime('%a %m/%d %H:%M') if self.datetime else "time?",
-                self.precip, desirabilityToChar[self.paramDesirabilityForValue('precip', self.precip)],
-                self.temp, desirabilityToChar[self.paramDesirabilityForValue('temp', self.temp)],
-                self.wind, desirabilityToChar[self.paramDesirabilityForValue('wind', self.wind)],
-                self.clouds, desirabilityToChar[self.paramDesirabilityForValue('clouds', self.clouds)])
+            paramDesToChar = {Hour.P_DES_HIGH: '&check;', Hour.P_DES_MED: '~', Hour.P_DES_LOW: 'x', }
+            bodyStr = '{}&nbsp;<strong>Precip</strong>:&nbsp;{}%, {}&nbsp;<strong>Temp</strong>:&nbsp;{}°F, ' \
+                      '{}&nbsp;<strong>Wind</strong>:&nbsp;{} MPH, {}&nbsp;<strong>Clouds</strong>:&nbsp;{}%'.format(
+                paramDesToChar[self.paramDesirabilityForValue('precip', self.precip)], self.precip,
+                paramDesToChar[self.paramDesirabilityForValue('temp', self.temp)], self.temp,
+                paramDesToChar[self.paramDesirabilityForValue('wind', self.wind)], self.wind,
+                paramDesToChar[self.paramDesirabilityForValue('clouds', self.clouds)], self.clouds,
+                )
+            return titleStr, bodyStr
 
 
     def cssClassForDesirability(self):
@@ -94,10 +100,10 @@ class Hour():
         """
         desirability = self.desirability()
         chars = [None, None, None]  # precip, temp, wind
-        
+
         if self.isMissingHour():
             return chars
-        
+
         # add precip or clouds
         precipDes = self.paramDesirabilityForValue('precip', self.precip)
         cloudsDes = self.paramDesirabilityForValue('clouds', self.clouds)
@@ -105,10 +111,10 @@ class Hour():
             chars[0] = 'wi-rain'
         elif precipDes == Hour.P_DES_MED:
             chars[0] = 'wi-showers'
-        elif cloudsDes == Hour.P_DES_LOW:   # add a cloud icon if it's cloudy and no other cloud-containing icons are present due to precip
+        elif cloudsDes == Hour.P_DES_LOW:  # add a cloud icon if it's cloudy and no other cloud-containing icons are present due to precip
             chars[0] = 'wi-cloudy'  # double clouds
         elif cloudsDes == Hour.P_DES_MED:
-            chars[0] = 'wi-cloud'   # single cloud
+            chars[0] = 'wi-cloud'  # single cloud
 
         # add temp
         tempDes = self.paramDesirabilityForValue('temp', self.temp)
