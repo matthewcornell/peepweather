@@ -63,10 +63,11 @@ class Hour():
         """
         :return: 2-tuple of strings for popover display: (title, body)
         """
-        titleStr = '{} - {}'.format(self.datetime.strftime('%a %m/%d %I:%M %p'), self.cssClassForDesirability())
+        dateTimeStr = '{}'.format(self.datetime.strftime('%a %m/%d %I:%M %p'))
         if self.isMissingHour():
-            return titleStr, "No data"
+            return dateTimeStr, "No data"
         else:
+            titleStr = '{} - {}'.format(dateTimeStr, self.cssClassForDesirability())
             paramDesToChar = {Hour.P_DES_HIGH: '&check;', Hour.P_DES_MED: '~', Hour.P_DES_LOW: 'x', }
             bodyStr = '{}&nbsp;<strong>Precip</strong>:&nbsp;{}%, {}&nbsp;<strong>Temp</strong>:&nbsp;{}°F, ' \
                       '{}&nbsp;<strong>Wind</strong>:&nbsp;{}&nbsp;MPH, {}&nbsp;<strong>Clouds</strong>:&nbsp;{}%'.format(

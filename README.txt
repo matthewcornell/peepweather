@@ -39,9 +39,6 @@ o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
-** >> 1d click/tap to show popover
-http://getbootstrap.com/javascript/#popovers
-
 ** 1d think: a way to pass my defaults in as a part of a URL link
 My flying buddies and I have a different idea for what the low/medium/high is and to be able to pass a link around showing the settings would be nice. As it is, I adjust the defaults to what We're willing to fly in, but when I send them the link, it seems to go back to the defaults.
 
