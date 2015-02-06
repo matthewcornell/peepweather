@@ -10,35 +10,33 @@
             <h1>How does it work?</h1>
 
             <p><img src="{{ url_for('static', filename='traffic-light.png') }}" align="left"/> PeepWeather shows the
-                upcoming week's forecast in a familiar four-color "traffic light" coding of each hour, formatted as a
+                upcoming week's forecast in a familiar colored "traffic light" coding of each hour, formatted as a
                 calendar-like table. A green square means the weather looks Great, yellow is Okay, orange is Fair, and
                 red is just plain Poor. By simply looking at the colors you can tell at a glance how the week is
                 shaping up.</p>
 
-            <p>In addition, PeepWeather augment the colors by showing icons in each square that indicate concerns,
+            <p>In addition, PeepWeather augments the colors by showing icons in each square that indicate concerns,
                 including increased probability of precipitation, low or high temperatures, windiness, and cloud
                 cover. These give you some additional detail if you want it. Think of the icons as hints about what
                 made an hour not green. (Note that icons can be disabled in settings.)</p>
 
-            <p>Details about how those weather parameters - probability of precipitation, temperature, and
-                windiness - get combined into once color are below, but in a nutshell parameters "add up" - the more
-                bad ones there are, the worse the color is.</p>
+            <p>Details are below about how those weather parameters - probability of precipitation, temperature, and
+                windiness - get combined into one color, but in a nutshell parameters "add up" - the more bad ones
+                there are, the worse the color is.</p>
 
             <p>Cloud cover is treated specially and does not influence color. Instead it's a secondary consideration
                 for you and is shown as adjunct information in the form of an icon. That's why some green days will
-                have a cloud icon. They are terrific for precip, temp, and wind, but there's some sky cover that you
-                may have a preference about.</p>
+                have a cloud icon. This way you can factor in sky cover given your preferences.</p>
 
 
             <h2>Overall operation</h2>
 
-            <p><img src="{{ url_for('static', filename='noaa-logo.png') }}" align="right"/> When you enter a location, PeepWeather converts it to a latitude and longitude (if it's a zip code then
-                it uses a data file of U.S. towns) and then passes that to a query of the U.S. Government's
-                <a href="http://www.nws.noaa.gov/ndfd/">National Digital Forecast Database</a>
+            <p><img src="{{ url_for('static', filename='noaa-logo.png') }}" align="right"/> When you enter a location,
+                PeepWeather converts it to a latitude and longitude and then passes that to a query of the U.S.
+                Government's <a href="http://www.nws.noaa.gov/ndfd/">National Digital Forecast Database</a>
                 <a href="http://graphical.weather.gov/xml/rest.php">REST Web Service</a>. It processes the resulting
-                file to find hourly data, filling in gaps for missing hours. (Different parameters are sampled at 
-                different rates, e.g., every three hours for some and every 12 hours for others.) Finally it builds
-                a hourly calendar-like table for display on the page, coloring in each hour using the below algorithm.
+                file to find hourly data, filling in gaps for missing hours. Finally it builds a hourly calendar-like
+                table for display on the page, coloring in each hour using the below algorithm.
             </p>
 
             <h2>Color calculation details</h2>
