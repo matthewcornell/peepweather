@@ -68,7 +68,7 @@
         <div class="row">
             <h2>Debuging tools</h2>
 
-            {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + ',' + forecast.latLon[1] %}
+            {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + '|' + forecast.latLon[1] %}
 
             <ul>
                 <li><a href="{{ url_for('showForecast', zipOrLatLon=zipOrLatLon, list=true) }}">Show list view</a>

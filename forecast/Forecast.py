@@ -52,7 +52,7 @@ class Forecast:
 
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
-            print('Forecast({}) @ {}: {}, {} -> {}: '.format(
+            logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(
                 self.zipcode, datetime.datetime.now(), self.latLon, self.name, self.weatherDotGovUrl()))
             elementTree = ET.parse(httpResponse)
         dwmlElement = elementTree.getroot()
