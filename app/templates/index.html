@@ -2,7 +2,7 @@
 
 {% block title %}Welcome to PeepWeather!{% endblock %}
 
-{% block content %}
+{% block scripts %}
     
     <script>
         jQuery(window).ready(function () {
@@ -12,10 +12,14 @@
         function handle_geolocation_query(position) {
             var latLon = position.coords.latitude + ',' + position.coords.longitude;
             jQuery("#latlon_input_id").val(latLon);
-            jQuery("#latlon_form_id").attr("class","show");
+            jQuery("#latlon_form_id").attr("class", "show");
         }
     </script>
     
+{% endblock %}
+
+
+{% block content %}
 
     <!-- upper half: action, screen shot, recent -->
     <div class="container">
@@ -28,7 +32,8 @@
                 <div id="latlon_form_id" class="hidden">
                     <form class="form-inline" method="POST" action="{{ url_for('do_zip_submit') }}">
                         <label class="h3 text-muted" for="latlon_input_id">Use your location:&nbsp;</label>
-                        <input class="form-control hidden" id="latlon_input_id" type="text" name="zip_or_latlon_form_val">
+                        <input class="form-control hidden" id="latlon_input_id" type="text"
+                               name="zip_or_latlon_form_val">
                         <button type="submit" class="btn btn-primary">
                             <i class="fa fa-crosshairs fa-lg"></i>
                         </button>
@@ -50,7 +55,8 @@
                 <h3 class="text-muted">Search for a location:</h3>
 
                 <form class="form-inline" method="POST" action="{{ url_for('do_zip_search_submit') }}">
-                    <input class="form-control" type="text" name="query_form_val" placeholder="city or town (not state)">
+                    <input class="form-control" type="text" name="query_form_val"
+                           placeholder="city or town (not state)">
                     <button class="btn btn-primary" type="submit">
                         <span class="glyphicon glyphicon-search"></span>
                     </button>

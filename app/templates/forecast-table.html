@@ -1,4 +1,4 @@
-<table class="table table-bordered" style="table-layout: fixed;">
+<table id="forecast_table" class="table table-bordered" style="table-layout: fixed;">
     <tr>
         {# first column blank for row/hour header #}
         <td></td>
@@ -15,7 +15,13 @@
             <th style="color:{{ rowHeadingColor }}">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
             {% for hour in hourOfDayRow %}
                 <td class="{{ hour.cssClassForDesirability() }}"
-                    title="{{ hour.detailString() }}">
+                    title="{{ hour.detailString() }}"
+                    data-content="And here's some <b>amazing</b> content. It's very engaging. Right?"
+                    data-toggle="popover"
+                    data-placement="bottom"
+                    data-trigger="focus"
+                    data-container="#forecast_table"
+                    tabindex="0">
                     {% if not hideIcons %}
                         {% for wiClass in hour.charIconsForParams() %}
                             {% if wiClass %} <i class="wi {{ wiClass }}"></i> {% endif %}

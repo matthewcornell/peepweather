@@ -17,6 +17,11 @@ def index():
     return render_template("index.html")
 
 
+@app.route('/forecast/')
+def showForecastNoZip():
+    return redirect(url_for('index'))
+    
+
 @app.route('/forecast/<zipOrLatLon>')
 def showForecast(zipOrLatLon):
     """

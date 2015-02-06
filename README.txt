@@ -1,5 +1,10 @@
 ;; -*- mode: outline -*-
 
+* development process
+** >> 1d staging server!
+Q: can use same codebase and just add a different git remote for new app?
+
+
 * bugs
 ** 2d text input error-checking (and forgiveness, validation)
 o zip/latlon:
@@ -28,27 +33,13 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 ** 3d appearance: responsive: when key goes below table, it stretches full width
 
 * features: to do
-** >> 1e default ranges: rethink
-current temp:
-    'precip': [10, 30],
-    'temp': [32, 41, 70, 85],
-    'wind': [8, 12],
-    'clouds': [33, 66]
-
-Slyster suggests:
-    <35 = poor
-    35-59 = medium
-    60-89 = great
-    >90 = medium
-
-
 ** 1m change terminology - confusion over Low/Med/High: desirability vs. amount
 o low rain vs. low desirability - high rain
 o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
-** 1d click/tap to show popover
+** >> 1d click/tap to show popover
 http://getbootstrap.com/javascript/#popovers
 
 ** 1d think: a way to pass my defaults in as a part of a URL link

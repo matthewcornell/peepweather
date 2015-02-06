@@ -2,6 +2,19 @@
 {% block title %}Forecast for {{ forecast.location() }}{% endblock %}
 {% block navLocation %} > {{ forecast.location() }}{% endblock %}
 
+{% block scripts %}
+    
+    <!-- enable popovers for forecast cells -->
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+{#            $(".Great").popover();#}
+        });
+    </script>
+    
+{% endblock %}
+
+
 {% block content %}
 
     <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
