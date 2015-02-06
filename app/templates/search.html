@@ -18,7 +18,7 @@
                 <tbody>
                 {% for zip, name, lat, lon in zipNameLatLonTuples %}
                     <tr>
-                        <td><a href="/forecast/{{ zip }}">{{ zip }}</a></td>
+                        <td><a href="{{ url_for('showForecast', zipOrLatLon=zip) }}">{{ zip }}</a></td>
                         <td>{{ name }}</td>
                     </tr>
                 {% endfor %}
