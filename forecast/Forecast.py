@@ -156,7 +156,7 @@ class Forecast:
             name = city + ", " + state
             if re.search(query, name, re.IGNORECASE):
                 zipNameTuples.append((csv_zipcode, name, latitude, longitude))
-        return zipNameTuples
+        return sorted(zipNameTuples, key=lambda theTuple: theTuple[1])
 
 
     # ==== hoursWithNoGapsFromXml() and friends ====

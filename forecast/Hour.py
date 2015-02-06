@@ -69,7 +69,7 @@ class Hour():
         else:
             paramDesToChar = {Hour.P_DES_HIGH: '&check;', Hour.P_DES_MED: '~', Hour.P_DES_LOW: 'x', }
             bodyStr = '{}&nbsp;<strong>Precip</strong>:&nbsp;{}%, {}&nbsp;<strong>Temp</strong>:&nbsp;{}°F, ' \
-                      '{}&nbsp;<strong>Wind</strong>:&nbsp;{} MPH, {}&nbsp;<strong>Clouds</strong>:&nbsp;{}%'.format(
+                      '{}&nbsp;<strong>Wind</strong>:&nbsp;{}&nbsp;MPH, {}&nbsp;<strong>Clouds</strong>:&nbsp;{}%'.format(
                 paramDesToChar[self.paramDesirabilityForValue('precip', self.precip)], self.precip,
                 paramDesToChar[self.paramDesirabilityForValue('temp', self.temp)], self.temp,
                 paramDesToChar[self.paramDesirabilityForValue('wind', self.wind)], self.wind,
