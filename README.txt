@@ -56,14 +56,39 @@ was causing problems - mobile navbar to cover top of content, etc.
 
 
 * promotion ideas, branding
-** use PeepCast ? :-)
+** use 'PeepCast' ? :-)
 
-** ! think: embed feature for clubs' sites :-)
+** >> ! embed feature for clubs' sites :-)
 Have you considered an embed option for clubs to use that has a link to your site when clicked? For example, a club with 60 members regularly checks the club page for news, rules, ETC. They can always see the conditions for flight.
 
-A one-line filled-in HTML text field that a webmaster can copy that shows the forecast page embedded in their site in a frame, like this from youtube:
+*** REF
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
 
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/RPBX47zSktc" frameborder="0" allowfullscreen></iframe>
+*** Using inline frames (iframe elements) to embed documents into HTML documents
+http://www.cs.tut.fi/~jkorpela/html/iframe.html
+
+inline frame (floating frame) .. Technically, an iframe element is a text-level element, or "inline element" (as opposite to block-level elements). Syntactically an iframe element may occur inside a paragraph, even between two words of text
+
+<iframe src="news.html" width="40%" height="80" align="right"> <p>See our <a href="news.html">newsflashes</a>.</p> </iframe>
+
+
+*** https://www.youtube.com/watch?v=nTgJJy3Umhw
+Share > Embed
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nTgJJy3Umhw" frameborder="0" allowfullscreen></iframe>
+
+
+*** https://www.google.com/maps/place/Amherst,+MA/@42.3676145,-72.505491,12z/data=!3m1!4b1!4m2!3m1!1s0x89e6ce020a71240f:0xd5751d15974c2fdc
+Share > Embed
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d94330.33116468109!2d-72.50549095000001!3d42.3676145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e6ce020a71240f%3A0xd5751d15974c2fdc!2sAmherst%2C+MA!5e0!3m2!1sen!2sus!4v1423275410144" width="600" height="450" frameborder="0" style="border:0"></iframe>
+
+has a dropdown: Small, Medium, Large, Custom size
+
+gives a popup preview
+
+
+*** http://stackoverflow.com/questions/291813/recommended-way-to-embed-pdf-in-html
+<iframe src="http://docs.google.com/gview?url=http://example.com/mypdf.pdf&embedded=true" style="width:718px; height:700px;" frameborder="0"></iframe>
+
 
 ** think: what other integration opportunities are there?
 see [embed feature for clubs' sites]
