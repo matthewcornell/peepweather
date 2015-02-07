@@ -32,52 +32,55 @@
 
     <div class="container">
 
-        <div class="row">
-            <h1>Forecast for {{ forecast.location() }} </h1>
+    <div class="row">
+        <h1>Forecast for {{ forecast.location() }} </h1>
 
-            <div class="col-md-12 help-block">Time: <span id="time-id"></span></div>
+        <div class="col-md-12 help-block">Time: <span id="time-id"></span></div>
 
-            <div class="col-md-8">
-                {% include "forecast-table.html" %}
-            </div>
+        <div class="col-md-8">
+            {% include "forecast-table.html" %}
+        </div>
 
-            <div class="col-md-4">
-                <div class="row">
-                    <div class="col-md-8">
-                        {% include "color-icon-key.html" %}
-                    </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-8">
+                    {% include "color-icon-key.html" %}
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <h2>Customize</h2>
+    <div class="row">
+        <h2>Customize</h2>
 
-            <p>To learn about how colors are chosen and how to customize them:</p>
+        <p>To learn about how colors are chosen and how to customize them:</p>
 
-            <p>
-                <a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
-            </p>
-        </div>
+        <p>
+            <a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
+        </p>
+    </div>
 
-        <div class="row">
-            <h2>Share</h2>
+    <div class="row">
+        <h2>Share</h2>
 
-            <p>Copy this URL to share the forecast:</p>
-            <input type="text" class="form-control" value="{{ urlToShare }}">
-        </div>
+        <p>Copy this URL to share the forecast:</p>
+        <input type="text" class="form-control" value="{{ fullUrl }}">
 
-        <div class="row">
-            <h2>Debuging tools</h2>
+        <p>To embed the forecast:</p>
+        {% set embedUrlAsText = '<iframe src="' + embedUrl + '" width="350" height="300" frameborder="0" style="border:0">' %}
+        <input type="text" class="form-control" value="{{ embedUrlAsText }}">
+    </div>
 
-            {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + '|' + forecast.latLon[1] %}
+    <div class="row">
+        <h2>Debuging tools</h2>
 
-            <ul>
-                <li><a href="{{ url_for('showForecast', zipOrLatLon=zipOrLatLon, list=true) }}">Show list view</a>
-                </li>
-                <li><a href="{{ forecast.weatherDotGovUrl() }}">Download raw data</a></li>
-            </ul>
-        </div>
+        {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + '|' + forecast.latLon[1] %}
+
+        <ul>
+            <li><a href="{{ url_for('showForecast', zipOrLatLon=zipOrLatLon, list=true) }}">Show list view</a>
+            </li>
+            <li><a href="{{ forecast.weatherDotGovUrl() }}">Download raw data</a></li>
+        </ul>
     </div>
 
 

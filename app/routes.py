@@ -34,7 +34,8 @@ def embedForecast(zipOrLatLon):
     """
     try:
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None # check for at least one
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
+            'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
         forecast = Forecast(zipOrLatLonList, rangeDictFromQuery)
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
@@ -42,8 +43,8 @@ def embedForecast(zipOrLatLon):
                              _external=True,
                              p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
                              c=queryParamsDict['c'])
-        urlToShare = urllib.parse.unquote(urlToShare)  # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
-        return render_template("embedded-forecast.html", forecast=forecast, urlToShare=urlToShare)
+        fullUrl = urllib.parse.unquote(urlToShare)
+        return render_template("embedded-forecast.html", forecast=forecast, fullUrl=fullUrl)
     except Exception as exc:
         return render_template("embedded-forecast.html", error=exc.args[0])
 
@@ -62,19 +63,21 @@ def showForecast(zipOrLatLon):
     try:
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
         rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None # check for at least one
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
+            'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
         template = "forecast-list.html" if request.args.get('list') else "forecast.html"
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(zipOrLatLonList, rangeDict)
         hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
-        urlToShare = url_for('showForecast', zipOrLatLon=zipOrLatLon,
-                             _external=True,
-                             p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
-                             c=queryParamsDict['c'])
-        urlToShare = urllib.parse.unquote(urlToShare)  # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
-        return render_template(template, forecast=forecast, hideIcons=hideIcons, urlToShare=urlToShare)
+        fullUrl = urllib.parse.unquote(
+            url_for('showForecast', zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
+                    t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
+        embedUrl = urllib.parse.unquote(
+            url_for('embedForecast', zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
+                    t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
+        return render_template(template, forecast=forecast, hideIcons=hideIcons, fullUrl=fullUrl, embedUrl=embedUrl)
     except Exception as exc:
         return render_template("forecast-error.html", error=exc.args[0])
 
