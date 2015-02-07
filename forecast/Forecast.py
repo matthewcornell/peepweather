@@ -48,7 +48,7 @@ class Forecast:
             self.latLon = zipOrLatLon
             self.name = None
         else:
-            raise ValueError("invalid zipOrLatLon {}".format(zipOrLatLon))
+            raise ValueError("location wasn't a zip code or comma-separated lat/lon: {}".format(zipOrLatLon))
 
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
@@ -73,9 +73,12 @@ class Forecast:
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
 
 
-    def location(self):
-        if self.name and self.zipcode:
-            return '{} ({})'.format(self.zipcode, self.name)
+    def location(self, includeName=True):
+        if self.zipcode:
+            if includeName:
+                return '{} ({})'.format(self.zipcode, self.name)
+            else:
+                return '{}'.format(self.zipcode, self.name)
         else:
             # truncate to four digits after decimal
             latStr = self.latLon[0]

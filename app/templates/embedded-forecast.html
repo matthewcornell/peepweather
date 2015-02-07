@@ -16,16 +16,27 @@
 
 {% block content %}
 
-    <!-- todo include error block -->
-
     <div class="container">
         <div class="row">
-            <h4>Forecast for {{ forecast.location() }}</h4> 
-            <div class="col-sm-12 help-block"><small>Courtesy of <a href="{{ urlToShare }}" target="_blank">PeepWeather.com</a></small></div>
-            <div class="col-sm-6">
-                {% set smallTable = True %}
-                {% include "forecast-table.html" %}
-            </div>
+
+            {% if error %}
+
+                <h4>PeepWeather: Error getting forecast</h4>
+                <p>The error message was: <span class="alert-danger">{{ error }}</span></p>
+
+            {% else %}
+
+                <h4>Forecast for {{ forecast.location(includeName=False) }}</h4>
+                <div class="col-sm-12 help-block">
+                    <small>Courtesy of <a href="{{ urlToShare }}" target="_blank">PeepWeather.com</a></small>
+                </div>
+                <div class="col-sm-6">
+                    {% set smallTable = True %}
+                    {% include "forecast-table.html" %}
+                </div>
+
+            {% endif %}
+
         </div>
     </div>
 
@@ -55,25 +66,6 @@
 <!-- update time -->
 <script type="text/javascript">
     document.getElementById('time-id').innerHTML = new Date();
-</script>
-
-
-<!-- enable popovers for forecast cells -->
-<script>
-    $(document).ready(function () {
-        // via http://stackoverflow.com/questions/15467873/bootstrap-popover-not-working-on-ipad
-        $('[data-toggle="popover"]').popover();
-
-        $('body').on('click', function (e) {
-            $('[data-toggle="popover"]').each(function () {
-                //the 'is' for buttons that trigger popups
-                //the 'has' for icons within a button that triggers a popup
-                if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-                    $(this).popover('hide');
-                }
-            });
-        });
-    });
 </script>
 
 

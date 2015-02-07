@@ -32,17 +32,20 @@ def embedForecast(zipOrLatLon):
     """
     same inputs and query parameters as showForecast() but returns a simpler HTML document suitable for an <iframe> embedding
     """
-    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
-    rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None # check for at least one
-    rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
-    forecast = Forecast(zipOrLatLonList, rangeDictFromQuery)
-    queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
-    urlToShare = url_for('showForecast', zipOrLatLon=zipOrLatLon,
-                         _external=True,
-                         p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
-                         c=queryParamsDict['c'])
-    urlToShare = urllib.parse.unquote(urlToShare)  # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
-    return render_template("embedded-forecast.html", forecast=forecast, urlToShare=urlToShare)
+    try:
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None # check for at least one
+        rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
+        forecast = Forecast(zipOrLatLonList, rangeDictFromQuery)
+        queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
+        urlToShare = url_for('showForecast', zipOrLatLon=zipOrLatLon,
+                             _external=True,
+                             p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
+                             c=queryParamsDict['c'])
+        urlToShare = urllib.parse.unquote(urlToShare)  # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
+        return render_template("embedded-forecast.html", forecast=forecast, urlToShare=urlToShare)
+    except Exception as exc:
+        return render_template("embedded-forecast.html", error=exc.args[0])
 
 
 @app.route('/forecast/<zipOrLatLon>')
