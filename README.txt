@@ -7,6 +7,8 @@ Q: can use same codebase and just add a different git remote for new app?
 
 * bugs
 ** 2d text input error-checking (and forgiveness, validation)
+http://flask.pocoo.org/docs/0.10/patterns/flashing/
+
 o zip/latlon:
   o validation: not empty. zip or lat/lon pattern (zip: five numbers, exists in zipcode file)
   o trip spaces around comma, ends
@@ -39,19 +41,6 @@ o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
-** 1d think: a way to pass my defaults in as a part of a URL link
-My flying buddies and I have a different idea for what the low/medium/high is and to be able to pass a link around showing the settings would be nice. As it is, I adjust the defaults to what We're willing to fly in, but when I send them the link, it seems to go back to the defaults.
-
-
-Maybe it would be cool instead of storing preferences in cookies if you could pass them all in the query string. That way you could just set up your favorites locally on whichever devices you have and pass any non default settings that way. Maybe make something like the settings page to allow the full URL and query string to be built and copied from there. Anyways, just another way to do it without having use cookies or store any data server side.
-
-
-You could always do like Mr. Mel did with the headspeed calculator. It doesn't require a log-in per se, but stores on the site's side based on an email address entered. Then just allow a way for the email addy to be passed in the URL query parameters.
-
-Nothing confidential, so no password needed, but using email allows a unique way to store personal preferences without needing cookies (well, you can still use a cookie and keep the email addy so user doesn't need to enter if visiting from the same device) and changes will be always available to a user across devices...
-
-This would also be a good solution for club websites... Just pass the email used in the query parameter and the right zip's info will always be displayed with the chosen settings.
-
 ** 2e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
 (wind, precip, etc.) that updates to show a sentence incorporating the current values
 
@@ -67,6 +56,8 @@ was causing problems - mobile navbar to cover top of content, etc.
 
 
 * promotion ideas, branding
+** use PeepCast ? :-)
+
 ** ! think: embed feature for clubs' sites :-)
 Have you considered an embed option for clubs to use that has a link to your site when clicked? For example, a club with 60 members regularly checks the club page for news, rules, ETC. They can always see the conditions for flight.
 

@@ -8,7 +8,7 @@
         <div class="row">
             <h1>Customize settings</h1>
 
-            <p class="help-block">This page lets you view and edit the app's display preferences and weather parameter
+            <p>This page lets you view and edit the app's display preferences and weather parameter
                 ranges that combine to determine how each hour is rated and how it appears. (Customized settings are
                 saved in browser cookies.)</p>
 
@@ -16,8 +16,8 @@
             <h2>Display Preferences</h2>
 
             <form class="form-group" method="POST" action="{{ url_for('do_edit_display_submit') }}">
-                <p class="help-block">Controls whether icons are shown in each hour, or if they are simply displayed
-                    as colors. The default is to show icons.</p>
+                <p>Controls whether icons are shown in each hour, or if they are simply displayed as colors. The default
+                    is to show icons.</p>
 
                 <div class="form-inline">
                     <div class="checkbox">
@@ -32,8 +32,7 @@
             <hr>
             <h2>Weather Parameters</h2>
 
-            <p class="help-block">Customizing weather parameter ranges: Percent of precipitation, wind speed, and cloud
-                cover
+            <p>Customizing weather parameter ranges: Percent of precipitation, wind speed, and cloud cover
                 are broken into three <code>Low</code>, <code>Medium</code>, and <code>High</code> ranges that are
                 identified by two numbers called <code>v1</code> and <code>v2</code> which mark out the
                 <code>Medium</code> range. Anything below <code>v1</code> is <code>High</code> desirability and anything
@@ -44,7 +43,7 @@
                 spot. The edit areas below let you view and change all these values.
             </p>
 
-            <p class="help-block">For a detailed explanation see:</p>
+            <p>For a detailed explanation see:</p>
 
             <p><a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
             </p>
@@ -177,8 +176,7 @@
     <!-- todo 1) jquery, 2) on document ready -->
     <script type="text/javascript">
         function initialize_form_values() {
-            var hideIcons = {{ hideIcons }};
-            document.getElementById('show_icons_id').checked = ! hideIcons;
+            document.getElementById('show_icons_id').checked = ! {{ hideIcons }};
 
             var precipVals = {{ precipVals }};
             var tempVals = {{ tempVals }};

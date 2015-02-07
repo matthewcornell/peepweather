@@ -1,5 +1,6 @@
 import json
 import logging
+import urllib.parse
 
 from flask import render_template, request, redirect, url_for, make_response
 
@@ -37,42 +38,29 @@ def showForecast(zipOrLatLon):
       there are four, pipe-delimited, one for each parameter: ?p=v1|v2&t=v1|v2|v3|v4&w=v1|v2&c=v1|v2
     :return:
     """
-    # todo catch loads error
-    rangeDictFromCookie = None
-    rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
-    if rangesDictJson:
-        rangeDictFromCookie = json.loads(rangesDictJson)
-
-    rangeDictFromQuery = None
     try:
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args)
-    except ValueError as ve:
-        logger.warn("showForecast() ignoring error: {} for args {}".format(ve, request.args))
+        rangeDictFromCookie = None
+        rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
+        if rangesDictJson:
+            rangeDictFromCookie = json.loads(rangesDictJson)
 
-    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
-    hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
-    template = "forecast-list.html" if request.values.get('list') else "forecast.html"
-
-    # handle URL query parameter insertion
-    print('xx: query: {}, cookie: {}, args: {}'.format(rangeDictFromQuery, rangeDictFromCookie, request.args))
-    try:
-        if rangeDictFromQuery:
-            # render using customizations in query
-            forecast = Forecast(zipOrLatLonList, rangeDictFromQuery)
-            return render_template(template, forecast=forecast, hideIcons=hideIcons)
-        elif rangeDictFromCookie:
-            # redirect back to here using customizations in cookie
-            queryParamsDict = queryParamsDictFromRangeDict(rangeDictFromCookie)
-            print(' xx redirect: queryParamsDict:', queryParamsDict)
-            return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon, p=queryParamsDict['p'],
-                                    t=queryParamsDict['t'], w=queryParamsDict['w'],
-                                    c=queryParamsDict['c']))
-        else:
-            # render using default dict
-            forecast = Forecast(zipOrLatLonList)
-            return render_template(template, forecast=forecast, hideIcons=hideIcons)
-    except ValueError as ve:
-        return render_template("forecast-error.html", error=ve.args[0])
+        rangeDictFromQuery = None
+        if request.args.get('p'):   # check for at least one
+            rangeDictFromQuery = rangesDictFromRequestArgs(request.args)
+        rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
+        template = "forecast-list.html" if request.args.get('list') else "forecast.html"
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        forecast = Forecast(zipOrLatLonList, rangeDict)
+        hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
+        queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
+        urlToShare = url_for('showForecast', zipOrLatLon=zipOrLatLon,
+                             _external=True,
+                             p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
+                             c=queryParamsDict['c'])
+        urlToShare = urllib.parse.unquote(urlToShare)   # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
+        return render_template(template, forecast=forecast, hideIcons=hideIcons, urlToShare=urlToShare)
+    except Exception as exc:
+        return render_template("forecast-error.html", error=exc.args[0])
 
 
 @app.route('/settings')
@@ -106,7 +94,8 @@ def showHowItWorks():
 @app.route('/submit_zip', methods=['POST'])
 def do_zip_submit():
     zipOrLatLon = request.values.get('zip_or_latlon_form_val', None)
-    zipOrLatLon = zipOrLatLon.replace(',', '|') # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
+    zipOrLatLon = zipOrLatLon.replace(',',
+                                      '|')  # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
     return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
 
 
@@ -173,11 +162,11 @@ def rangesDictFromEditFormValues():
 def rangesDictFromRequestArgs(requestArgs):
     ptwcArgs = [requestArgs.get('p'), requestArgs.get('t'), requestArgs.get('w'), requestArgs.get('c')]
     if not all(ptwcArgs):
-        raise ValueError("not all request args were passed: p, t, w, c: {}".format(ptwcArgs))
+        raise ValueError("not all query parameters were passed: p, t, w, c: {}".format(ptwcArgs))
 
     pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs = map(lambda x: x.split('|'), ptwcArgs)
     if len(pRangeStrs) != 2 or len(tRangeStrs) != 4 or len(wRangeStrs) != 2 or len(cRangeStrs) != 2:
-        raise ValueError("not all string lists had correct # of items: p, t, w, c: {}".
+        raise ValueError("not all query parameters had correct # of items: p, t, w, c: {}".
                          format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
 
 
@@ -190,11 +179,11 @@ def rangesDictFromRequestArgs(requestArgs):
             map(intsForStrs, [pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
     except ValueError:
         raise ValueError(
-            "not all string lists were integers: {}".format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
+            "not all query parameters were integers: {}".format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
 
     if not all(map(lambda intList: intList == sorted(intList), [pRangeInts, tRangeInts, wRangeInts, cRangeInts])):
         raise ValueError(
-            "not all int lists were sorted: p, t, w, c: {}".format([pRangeInts, tRangeInts, wRangeInts, cRangeInts]))
+            "not all query parameters were sorted: p, t, w, c: {}".format([pRangeInts, tRangeInts, wRangeInts, cRangeInts]))
 
     # finally!
     return {'precip': pRangeInts,

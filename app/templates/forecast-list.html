@@ -14,7 +14,7 @@
                 {% for hour in forecast.hours %}
                     <tr>
                         <td>
-                            <span class="{{ hour.cssClassForDesirability() }}">&nbsp;</span> {{ hour.detailString() }}
+                            <span class="{{ hour.cssClassForDesirability() }}">&nbsp;</span> {{ hour }}
                         </td>
                     </tr>
                 {% endfor %}
