@@ -61,7 +61,12 @@ was causing problems - mobile navbar to cover top of content, etc.
 ** >> ! embed feature for clubs' sites :-)
 Have you considered an embed option for clubs to use that has a link to your site when clicked? For example, a club with 60 members regularly checks the club page for news, rules, ETC. They can always see the conditions for flight.
 
-my thinking so far:
+*** >> todo
+o share button that pops up copy-able inputs
+o smaller table via font?
+
+
+*** my thinking so far:
 o iframe (simplest)
 o /embed/ endpoint
   Q: or /forecast/embed? DEC: what else would I embed -> no forecast/
@@ -73,7 +78,7 @@ o maybe later: options (size, icons, etc), preview
 ex: http://www.peepweather.com/embed/77001?w=8|12&t=35|59|89|100&c=33|66&p=10|30
 
 
-** learned from quick prototype:
+*** learned from quick prototype:
 o only want part of the page:
   o title, time, table
   o link at top to full page on my site ("Courtesy of __")
