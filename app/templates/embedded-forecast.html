@@ -26,10 +26,9 @@
 
             {% else %}
 
-                <h4>Forecast for {{ forecast.location(includeName=False) }}</h4>
-                <div class="col-sm-12 help-block">
-                    <small>Courtesy of <a href="{{ urlToShare }}" target="_blank">PeepWeather.com</a></small>
-                </div>
+                <h4>Forecast for {{ forecast.location(includeName=False) }}
+                    <small>(<a href="{{ urlToShare }}" target="_blank">PeepWeather.com</a>)</small>
+                </h4>
                 <div class="col-sm-6">
                     {% set smallTable = True %}
                     {% include "forecast-table.html" %}
