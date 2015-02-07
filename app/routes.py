@@ -27,6 +27,24 @@ def showForecastNoZip():
     return redirect(url_for('index'))
 
 
+@app.route('/embed/<zipOrLatLon>')
+def embedForecast(zipOrLatLon):
+    """
+    same inputs and query parameters as showForecast() but returns a simpler HTML document suitable for an <iframe> embedding
+    """
+    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+    rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None # check for at least one
+    rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
+    forecast = Forecast(zipOrLatLonList, rangeDictFromQuery)
+    queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
+    urlToShare = url_for('showForecast', zipOrLatLon=zipOrLatLon,
+                         _external=True,
+                         p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
+                         c=queryParamsDict['c'])
+    urlToShare = urllib.parse.unquote(urlToShare)  # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
+    return render_template("embedded-forecast.html", forecast=forecast, urlToShare=urlToShare)
+
+
 @app.route('/forecast/<zipOrLatLon>')
 def showForecast(zipOrLatLon):
     """
@@ -39,14 +57,9 @@ def showForecast(zipOrLatLon):
     :return:
     """
     try:
-        rangeDictFromCookie = None
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
-        if rangesDictJson:
-            rangeDictFromCookie = json.loads(rangesDictJson)
-
-        rangeDictFromQuery = None
-        if request.args.get('p'):   # check for at least one
-            rangeDictFromQuery = rangesDictFromRequestArgs(request.args)
+        rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
         template = "forecast-list.html" if request.args.get('list') else "forecast.html"
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
@@ -57,7 +70,7 @@ def showForecast(zipOrLatLon):
                              _external=True,
                              p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
                              c=queryParamsDict['c'])
-        urlToShare = urllib.parse.unquote(urlToShare)   # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
+        urlToShare = urllib.parse.unquote(urlToShare)  # todo a way to have url_for do this? http://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash
         return render_template(template, forecast=forecast, hideIcons=hideIcons, urlToShare=urlToShare)
     except Exception as exc:
         return render_template("forecast-error.html", error=exc.args[0])
@@ -183,7 +196,8 @@ def rangesDictFromRequestArgs(requestArgs):
 
     if not all(map(lambda intList: intList == sorted(intList), [pRangeInts, tRangeInts, wRangeInts, cRangeInts])):
         raise ValueError(
-            "not all query parameters were sorted: p, t, w, c: {}".format([pRangeInts, tRangeInts, wRangeInts, cRangeInts]))
+            "not all query parameters were sorted: p, t, w, c: {}".format(
+                [pRangeInts, tRangeInts, wRangeInts, cRangeInts]))
 
     # finally!
     return {'precip': pRangeInts,

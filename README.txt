@@ -61,24 +61,47 @@ was causing problems - mobile navbar to cover top of content, etc.
 ** >> ! embed feature for clubs' sites :-)
 Have you considered an embed option for clubs to use that has a link to your site when clicked? For example, a club with 60 members regularly checks the club page for news, rules, ETC. They can always see the conditions for flight.
 
-*** REF
-https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
+my thinking so far:
+o iframe (simplest)
+o /embed/ endpoint
+  Q: or /forecast/embed? DEC: what else would I embed -> no forecast/
+o pass zip plus all params, like current share url
+o requires zip and all params, like current
+o Q: size?
+o maybe later: options (size, icons, etc), preview
 
-*** Using inline frames (iframe elements) to embed documents into HTML documents
-http://www.cs.tut.fi/~jkorpela/html/iframe.html
-
-inline frame (floating frame) .. Technically, an iframe element is a text-level element, or "inline element" (as opposite to block-level elements). Syntactically an iframe element may occur inside a paragraph, even between two words of text
-
-<iframe src="news.html" width="40%" height="80" align="right"> <p>See our <a href="news.html">newsflashes</a>.</p> </iframe>
+ex: http://www.peepweather.com/embed/77001?w=8|12&t=35|59|89|100&c=33|66&p=10|30
 
 
-*** https://www.youtube.com/watch?v=nTgJJy3Umhw
+** learned from quick prototype:
+o only want part of the page:
+  o title, time, table
+  o link at top to full page on my site ("Courtesy of __")
+  o no popover, but maybe clicks -> full site
+
+o not:
+  o navbar, customize, share, debug, footer
+  o Q: include key?
+
+
+o would be nice: share button with popup to configure
+  o show configured url and preview
+  o options: iframe size, whether to show colors & icons key, show icons
+  o set table size! maybe large/normal and small (scaled down) choices
+
+
+*** v https://www.youtube.com/watch?v=nTgJJy3Umhw
+generates a full HTML document with own style sheet
+link to original on site
+scripts
+
 Share > Embed
 <iframe width="560" height="315" src="https://www.youtube.com/embed/nTgJJy3Umhw" frameborder="0" allowfullscreen></iframe>
 
 
 *** https://www.google.com/maps/place/Amherst,+MA/@42.3676145,-72.505491,12z/data=!3m1!4b1!4m2!3m1!1s0x89e6ce020a71240f:0xd5751d15974c2fdc
 Share > Embed
+
 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d94330.33116468109!2d-72.50549095000001!3d42.3676145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e6ce020a71240f%3A0xd5751d15974c2fdc!2sAmherst%2C+MA!5e0!3m2!1sen!2sus!4v1423275410144" width="600" height="450" frameborder="0" style="border:0"></iframe>
 
 has a dropdown: Small, Medium, Large, Custom size
@@ -86,8 +109,35 @@ has a dropdown: Small, Medium, Large, Custom size
 gives a popup preview
 
 
-*** http://stackoverflow.com/questions/291813/recommended-way-to-embed-pdf-in-html
-<iframe src="http://docs.google.com/gview?url=http://example.com/mypdf.pdf&embedded=true" style="width:718px; height:700px;" frameborder="0"></iframe>
+*** ~ http://www.wunderground.com/stickers/?query=01002
+click link to pop up image and code
+aha: span not iframe - dynamic image
+click opens full site in new window
+
+<span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_bluestripes&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
+
+<span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_travel_landmarks1" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_travel_landmarks1&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_travel_landmarks1" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
+
+
+*** x https://twitter.com/richarddawkins
+pops up code, preview
+aha: quote + script
+looks plain embedded
+
+<blockquote class="twitter-tweet" lang="en"><p>Incredibly, it seems there are many people out there who honestly think quoting their own holy book at you is a clinching argument-winner.</p>&mdash; Richard Dawkins (@RichardDawkins) <a href="https://twitter.com/RichardDawkins/status/563652904524185601">February 6, 2015</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+*** REF
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
+
+
+Using inline frames (iframe elements) to embed documents into HTML documents
+http://www.cs.tut.fi/~jkorpela/html/iframe.html
+
+inline frame (floating frame) .. Technically, an iframe element is a text-level element, or "inline element" (as opposite to block-level elements). Syntactically an iframe element may occur inside a paragraph, even between two words of text
+
+<iframe src="news.html" width="40%" height="80" align="right"> <p>See our <a href="news.html">newsflashes</a>.</p> </iframe>
 
 
 ** think: what other integration opportunities are there?

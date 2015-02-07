@@ -1,0 +1,87 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='custom.css') }}" rel="stylesheet">
+    <link rel='stylesheet' href='{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}'>
+
+    <link rel='stylesheet' href='{{ url_for('static', filename='weather-icons-1.2.1/css/weather-icons.css') }}'>
+    <link rel='stylesheet' href='{{ url_for('static', filename='hour-colors.css') }}'>
+</head>
+<body>
+
+
+{% block content %}
+    
+    <!-- todo
+    o include error block
+    o scaled feature
+    o xx
+     -->
+
+    <div class="container">
+        <div class="row">
+            <h1>Forecast for {{ forecast.location() }} <small>xx</small></h1>
+            <p>Courtesy of <a href="{{ urlToShare }}">PeepWeather.com</a> </p>
+
+            <div class="col-md-12 help-block">Time: <span id="time-id"></span></div>
+
+            <div class="col-md-8">
+                {% include "forecast-table.html" %}
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+<!-- Bootstrap core JavaScript. Placed at the end of the document so the pages load faster -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<!-- update time -->
+<script type="text/javascript">
+    document.getElementById('time-id').innerHTML = new Date();
+</script>
+
+
+<!-- enable popovers for forecast cells -->
+<script>
+    $(document).ready(function () {
+        // via http://stackoverflow.com/questions/15467873/bootstrap-popover-not-working-on-ipad
+        $('[data-toggle="popover"]').popover();
+
+        $('body').on('click', function (e) {
+            $('[data-toggle="popover"]').each(function () {
+                //the 'is' for buttons that trigger popups
+                //the 'has' for icons within a button that triggers a popup
+                if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                    $(this).popover('hide');
+                }
+            });
+        });
+    });
+</script>
+
+
+</body>
+</html>
