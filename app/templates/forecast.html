@@ -63,12 +63,28 @@
     <div class="row">
         <h2>Share</h2>
 
-        <p>Copy this URL to share the forecast:</p>
-        <input type="text" class="form-control" value="{{ fullUrl }}">
+        <form onsubmit="return false;">
+            <div>
+                <p class="help-block">Copy this URL to share the forecast:</p>
 
-        <p>To embed the forecast:</p>
-        {% set embedUrlAsText = '<iframe src="' + embedUrl + '" width="350" height="300" frameborder="0" style="border:0">' %}
-        <input type="text" class="form-control" value="{{ embedUrlAsText }}">
+                <div class="form-group">
+                    <label for="full_url_text"></label>
+                    <input type="text" class="form-control select_all" id="full_url_text" value="{{ fullUrl }}">
+                </div>
+            </div>
+        </form>
+
+        <form onsubmit="return false;">
+            <div>
+                <p class="help-block">To embed the forecast:</p>
+
+                <div class="form-group">
+                    {% set embedUrlAsText = '<iframe src="' + embedUrl + '" width="350" height="300" frameborder="0" style="border:0">' %}
+                    <label for="embed_url_text"></label>
+                    <input type="text" class="form-control select_all" id="embed_url_text" value="{{ embedUrlAsText }}">
+                </div>
+            </div>
+        </form>
     </div>
 
     <div class="row">
