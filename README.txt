@@ -1,11 +1,60 @@
 ;; -*- mode: outline -*-
 
 * development process
-** >> 1d staging server!
+** setting up staging server for rc-weather at http://rc-weather-staging.herokuapp.com/
 Q: can use same codebase and just add a different git remote for new app?
+
+backed up to: rc-weather-flask-pre-heroku-staging-play.zip
+
+recall: git push heroku master
+
+before: git remote -v
+    heroku	https://git.heroku.com/rc-weather.git (fetch)
+    heroku	https://git.heroku.com/rc-weather.git (push)
+    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (fetch)
+    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (push)
+
+trying:
+
+created Heroku app (web UI): rc-weather-staging
+
+cd ~/IdeaProjects/rc-weather-flask/
+
+heroku git:remote -a rc-weather-staging
+
+after: git remote -v
+    heroku	https://git.heroku.com/rc-weather-staging.git (fetch)
+    heroku	https://git.heroku.com/rc-weather-staging.git (push)
+    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (fetch)
+    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (push)
+
+oops: it blew out the old
+
+manually editing to add 'staging' remote
+
+now: git remote -v
+    heroku	https://git.heroku.com/rc-weather.git (fetch)
+    heroku	https://git.heroku.com/rc-weather.git (push)
+    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (fetch)
+    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (push)
+    staging	https://git.heroku.com/rc-weather-staging.git (fetch)
+    staging	https://git.heroku.com/rc-weather-staging.git (push)
+
+trying: git push staging master
+-> worked!
+
+
+    ...
+    remote: -----> Launching... done, v3
+    remote:        https://rc-weather-staging.herokuapp.com/ deployed to Heroku
+    remote: 
+    remote: Verifying deploy... done.
+    To https://git.heroku.com/rc-weather-staging.git
+     * [new branch]      master -> master
 
 
 * bugs
+** 1e /settings should validate inputs, such as 8 < 1!
 ** 2d text input error-checking (and forgiveness, validation)
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
@@ -15,6 +64,7 @@ o zip/latlon:
   o bug: empty -> Not Found
 
 o search:
+  o simplest would be a helpful message if there are no results saying to simplify
   o not empty, matches zipcode file. ideally: completion
     http://stackoverflow.com/questions/9232748/twitter-bootstrap-typeahead-ajax-example
   o trim space from ends
@@ -57,93 +107,6 @@ was causing problems - mobile navbar to cover top of content, etc.
 
 * promotion ideas, branding
 ** use 'PeepCast' ? :-)
-
-** >> ! embed feature for clubs' sites :-)
-Have you considered an embed option for clubs to use that has a link to your site when clicked? For example, a club with 60 members regularly checks the club page for news, rules, ETC. They can always see the conditions for flight.
-
-*** >> todo
-o share button that pops up copy-able inputs
-o smaller table via font?
-
-
-*** my thinking so far:
-o iframe (simplest)
-o /embed/ endpoint
-  Q: or /forecast/embed? DEC: what else would I embed -> no forecast/
-o pass zip plus all params, like current share url
-o requires zip and all params, like current
-o Q: size?
-o maybe later: options (size, icons, etc), preview
-
-ex: http://www.peepweather.com/embed/77001?w=8|12&t=35|59|89|100&c=33|66&p=10|30
-
-
-*** learned from quick prototype:
-o only want part of the page:
-  o title, time, table
-  o link at top to full page on my site ("Courtesy of __")
-  o no popover, but maybe clicks -> full site
-
-o not:
-  o navbar, customize, share, debug, footer
-  o Q: include key?
-
-
-o would be nice: share button with popup to configure
-  o show configured url and preview
-  o options: iframe size, whether to show colors & icons key, show icons
-  o set table size! maybe large/normal and small (scaled down) choices
-
-
-*** v https://www.youtube.com/watch?v=nTgJJy3Umhw
-generates a full HTML document with own style sheet
-link to original on site
-scripts
-
-Share > Embed
-<iframe width="560" height="315" src="https://www.youtube.com/embed/nTgJJy3Umhw" frameborder="0" allowfullscreen></iframe>
-
-
-*** https://www.google.com/maps/place/Amherst,+MA/@42.3676145,-72.505491,12z/data=!3m1!4b1!4m2!3m1!1s0x89e6ce020a71240f:0xd5751d15974c2fdc
-Share > Embed
-
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d94330.33116468109!2d-72.50549095000001!3d42.3676145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e6ce020a71240f%3A0xd5751d15974c2fdc!2sAmherst%2C+MA!5e0!3m2!1sen!2sus!4v1423275410144" width="600" height="450" frameborder="0" style="border:0"></iframe>
-
-has a dropdown: Small, Medium, Large, Custom size
-
-gives a popup preview
-
-
-*** ~ http://www.wunderground.com/stickers/?query=01002
-click link to pop up image and code
-aha: span not iframe - dynamic image
-click opens full site in new window
-
-<span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_bluestripes&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
-
-<span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_travel_landmarks1" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_travel_landmarks1&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_travel_landmarks1" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
-
-
-*** x https://twitter.com/richarddawkins
-pops up code, preview
-aha: quote + script
-looks plain embedded
-
-<blockquote class="twitter-tweet" lang="en"><p>Incredibly, it seems there are many people out there who honestly think quoting their own holy book at you is a clinching argument-winner.</p>&mdash; Richard Dawkins (@RichardDawkins) <a href="https://twitter.com/RichardDawkins/status/563652904524185601">February 6, 2015</a></blockquote>
-<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-
-*** REF
-https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
-
-
-Using inline frames (iframe elements) to embed documents into HTML documents
-http://www.cs.tut.fi/~jkorpela/html/iframe.html
-
-inline frame (floating frame) .. Technically, an iframe element is a text-level element, or "inline element" (as opposite to block-level elements). Syntactically an iframe element may occur inside a paragraph, even between two words of text
-
-<iframe src="news.html" width="40%" height="80" align="right"> <p>See our <a href="news.html">newsflashes</a>.</p> </iframe>
-
 
 ** think: what other integration opportunities are there?
 see [embed feature for clubs' sites]
@@ -190,9 +153,23 @@ o the integrate it with the existing android/iOS calendars (shade the background
 
 
 * 2015-01-19: forum postings
-[Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!](http://helifreak.com/showthread.php?p=6307025#post6307025)
+Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!
+http://helifreak.com/showthread.php?p=6307025#post6307025
 
-[RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!](http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR)
+RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!
+http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR
+
+2015-02-07 features blurb posted to RunRyder:
+
+o geolocation to use your current lat/lon
+o search for zip codes
+o much improved interface, including 'responsive' for small devices
+o user-customizable ranges for precip, wind, temp, and clouds
+o cloud cover now included
+o tasty weather icons (can be disabled)
+o url sharing that includes customized settings
+o embed link for web masters
+o tap/hover detail information for each hour (shows how the hour was rated)
 
 
 ** referenced apps/sites
@@ -291,4 +268,91 @@ DEC: wait on subdomains - use root domain
 
 
 ** v see [set up forwarding to rc-weather.herokuapp.com]
+
+
+* v! embed feature for clubs' sites :-)
+Have you considered an embed option for clubs to use that has a link to your site when clicked? For example, a club with 60 members regularly checks the club page for news, rules, ETC. They can always see the conditions for flight.
+
+** maybe: todo
+o share button that pops up copyable inputs
+o maybe later: options (size, icons, etc), preview
+
+
+** my thinking so far:
+o iframe (simplest)
+o /embed/ endpoint
+  Q: or /forecast/embed? DEC: what else would I embed -> no forecast/
+o pass zip plus all params, like current share url
+o requires zip and all params, like current
+o Q: size?
+
+ex: http://www.peepweather.com/embed/77001?w=8|12&t=35|59|89|100&c=33|66&p=10|30
+
+
+** learned from quick prototype:
+o only want part of the page:
+  o title, time, table
+  o link at top to full page on my site ("Courtesy of __")
+  o no popover, but maybe clicks -> full site
+
+o not:
+  o navbar, customize, share, debug, footer
+  o Q: include key?
+
+
+o would be nice: share button with popup to configure
+  o show configured url and preview
+  o options: iframe size, whether to show colors & icons key, show icons
+  o set table size! maybe large/normal and small (scaled down) choices
+
+
+** v https://www.youtube.com/watch?v=nTgJJy3Umhw
+generates a full HTML document with own style sheet
+link to original on site
+scripts
+
+Share > Embed
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nTgJJy3Umhw" frameborder="0" allowfullscreen></iframe>
+
+
+** https://www.google.com/maps/place/Amherst,+MA/@42.3676145,-72.505491,12z/data=!3m1!4b1!4m2!3m1!1s0x89e6ce020a71240f:0xd5751d15974c2fdc
+Share > Embed
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d94330.33116468109!2d-72.50549095000001!3d42.3676145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e6ce020a71240f%3A0xd5751d15974c2fdc!2sAmherst%2C+MA!5e0!3m2!1sen!2sus!4v1423275410144" width="600" height="450" frameborder="0" style="border:0"></iframe>
+
+has a dropdown: Small, Medium, Large, Custom size
+
+gives a popup preview
+
+
+** ~ http://www.wunderground.com/stickers/?query=01002
+click link to pop up image and code
+aha: span not iframe - dynamic image
+click opens full site in new window
+
+<span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_bluestripes&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
+
+<span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_travel_landmarks1" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_travel_landmarks1&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_travel_landmarks1" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
+
+
+** x https://twitter.com/richarddawkins
+pops up code, preview
+aha: quote + script
+looks plain embedded
+
+<blockquote class="twitter-tweet" lang="en"><p>Incredibly, it seems there are many people out there who honestly think quoting their own holy book at you is a clinching argument-winner.</p>&mdash; Richard Dawkins (@RichardDawkins) <a href="https://twitter.com/RichardDawkins/status/563652904524185601">February 6, 2015</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+** REF
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe
+
+
+Using inline frames (iframe elements) to embed documents into HTML documents
+http://www.cs.tut.fi/~jkorpela/html/iframe.html
+
+inline frame (floating frame) .. Technically, an iframe element is a text-level element, or "inline element" (as opposite to block-level elements). Syntactically an iframe element may occur inside a paragraph, even between two words of text
+
+<iframe src="news.html" width="40%" height="80" align="right"> <p>See our <a href="news.html">newsflashes</a>.</p> </iframe>
+
 

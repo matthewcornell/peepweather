@@ -17,9 +17,25 @@
     font-weight: 500;
 }
 
-/* per http://stackoverflow.com/questions/18165901/twitters-bootstrap-3-with-sharethis-widget/18241944#18241944 */
+/* http://stackoverflow.com/questions/18165901/twitters-bootstrap-3-with-sharethis-widget/18241944#18241944 */
 #sharethis span {
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
+
+/* http://pastebin.com/khbJY9ki */
+.peep {
+    background: url(/static/chick.png) no-repeat left center;
+    /*height: 20px;*/
+    /*width: 100px;*/
+}
+
+/* http://stackoverflow.com/a/4919231/1082367 */
+.yellow-stroke {
+    color: yellow;
+    text-shadow: -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
