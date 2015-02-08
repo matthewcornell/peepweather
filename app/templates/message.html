@@ -5,9 +5,11 @@
 
     <div class="container">
         <div class="row">
-            <h1>Error getting forecast</h1>
-            <p>The error message was: <span class="alert-danger">{{ error }}</span></p>
+            <h1>{{ title }}</h1>
+            {% set alert = 'alert-danger' if isError else 'alert-warning' %}
+            <p><span class="{{ alert }}">{{ message }}</span></p>
         </div>
     </div>
+    
 
 {% endblock %}

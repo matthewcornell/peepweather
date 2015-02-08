@@ -1,6 +1,7 @@
 ;; -*- mode: outline -*-
 
 * bugs
+** 1e index forms should handle null input: zip/lat/lon and search
 ** 1e /settings should validate inputs, such as 8 < 1!
 ** 2d text input error-checking (and forgiveness, validation)
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
@@ -11,7 +12,6 @@ o zip/latlon:
   o bug: empty -> Not Found
 
 o search:
-  o simplest would be a helpful message if there are no results saying to simplify
   o not empty, matches zipcode file. ideally: completion
     http://stackoverflow.com/questions/9232748/twitter-bootstrap-typeahead-ajax-example
   o trim space from ends
@@ -34,19 +34,15 @@ o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
-** 2e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
-(wind, precip, etc.) that updates to show a sentence incorporating the current values
-
-ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."
-
 ** 2m use jQuery everywhere
 
 ** 2m search: decide what I want it to do
 whole state name. completion. sort by name
 
-** 2d add chick pic image in header
-was causing problems - mobile navbar to cover top of content, etc.
+** 3e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
+(wind, precip, etc.) that updates to show a sentence incorporating the current values
 
+ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."
 
 * promotion ideas, branding
 ** use 'PeepCast' ? :-)

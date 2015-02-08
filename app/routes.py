@@ -22,11 +22,6 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/forecast/')
-def showForecastNoZip():
-    return redirect(url_for('index'))
-
-
 @app.route('/embed/<zipOrLatLon>')
 def embedForecast(zipOrLatLon):
     """
@@ -45,8 +40,8 @@ def embedForecast(zipOrLatLon):
                              c=queryParamsDict['c'])
         fullUrl = urllib.parse.unquote(urlToShare)
         return render_template("embedded-forecast.html", forecast=forecast, fullUrl=fullUrl)
-    except Exception as exc:
-        return render_template("embedded-forecast.html", error=exc.args[0])
+    except Exception as ex:
+        return render_template("embedded-forecast.html", error=ex.args[0])
 
 
 @app.route('/forecast/<zipOrLatLon>')
@@ -79,8 +74,7 @@ def showForecast(zipOrLatLon):
                     t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
         return render_template(template, forecast=forecast, hideIcons=hideIcons, fullUrl=fullUrl, embedUrl=embedUrl)
     except Exception as exc:
-        return render_template("forecast-error.html", error=exc.args[0])
-
+        return render_template("message.html", title="Error getting forecast", message=exc.args[0], isError=True)
 
 @app.route('/settings')
 def editSettings():
@@ -100,7 +94,14 @@ def editSettings():
 
 @app.route('/search/<query>')
 def searchForZip(query):
-    return render_template("search.html", query=query, zipNameLatLonTuples=Forecast.searchZipcodes(query))
+    zipNameLatLonTuples = Forecast.searchZipcodes(query)
+    if not zipNameLatLonTuples:
+        return render_template("message.html", title="No search results for ‘{}’".format(query),
+                               message="The search feature is primitive, so try a single word or part of one, " +
+                                       "such as 'york', instead of new york, new york. Also, spaces " +
+                                       "and commas cause trouble, as do state names/abbreviations", isError=False)
+    else:
+        return render_template("search.html", query=query, zipNameLatLonTuples=zipNameLatLonTuples)
 
 
 @app.route('/how-it-works')
@@ -113,9 +114,12 @@ def showHowItWorks():
 @app.route('/submit_zip', methods=['POST'])
 def do_zip_submit():
     zipOrLatLon = request.values.get('zip_or_latlon_form_val', None)
-    zipOrLatLon = zipOrLatLon.replace(',',
-                                      '|')  # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
-    return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
+    if not zipOrLatLon:
+        return render_template("message.html", title="Nothing to search for",
+                               message="Please enter a zip code or a latitude, longitude.", isError=False)
+    else:
+        zipOrLatLon = zipOrLatLon.replace(',', '|')  # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
+        return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
 
 
 @app.route('/edit_display_submit', methods=['POST'])
@@ -155,7 +159,11 @@ def do_edit_parameters_submit():
 @app.route('/zip_search_submit', methods=['POST'])
 def do_zip_search_submit():
     queryVal = request.values.get('query_form_val', None)
-    return redirect(url_for('searchForZip', query=queryVal))
+    if not queryVal:
+        return render_template("message.html", title="Nothing to search for",
+                               message="Please enter a search term.", isError=False)
+    else:
+        return redirect(url_for('searchForZip', query=queryVal))
 
 
 # todo refactor to use rangesDictFromRequestArgs()
@@ -181,11 +189,11 @@ def rangesDictFromEditFormValues():
 def rangesDictFromRequestArgs(requestArgs):
     ptwcArgs = [requestArgs.get('p'), requestArgs.get('t'), requestArgs.get('w'), requestArgs.get('c')]
     if not all(ptwcArgs):
-        raise ValueError("not all query parameters were passed: p, t, w, c: {}".format(ptwcArgs))
+        raise ValueError("Not all query parameters were passed: p, t, w, c: {}".format(ptwcArgs))
 
     pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs = map(lambda x: x.split('|'), ptwcArgs)
     if len(pRangeStrs) != 2 or len(tRangeStrs) != 4 or len(wRangeStrs) != 2 or len(cRangeStrs) != 2:
-        raise ValueError("not all query parameters had correct # of items: p, t, w, c: {}".
+        raise ValueError("Not all query parameters had correct # of items: p, t, w, c: {}".
                          format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
 
 
@@ -198,11 +206,11 @@ def rangesDictFromRequestArgs(requestArgs):
             map(intsForStrs, [pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
     except ValueError:
         raise ValueError(
-            "not all query parameters were integers: {}".format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
+            "Not all query parameters were integers: {}".format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
 
     if not all(map(lambda intList: intList == sorted(intList), [pRangeInts, tRangeInts, wRangeInts, cRangeInts])):
         raise ValueError(
-            "not all query parameters were sorted: p, t, w, c: {}".format(
+            "Not all query parameters were sorted: p, t, w, c: {}".format(
                 [pRangeInts, tRangeInts, wRangeInts, cRangeInts]))
 
     # finally!
