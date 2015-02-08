@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Generate Sticker{% endblock %}
+{% set zipOrLatLon = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
+
+{% block title %}Generate Sticker for {{ zipOrLatLon }} {% if forecast.name %}({{ forecast.name }})
+{% endif %} {% endblock %}
 
 {% block content %}
 
     <div class="container">
         <div class="row">
-            <h1>Generate Sticker for {{ zipOrLatLon }}</h1>
-
+        
+            <h1>Generate Sticker for {{ zipOrLatLon }} {% if forecast.name %}
+                <small>({{ forecast.name }})</small>{% endif %}</h1>
             <p>I've cooked up a fun dynamic image for you to put on your homepage. In return, all I ask is that you link
                 the image to this site.
             <ol>
@@ -16,15 +20,12 @@
                 <li>Paste the it into your HTML</li>
             </ol>
 
-            The sticker will automatically display the most up to date current conditions for that location.</p>
+            <p>The sticker will automatically display the most up to date current conditions for that location.</p>
 
             <h2>Preview</h2>
-
             <p> {% include "sticker-code.html" %} </p>
 
-
             <h2>Code</h2>
-
             <form onsubmit="return false;">
                 <div>
                     <p class="help-block">Copy this code to paste into your site's HTML:</p>

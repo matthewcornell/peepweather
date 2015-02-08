@@ -12,8 +12,9 @@ wunderground ones are awesome
 todo:
 o finish basic layout
 o generate basic image - table only, no branding
-o pass image size through cleanly
+o pass image size, location, etc. through cleanly for <span>
 o clean up image and sticker link: location, brand, etc - see wunderground
+o add url query parameters to customize
 
 ideas:
 o thumbnail image of the forecast
