@@ -6,7 +6,7 @@
 
     <div class="container">
         <div class="row">
-            <h1>Generate Sticker</h1>
+            <h1>Generate Sticker for {{ zipOrLatLon }}</h1>
 
             <p>I've cooked up a fun dynamic image for you to put on your homepage. In return, all I ask is that you link
                 the image to this site.
@@ -20,7 +20,8 @@
 
             <h2>Preview</h2>
 
-            <p><img src="{{ url_for('generateStickerImage', zipOrLatLon=zipOrLatLon) }}"/></p>
+            <p> {% include "sticker-code.html" %} </p>
+
 
             <h2>Code</h2>
 
@@ -30,8 +31,7 @@
 
                     <div class="form-group">
                         <label for="sticker_code_text"></label>
-                        <input type="text" class="form-control select_all" id="sticker_code_text"
-                               value="{{ stickerCode }}">
+                        <textarea class="form-control" rows="3" id="sticker_code_text">{{ stickerCode }}</textarea>
                     </div>
                 </div>
             </form>

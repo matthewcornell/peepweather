@@ -71,8 +71,7 @@ def showStickersEditor(zipOrLatLon):
     try:
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(zipOrLatLonList)
-        stickerCode = render_template("sticker-link.html", forecast=forecast, zipOrLatLon=zipOrLatLon)
-        stickerCode = stickerCode.replace('')
+        stickerCode = render_template("sticker-code.html", forecast=forecast, zipOrLatLon=zipOrLatLon)
         return render_template("stickers.html", forecast=forecast, stickerCode=stickerCode, zipOrLatLon=zipOrLatLon)
     except Exception as ex:
         return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)

@@ -1,7 +1,32 @@
 ;; -*- mode: outline -*-
 
+* refactoring
+** titles: write Forecast method to help zipOrLatLon. use in stickers.html too
+** embed code: make template like stickers.html
+
+
+* >> current branch
+** stickers!
+wunderground ones are awesome
+
+todo:
+o finish basic layout
+o generate basic image - table only, no branding
+o pass image size through cleanly
+o clean up image and sticker link: location, brand, etc - see wunderground
+
+ideas:
+o thumbnail image of the forecast
+o later: query parameters to customize (size, format, include summary, etc.)
+o summary for the coming day/week - "Looks like the best times are __, __, and __."
+
+http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
+http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
+
+
 * bugs
 ** 1e /settings should validate inputs, such as 8 < 1!
+
 ** 2d text input error-checking (and forgiveness, validation)
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
@@ -30,17 +55,6 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 ** 1e overview/summary
 "Looks like the best times are __, __, and __."
 "The best days to get out look to be ..."
-
-
-** !1d stickers! :-)
-http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
-http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
-
-these are awesome. ideas:
-o thumbnail image of the forecast
-o later: query parameters to customize (size, format, include summary, etc.)
-o summary for the coming day/week - "Looks like the best times are __, __, and __."
-
 
 ** 1m change terminology - confusion over Low/Med/High: desirability vs. amount
 o low rain vs. low desirability - high rain

@@ -87,6 +87,12 @@
                 </div>
             </form>
 
+            <p class="help-block">Generate a fun dynamic widget for your homepage:</p>
+            <a class="btn btn-success" role="button"
+               href="{{ url_for('showStickersEditor', zipOrLatLon=zipOrLatLon) }}">Generate a Sticker!&nbsp;&nbsp;
+                <i class="fa fa-code fa-lg"></i>
+            </a>
+
             <form onsubmit="return false;">
                 <div>
                     <p class="help-block">To embed the forecast:</p>
@@ -100,11 +106,6 @@
                 </div>
             </form>
 
-            <p>todo xx button for sticker page</p>
-            <a class="btn btn-primary" role="button"
-               href="{{ url_for('showStickersEditor', zipOrLatLon=zipOrLatLon) }}">Generate a Sticker!&nbsp;&nbsp;<span
-                    class="glyphicon glyphicon-picture"></span></a>
-    
         </div>
 
         <div class="row">
