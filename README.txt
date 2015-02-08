@@ -1,58 +1,5 @@
 ;; -*- mode: outline -*-
 
-* development process
-** setting up staging server for rc-weather at http://rc-weather-staging.herokuapp.com/
-Q: can use same codebase and just add a different git remote for new app?
-
-backed up to: rc-weather-flask-pre-heroku-staging-play.zip
-
-recall: git push heroku master
-
-before: git remote -v
-    heroku	https://git.heroku.com/rc-weather.git (fetch)
-    heroku	https://git.heroku.com/rc-weather.git (push)
-    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (fetch)
-    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (push)
-
-trying:
-
-created Heroku app (web UI): rc-weather-staging
-
-cd ~/IdeaProjects/rc-weather-flask/
-
-heroku git:remote -a rc-weather-staging
-
-after: git remote -v
-    heroku	https://git.heroku.com/rc-weather-staging.git (fetch)
-    heroku	https://git.heroku.com/rc-weather-staging.git (push)
-    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (fetch)
-    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (push)
-
-oops: it blew out the old
-
-manually editing to add 'staging' remote
-
-now: git remote -v
-    heroku	https://git.heroku.com/rc-weather.git (fetch)
-    heroku	https://git.heroku.com/rc-weather.git (push)
-    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (fetch)
-    origin	https://matthewcornell@bitbucket.org/matthewcornell/rc-weather-flask.git (push)
-    staging	https://git.heroku.com/rc-weather-staging.git (fetch)
-    staging	https://git.heroku.com/rc-weather-staging.git (push)
-
-trying: git push staging master
--> worked!
-
-
-    ...
-    remote: -----> Launching... done, v3
-    remote:        https://rc-weather-staging.herokuapp.com/ deployed to Heroku
-    remote: 
-    remote: Verifying deploy... done.
-    To https://git.heroku.com/rc-weather-staging.git
-     * [new branch]      master -> master
-
-
 * bugs
 ** 1e /settings should validate inputs, such as 8 < 1!
 ** 2d text input error-checking (and forgiveness, validation)
@@ -71,10 +18,6 @@ o search:
   o bug: empty -> Not Found
 
 o ranges : param values: not empty. ints. sorted
-
-** 3d appearance: navbar: mobile: expanded menubar has double lines above and below
-should be like this:
-http://getbootstrap.com/javascript/
 
 ** 3d sunrise/set off by an hour? current: twilight = -12 * ephem.degree
 http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library

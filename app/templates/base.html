@@ -14,7 +14,6 @@
 <body>
 
 <!-- navbar -->
-{#<nav class="navbar navbar-inverse navbar-fixed-top">#}
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
@@ -29,13 +28,11 @@
                 <span class="yellow-stroke">Peep</span>Weather</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <form class="navbar-form navbar-right">
-                <a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
-                <a class="btn btn-default" href="{{ url_for('editSettings') }}" role="button">
-                    Settings&nbsp;&nbsp;<span class="glyphicon glyphicon-cog"></span></a>
-            </form>
+            <a class="btn btn-default navbar-btn navbar-right" href="{{ url_for('editSettings') }}" role="button">
+                Settings&nbsp;&nbsp;<span class="glyphicon glyphicon-cog"></span></a>
+            <a class="btn btn-default navbar-btn navbar-right" href="{{ url_for('showHowItWorks') }}" role="button">
+                How it works &raquo;</a>
         </div>
-        <!--/.navbar-collapse -->
     </div>
 </nav>
 
