@@ -20,9 +20,7 @@
 
             <h2>Preview</h2>
 
-            <p>todo xx</p>
-
-            <p><img src="data:image/png;base64,{{ img_data }}"/></p>
+            <p><img src="{{ url_for('generateStickerImage', zipOrLatLon=zipOrLatLon) }}"/></p>
 
             <h2>Code</h2>
 

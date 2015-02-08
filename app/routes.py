@@ -50,13 +50,13 @@ def embedForecast(zipOrLatLon):
 def generateStickerImage(zipOrLatLon):
     """
     :param zipOrLatLon:
-    :return:
+    todo pass customization query args like showForecast(), but not list
     """
     zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
     forecast = Forecast(zipOrLatLonList)
     image = imageForForecast(forecast)
     bytesIO = BytesIO()
-    image.save(bytesIO, format="PNG")
+    image.save(bytesIO, format="png")
     response = make_response(bytesIO.getvalue())
     response.mimetype = 'image/png'
     return response 
@@ -71,17 +71,9 @@ def showStickersEditor(zipOrLatLon):
     try:
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(zipOrLatLonList)
-
-        # recall wu: <span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_bluestripes&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
-        stickerCode = "todo xx"
-
-        image = imageForForecast(forecast)
-        # image.show()
-        bytesIO = BytesIO()
-        image.save(bytesIO, format="PNG")
-        # bytesIO.getvalue()
-
-        return render_template("stickers.html", forecast=forecast, stickerCode=stickerCode, img_data=img_data)
+        stickerCode = render_template("sticker-link.html", forecast=forecast, zipOrLatLon=zipOrLatLon)
+        stickerCode = stickerCode.replace('')
+        return render_template("stickers.html", forecast=forecast, stickerCode=stickerCode, zipOrLatLon=zipOrLatLon)
     except Exception as ex:
         return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
 
@@ -91,7 +83,7 @@ def imageForForecast(forecast):
     # dynamically - Sticker.generateImage(forecast)
     import os
     cwd = os.getcwd()
-    imagePath = url_for('static', filename='sticker-130-temp.png')  # /static/sticker-130-temp.png
+    imagePath = url_for('static', filename='sticker-126x187-temp.png')  # /static/sticker-126x187-temp.png
     fullPath = cwd + os.sep + 'app' + os.sep + imagePath
     image = Image.open(fullPath)
     return image
