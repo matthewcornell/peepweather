@@ -3,6 +3,7 @@ import logging
 import urllib.parse
 
 from flask import render_template, request, redirect, url_for, make_response
+from PIL import Image
 
 from forecast.Forecast import Forecast
 from app import app
@@ -44,6 +45,61 @@ def embedForecast(zipOrLatLon):
         return render_template("embedded-forecast.html", error=ex.args[0])
 
 
+@app.route('/forecaststicker/<zipOrLatLon>')
+def generateStickerImage(zipOrLatLon):
+    """
+    :param zipOrLatLon:
+    :return:
+    """
+    
+    # http://stackoverflow.com/questions/11017466/flask-return-image-created-from-database
+    # return send_file(io.BytesIO(obj.logo.read()), attachment_filename='logo.png', mimetype='image/png')
+
+    # http://stackoverflow.com/questions/11017466/flask-return-image-created-from-database
+    # response = make_response(image_binary)
+    # response.headers['Content-Type'] = 'image/jpeg'
+    # response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
+    # return response
+
+    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+    forecast = Forecast(zipOrLatLonList)
+    image = imageForForecast(forecast)
+    # todo!
+    image.show()
+    return "todo: " + str(image) + ": " + forecast.name + ", " + forecast.zipcode + ", " + str(forecast.latLon)
+
+
+def imageForForecast(forecast):
+    # get a temporary png file so we have an Image to work with. later it will be generated
+    # dynamically - Sticker.generateImage(forecast)
+    import os
+    cwd = os.getcwd()
+    imagePath = url_for('static', filename='sticker-130-temp.png')  # /static/sticker-130-temp.png
+    fullPath = cwd + os.sep + 'app' + os.sep + imagePath
+    image = Image.open(fullPath)
+    return image
+
+
+@app.route('/stickers/<zipOrLatLon>')
+def showStickersEditor(zipOrLatLon):
+    """
+    :param zipOrLatLon: same as showForecast()
+    URL query parameters: none
+    """
+    try:
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        forecast = Forecast(zipOrLatLonList)
+        
+        # recall wu: <span style="display: block !important; width: 180px; text-align: center; font-family: sans-serif; font-size: 12px;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Amherst, Massachusetts Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_bluestripes&airportcode=KCEF&ForcedCity=Amherst&ForcedState=MA&zip=01002&language=EN" alt="Find more about Weather in Amherst, MA" width="160" /></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:01002.1.99999&bannertypeclick=wu_bluestripes" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
+        stickerCode = "todo xx"
+        
+        img_data = "todoxx"
+        
+        return render_template("stickers.html", forecast=forecast, stickerCode=stickerCode, img_data=img_data)
+    except Exception as ex:
+        return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
+
+
 @app.route('/forecast/<zipOrLatLon>')
 def showForecast(zipOrLatLon):
     """
@@ -53,7 +109,6 @@ def showForecast(zipOrLatLon):
     o list=true: shows list format for debugging
     o four customized weather parameters (p, t, w, and c) -> use them instead of default.
       there are four, pipe-delimited, one for each parameter: ?p=v1|v2&t=v1|v2|v3|v4&w=v1|v2&c=v1|v2
-    :return:
     """
     try:
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
@@ -73,8 +128,9 @@ def showForecast(zipOrLatLon):
             url_for('embedForecast', zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
                     t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
         return render_template(template, forecast=forecast, hideIcons=hideIcons, fullUrl=fullUrl, embedUrl=embedUrl)
-    except Exception as exc:
-        return render_template("message.html", title="Error getting forecast", message=exc.args[0], isError=True)
+    except Exception as ex:
+        return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
+
 
 @app.route('/settings')
 def editSettings():
@@ -118,7 +174,8 @@ def do_zip_submit():
         return render_template("message.html", title="Nothing to search for",
                                message="Please enter a zip code or a latitude, longitude.", isError=False)
     else:
-        zipOrLatLon = zipOrLatLon.replace(',', '|')  # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
+        zipOrLatLon = zipOrLatLon.replace(',',
+                                          '|')  # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
         return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
 
 

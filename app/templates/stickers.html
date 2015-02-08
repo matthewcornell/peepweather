@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Sticker{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <h1>Generate Sticker</h1>
+
+            <p>I've cooked up a fun dynamic image for you to put on your homepage. In return, all I ask is that you link
+                the image to this site.
+            <ol>
+                <li>Navigate to this page using the location you want the sticker to show.</li>
+                <li>Copy the HTML code shown</li>
+                <li>Paste the it into your HTML</li>
+            </ol>
+
+            The sticker will automatically display the most up to date current conditions for that location.</p>
+
+            <h2>Preview</h2>
+
+            <p>todo xx</p>
+
+{#            <p><img src="data:image/png;base64,{{ img_data }}"/></p>#}
+            <p><img src="{{ imagePath }}"/></p>
+
+            <h2>Code</h2>
+
+            <form onsubmit="return false;">
+                <div>
+                    <p class="help-block">Copy this code to paste into your site's HTML:</p>
+
+                    <div class="form-group">
+                        <label for="sticker_code_text"></label>
+                        <input type="text" class="form-control select_all" id="sticker_code_text"
+                               value="{{ stickerCode }}">
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

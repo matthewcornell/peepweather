@@ -40,7 +40,8 @@
 
             {% set location = forecast.zipcode + " (" + forecast.name + ")" if forecast.zipcode else forecast.latLonTruncated() %}
 
-            <h1>Forecast for {{ zipOrLatLon }} {% if forecast.name %} <small>({{ forecast.name }})</small>{% endif %}</h1>
+            <h1>Forecast for {{ zipOrLatLon }} {% if forecast.name %}
+                <small>({{ forecast.name }})</small>{% endif %}</h1>
 
             <div class="col-md-12 help-block">Time: <span id="time-id"></span></div>
 
@@ -98,6 +99,12 @@
                     </div>
                 </div>
             </form>
+
+            <p>todo xx button for sticker page</p>
+            <a class="btn btn-primary" role="button"
+               href="{{ url_for('showStickersEditor', zipOrLatLon=zipOrLatLon) }}">Generate a Sticker!&nbsp;&nbsp;<span
+                    class="glyphicon glyphicon-picture"></span></a>
+    
         </div>
 
         <div class="row">
