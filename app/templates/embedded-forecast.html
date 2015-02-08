@@ -25,8 +25,10 @@
                 <p>The error message was: <span class="alert-danger">{{ error }}</span></p>
 
             {% else %}
+                
+                {% set location = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
 
-                <h4>Forecast for {{ forecast.location(includeName=False) }}
+                <h4>Forecast for {{ location }}
                     <small>(<a href="{{ fullUrl }}" target="_blank">PeepWeather.com</a>)</small>
                 </h4>
                 <div class="col-sm-6">

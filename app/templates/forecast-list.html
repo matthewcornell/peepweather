@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Forecast for {{ forecast.location() }}{% endblock %}
-{% block navLocation %} > {{ forecast.location() }}{% endblock %}
+
+{% set zipOrLatLon = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
+
+{% block title %}Forecast for {{ zipOrLatLon }} {% if forecast.name %}({{ forecast.name }}){% endif %} {% endblock %}
 
 {% block content %}
 
@@ -9,7 +11,11 @@
 
     <div class="container">
         <div class="row">
-            <h1>Forecast for {{ forecast.location() }} </h1>
+        
+            {% set location = forecast.zipcode + " (" + forecast.name + ")" if forecast.zipcode else forecast.latLonTruncated() %}
+        
+            <h1>Forecast for {{ zipOrLatLon }} {% if forecast.name %} <small>({{ forecast.name }})</small>{% endif %}</h1>
+        
             <table class="table table-condensed table-striped" style="font-family: monospace">
                 {% for hour in forecast.hours %}
                     <tr>

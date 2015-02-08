@@ -73,19 +73,13 @@ class Forecast:
         return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
 
 
-    def location(self, includeName=True):
-        if self.zipcode:
-            if includeName:
-                return '{} ({})'.format(self.zipcode, self.name)
-            else:
-                return '{}'.format(self.zipcode, self.name)
-        else:
-            # truncate to four digits after decimal
-            latStr = self.latLon[0]
-            lonStr = self.latLon[1]
-            latStr = latStr[:latStr.index('.') + 5]
-            lonStr = lonStr[:lonStr.index('.') + 5]
-            return '{}, {}'.format(latStr, lonStr)
+    def latLonTruncated(self):
+        # truncate to four digits after decimal
+        latStr = self.latLon[0]
+        lonStr = self.latLon[1]
+        latStr = latStr[:latStr.index('.') + 5]
+        lonStr = lonStr[:lonStr.index('.') + 5]
+        return '{}, {}'.format(latStr, lonStr)
 
 
     def weatherDotGovUrl(self):
