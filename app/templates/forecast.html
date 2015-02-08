@@ -91,7 +91,7 @@
                     <p class="help-block">To embed the forecast:</p>
 
                     <div class="form-group">
-                        {% set embedUrlAsText = '<iframe src="' + embedUrl + '" width="350" height="300" frameborder="0" style="border:0">' %}
+                        {% set embedUrlAsText = '<iframe src="' + embedUrl + '" width="350" height="300" frameborder="0" style="border:0"></iframe>' %}
                         <label for="embed_url_text"></label>
                         <input type="text" class="form-control select_all" id="embed_url_text"
                                value="{{ embedUrlAsText }}">
