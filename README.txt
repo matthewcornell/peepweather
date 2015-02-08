@@ -1,7 +1,6 @@
 ;; -*- mode: outline -*-
 
 * bugs
-** 1e index forms should handle null input: zip/lat/lon and search
 ** 1e /settings should validate inputs, such as 8 < 1!
 ** 2d text input error-checking (and forgiveness, validation)
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
@@ -28,6 +27,21 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 ** 3d appearance: responsive: when key goes below table, it stretches full width
 
 * features: to do
+** 1e overview/summary
+"Looks like the best times are __, __, and __."
+"The best days to get out look to be ..."
+
+
+** !1d stickers! :-)
+http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
+http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
+
+these are awesome. ideas:
+o thumbnail image of the forecast
+o later: query parameters to customize (size, format, include summary, etc.)
+o summary for the coming day/week - "Looks like the best times are __, __, and __."
+
+
 ** 1m change terminology - confusion over Low/Med/High: desirability vs. amount
 o low rain vs. low desirability - high rain
 o Low means Low Desirability (like Orange or Red) not low amounts of clouds
@@ -35,9 +49,6 @@ o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
 ** 2m use jQuery everywhere
-
-** 2m search: decide what I want it to do
-whole state name. completion. sort by name
 
 ** 3e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
 (wind, precip, etc.) that updates to show a sentence incorporating the current values
@@ -64,6 +75,8 @@ rc sites, clubs, etc.
 
 * features: to consider
 ** appearance: don't show first column if all white?
+
+** user accounts so that settings follow user around on every computer
 
 ** ~ favorite flying locations (like bookmarks)
 add my favorite locations to a list, and have that list saved for when I come back to the home page
