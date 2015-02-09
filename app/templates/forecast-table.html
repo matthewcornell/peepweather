@@ -10,7 +10,7 @@
     {% for hourOfDayIndex in range(8, 21) %}
         {% set hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex] %}
         {% set hour0 = hourOfDayRow[0] %}
-        {% set rowHeadingColor = 'black' if forecast.isDaylightHour(hour0) else 'gray' %}
+        {% set rowHeadingColor = 'black' if forecast.isDaylightHour(hour0) else 'gray' %}   {# todo cleaner if css classes #}
         <tr>
             <th style="color:{{ rowHeadingColor }}">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
             {% for hour in hourOfDayRow %}

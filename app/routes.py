@@ -4,9 +4,10 @@ import logging
 import urllib.parse
 
 from flask import render_template, request, redirect, url_for, make_response
-import Sticker
 
 from forecast.Forecast import Forecast
+
+from forecast.Sticker import Sticker
 from app import app
 
 
@@ -54,7 +55,7 @@ def generateStickerImage(zipOrLatLon):
     """
     zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
     forecast = Forecast(zipOrLatLonList)
-    image = Sticker.imageForForecast(forecast)
+    image = Sticker(forecast).image
     bytesIO = BytesIO()
     image.save(bytesIO, format="png")
     response = make_response(bytesIO.getvalue())
@@ -71,7 +72,7 @@ def showStickersEditor(zipOrLatLon):
     try:
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(zipOrLatLonList)
-        image = Sticker.imageForForecast(forecast)  # todo this is an additional call just to get image size
+        image = Sticker(forecast).image  # todo this is an additional call just to get image size
         forecastUrl = urllib.parse.unquote(url_for('showForecast', _external=True, zipOrLatLon=zipOrLatLon))
         stickerImageUrl = urllib.parse.unquote(url_for('generateStickerImage', _external=True, zipOrLatLon=zipOrLatLon))
         imageWidth = image.size[0]
