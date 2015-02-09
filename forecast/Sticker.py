@@ -14,7 +14,6 @@ class Sticker:
         self.image = Image.new('RGB', self.imageSize, 'white')
         self.drawSquaresRowColHeadsGrid()
         self.drawBrand()
-        self.drawOverallOutline()
 
         # todo for now a temporary png file so we have an Image to work with:
         # self.image = Image.open('/Users/matt/IdeaProjects/rc-weather-flask/app/static/sticker-126x187-temp.png')
@@ -26,7 +25,7 @@ class Sticker:
             x, y = squareSize[0] + (squareSize[0] * idx), self.brandSize[1]
             print('  drawColumnHeadings(): x,y={},{}. h={}'.format(x, y, colHeader))
             draw = ImageDraw.Draw(self.image)
-            draw.text((x, y), colHeader, 'black')
+            draw.text((x + 2, y), colHeader, 'black')
 
 
     def drawSquaresRowColHeadsGrid(self):
@@ -56,7 +55,7 @@ class Sticker:
     def drawRowHeading(self, x, y, rowHeading, rowHeadingColor):
         print('  drawRowHeading(): x,y={},{}. rh,rhc={},{}'.format(x, y, rowHeading, rowHeadingColor))
         draw = ImageDraw.Draw(self.image)
-        draw.text((x, y), rowHeading, rowHeadingColor)
+        draw.text((x + 2, y), rowHeading, rowHeadingColor)
 
 
     def drawHourSquare(self, x, y, squareSize, cssClass):
@@ -78,7 +77,7 @@ class Sticker:
         draw = ImageDraw.Draw(self.image)
         # draw horiz lines. include extra above column headers
         lineColor = 'gray'
-        for rowNum in range(numRows + 1):
+        for rowNum in range(numRows + 2):
             x1, y1 = 0, self.brandSize[1] + (squareSize[1] * rowNum)
             x2 = self.tableSize[0]
             print('  drawGrid() horiz: rn={}, x1,y1={},{}. x2={}'.format(rowNum, x1, y1, x2))
@@ -99,9 +98,4 @@ class Sticker:
         # self.brandSize[1]
         draw = ImageDraw.Draw(self.image)
         draw.text((x, y), brandText, 'black')
-
-
-    def drawOverallOutline(self):
-        # light gray around entire table
-        pass
     
