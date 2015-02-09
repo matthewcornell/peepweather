@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% set zipOrLatLon = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
+{% set zipOrLatLonForTitle = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
 
-{% block title %}Forecast for {{ zipOrLatLon }} {% if forecast.name %}({{ forecast.name }}){% endif %} {% endblock %}
+{% block title %}Forecast for {{ zipOrLatLonForTitle }} {% if forecast.name %}({{ forecast.name }}){% endif %} {% endblock %}
 
 {% block scripts %}
 
@@ -40,7 +40,7 @@
 
             {% set location = forecast.zipcode + " (" + forecast.name + ")" if forecast.zipcode else forecast.latLonTruncated() %}
 
-            <h1>Forecast for {{ zipOrLatLon }} {% if forecast.name %}
+            <h1>Forecast for {{ zipOrLatLonForTitle }} {% if forecast.name %}
                 <small>({{ forecast.name }})</small>{% endif %}</h1>
 
             <div class="col-md-12 help-block">Time: <span id="time-id"></span></div>

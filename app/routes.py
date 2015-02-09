@@ -112,7 +112,8 @@ def showForecast(zipOrLatLon):
         embedUrl = urllib.parse.unquote(
             url_for('embedForecast', zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
                     t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
-        return render_template(template, forecast=forecast, hideIcons=hideIcons, fullUrl=fullUrl, embedUrl=embedUrl)
+        return render_template(template, forecast=forecast, hideIcons=hideIcons, fullUrl=fullUrl, embedUrl=embedUrl, 
+                               zipOrLatLon=zipOrLatLon)
     except Exception as ex:
         return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
 

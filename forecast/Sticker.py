@@ -1,29 +1,32 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
+from PIL.ImageFont import ImageFont
 
 
 class Sticker:
     def __init__(self, forecast):
         """
         :return: an instance whose image property is a PIL Image corresponding to forecast to be used for sticker embedding
-        todo think: del(draw)
+
+        todo:
+        o make header prettier - say with a gray background, existing brand image, etc.
+        o use nicer font, such as TrueType. NB: default is courB08 in ImageFont.py. others were too big: via http://www.geeks3d.com/20131108/beginning-with-pillow-the-pil-fork-python-imaging-library-tutorial-programming/7/
+        o Q: del(draw)?
+
         """
         self.forecast = forecast
         self.tableSize = (126, 187)     # excluding brand but including row and column headers
-        self.brandSize = (self.tableSize[0], 20)
-        self.imageSize = self.tableSize[0] + self.brandSize[0], self.tableSize[1] + self.brandSize[1]
+        self.brandSize = (self.tableSize[0], 12)
+        self.imageSize = self.tableSize[0], self.tableSize[1] + self.brandSize[1]
         self.image = Image.new('RGB', self.imageSize, 'white')
-        self.drawSquaresRowColHeadsGrid()
+        print("xx", self.tableSize, self.brandSize, self.imageSize, self.image.size)    # s/b 126 x 188
         self.drawBrand()
-
-        # todo for now a temporary png file so we have an Image to work with:
-        # self.image = Image.open('/Users/matt/IdeaProjects/rc-weather-flask/app/static/sticker-126x187-temp.png')
+        self.drawLocation()
+        self.drawSquaresRowColHeadsGrid()
 
 
     def drawColumnHeadings(self,squareSize):
-        print('drawColumnHeadings()')
         for idx, colHeader in enumerate(self.forecast.calendarHeaderRow()):
             x, y = squareSize[0] + (squareSize[0] * idx), self.brandSize[1]
-            print('  drawColumnHeadings(): x,y={},{}. h={}'.format(x, y, colHeader))
             draw = ImageDraw.Draw(self.image)
             draw.text((x + 2, y), colHeader, 'black')
 
@@ -35,7 +38,6 @@ class Sticker:
         numCols = len(hoursAsCalendarRows[0]) + 1   # including row header
         # excluding brand and column header
         squareSize = self.tableSize[0] / numCols, (self.tableSize[1] - self.brandSize[1]) / (numHours + 1)    # including column header
-        print('drawSquaresRowColHeadsGrid(): ts={}, bs={} | nc={}, nr={}, ss={}'.format(self.tableSize, self.brandSize, numCols, range(numHours), squareSize))
         self.drawColumnHeadings(squareSize)
         for rowNum in range(numHours):  # hour of day rows. excludes column header
             # x, y = upper left corner. y skips brand height and column header row
@@ -53,7 +55,6 @@ class Sticker:
 
 
     def drawRowHeading(self, x, y, rowHeading, rowHeadingColor):
-        print('  drawRowHeading(): x,y={},{}. rh,rhc={},{}'.format(x, y, rowHeading, rowHeadingColor))
         draw = ImageDraw.Draw(self.image)
         draw.text((x + 2, y), rowHeading, rowHeadingColor)
 
@@ -67,35 +68,37 @@ class Sticker:
             'Missing': 'white',  # ffffff
         }  # todo should probably grab this from hour-colors.css in case it changes
         hourColor = cssClassToColor[cssClass]
-        print('    drawHourSquare(): x,y={},{}. hc={}'.format(x, y, hourColor))
         draw = ImageDraw.Draw(self.image)
         draw.rectangle((x, y, x + squareSize[0], y + squareSize[1]), hourColor)
 
 
     def drawGrid(self, squareSize, numCols, numRows):
-        print('drawGrid(): nc,nr={},{}'.format(numCols, numRows))
         draw = ImageDraw.Draw(self.image)
         # draw horiz lines. include extra above column headers
         lineColor = 'gray'
         for rowNum in range(numRows + 2):
             x1, y1 = 0, self.brandSize[1] + (squareSize[1] * rowNum)
             x2 = self.tableSize[0]
-            print('  drawGrid() horiz: rn={}, x1,y1={},{}. x2={}'.format(rowNum, x1, y1, x2))
             draw.line([x1, y1, x2, y1], lineColor)
         # draw vertical lines. include extra left of row headers
         for colNum in range(numCols + 1):
             x1, y1 = squareSize[0] * colNum, self.brandSize[1]
             y2 = self.tableSize[1]
-            print('  drawGrid() vert: cn={}, x1,y1={},{}. y2={}'.format(colNum, x1, y1, y2))
+            if colNum == numCols:
+                x1 -= 1     # a hack to keep the rightmost line from being clipped
             draw.line([x1, y1, x1, y2], lineColor)
 
 
     def drawBrand(self):
-        # todo Q: use existing brand image?
         x, y = 0, 0
         brandText = "PeepWeather.com"
-        print('drawBrand(): x,y={},{}. h={}'.format(x, y, brandText))
-        # self.brandSize[1]
         draw = ImageDraw.Draw(self.image)
-        draw.text((x, y), brandText, 'black')
-    
+        draw.text((x + 18, y - 1), brandText, 'gray')  # offsets are magic - should be based on font
+
+
+    def drawLocation(self):
+        x, y = 12 if self.forecast.zipcode else 0, self.tableSize[1]    # hack to center. s/b based on font
+        zipOrLatLon = self.forecast.zipcode if self.forecast.zipcode else self.forecast.latLonTruncated()
+        location = ("Forecast for " if self.forecast.zipcode else "Loc: ") + zipOrLatLon
+        draw = ImageDraw.Draw(self.image)
+        draw.text((x, y), location, 'gray') # offsets are magic
