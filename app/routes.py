@@ -1,4 +1,4 @@
-from io import StringIO, BytesIO
+from io import BytesIO
 import json
 import logging
 import urllib.parse
@@ -59,7 +59,7 @@ def generateStickerImage(zipOrLatLon):
     image.save(bytesIO, format="png")
     response = make_response(bytesIO.getvalue())
     response.mimetype = 'image/png'
-    return response 
+    return response
 
 
 @app.route('/stickers/<zipOrLatLon>')
@@ -71,9 +71,13 @@ def showStickersEditor(zipOrLatLon):
     try:
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(zipOrLatLonList)
-        stickerImageUrl = urllib.parse.unquote(url_for('generateStickerImage', zipOrLatLon=zipOrLatLon))
-        stickerCode = render_template("sticker-code.html", forecast=forecast, stickerImageUrl=stickerImageUrl)
-        return render_template("stickers.html", forecast=forecast, stickerCode=stickerCode)
+        forecastUrl = urllib.parse.unquote(url_for('showForecast', _external=True, zipOrLatLon=zipOrLatLon))
+        stickerImageUrl = urllib.parse.unquote(url_for('generateStickerImage', _external=True, zipOrLatLon=zipOrLatLon))
+        stickerCode = render_template("sticker-code.html", forecast=forecast,
+                                      forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=126)
+        return render_template("stickers.html", forecast=forecast,
+                               forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=126,
+                               stickerCode=stickerCode)
     except Exception as ex:
         return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
 
@@ -82,6 +86,7 @@ def imageForForecast(forecast):
     # get a temporary png file so we have an Image to work with. later it will be generated
     # dynamically - Sticker.generateImage(forecast)
     import os
+
     cwd = os.getcwd()
     imagePath = url_for('static', filename='sticker-126x187-temp.png')  # /static/sticker-126x187-temp.png
     fullPath = cwd + os.sep + 'app' + os.sep + imagePath

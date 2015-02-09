@@ -2,8 +2,7 @@
 
 {% set zipOrLatLon = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
 
-{% block title %}Generate Sticker for {{ zipOrLatLon }} {% if forecast.name %}({{ forecast.name }})
-{% endif %} {% endblock %}
+{% block title %}Generate Sticker for {{ zipOrLatLon }} {% if forecast.name %}({{ forecast.name }}) {% endif %} {% endblock %}
 
 {% block content %}
 
