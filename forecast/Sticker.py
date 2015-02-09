@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 
 class Sticker:
@@ -10,28 +10,34 @@ class Sticker:
         self.tableSize = (126, 187)     # excluding brand but including row and column headers
         self.brandSize = (self.tableSize[0], 20)
         self.imageSize = self.tableSize[0] + self.brandSize[0], self.tableSize[1] + self.brandSize[1]
-        self.image = Image.new('RGB', self.imageSize)
-        self.drawColumnHeadings()
-        self.drawSquaresAndRowHeadings()
+        self.image = Image.new('RGB', self.imageSize, 'white')
+        self.drawSquaresRowColHeadings()
         self.drawGrid()
         self.drawBrand()
 
         # todo for now a temporary png file so we have an Image to work with:
-        self.image = Image.open('/Users/matt/IdeaProjects/rc-weather-flask/app/static/sticker-126x187-temp.png')
+        # self.image = Image.open('/Users/matt/IdeaProjects/rc-weather-flask/app/static/sticker-126x187-temp.png')
         
 
-    def drawColumnHeadings(self):
-        pass
+    def drawColumnHeadings(self,squareSize):
+        print('drawColumnHeadings()')
+        for idx, colHeader in enumerate(self.forecast.calendarHeaderRow()):
+            x, y = squareSize[0] + (squareSize[0] * idx), self.brandSize[1]
+            print('  drawColumnHeadings(): x,y={},{}. h={}'.format(x, y, colHeader))
+            draw = ImageDraw.Draw(self.image)
+            draw.text((x, y), colHeader, 'black')
+            # del(draw)
 
 
-    def drawSquaresAndRowHeadings(self):
+    def drawSquaresRowColHeadings(self):
         # for now all squares, including row and column headers, are equal sizes
         firstHour, numHours = 8, 13  # 8a to 8p
         hoursAsCalendarRows = self.forecast.hoursAsCalendarRows()
         numCols = len(hoursAsCalendarRows[0]) + 1   # including row header
         # excluding brand and column header
         squareSize = self.tableSize[0] / numCols, (self.tableSize[1] - self.brandSize[1]) / (numHours + 1)    # including column header
-        print('drawSquaresAndRowHeadings(): ts={}, bs={} | nc={}, nr={}, ss={}'.format(self.tableSize, self.brandSize, numCols, range(numHours), squareSize))
+        print('drawSquaresRowColHeadings(): ts={}, bs={} | nc={}, nr={}, ss={}'.format(self.tableSize, self.brandSize, numCols, range(numHours), squareSize))
+        self.drawColumnHeadings(squareSize)
         for rowNum in range(numHours):  # hour of day rows. excludes column header
             # x, y = upper left corner. y skips brand height and column header row
             x, y = 0, self.brandSize[1] + squareSize[1] + (squareSize[1] * rowNum)
@@ -48,7 +54,9 @@ class Sticker:
 
     def drawRowHeading(self, x, y, rowHeading, rowHeadingColor):
         print('  drawRowHeading(): x,y={},{}. rh,rhc={},{}'.format(x, y, rowHeading, rowHeadingColor))
-        pass
+        draw = ImageDraw.Draw(self.image)
+        draw.text((x, y), rowHeading, rowHeadingColor)
+        # del(draw)
 
 
     def drawHourSquare(self, x, y, squareSize, cssClass):
@@ -61,6 +69,10 @@ class Sticker:
         }  # todo should probably grab this from hour-colors.css in case it changes
         hourColor = cssClassToColor[cssClass]
         print('    drawHourSquare(): x,y={},{}. hc={}'.format(x, y, hourColor))
+        draw = ImageDraw.Draw(self.image)
+        draw.rectangle((x, y, x + squareSize[0], y + squareSize[1]), hourColor)
+        # del(draw)
+
 
 
     def drawGrid(self):
