@@ -18,9 +18,8 @@ class Sticker:
         self.brandSize = (self.tableSize[0], 12)
         self.imageSize = self.tableSize[0], self.tableSize[1] + self.brandSize[1]
         self.image = Image.new('RGB', self.imageSize, 'white')
-        print("xx", self.tableSize, self.brandSize, self.imageSize, self.image.size)    # s/b 126 x 188
-        self.drawBrand()
         self.drawLocation()
+        self.drawBrand()
         self.drawSquaresRowColHeadsGrid()
 
 
@@ -89,16 +88,16 @@ class Sticker:
             draw.line([x1, y1, x1, y2], lineColor)
 
 
-    def drawBrand(self):
-        x, y = 0, 0
-        brandText = "PeepWeather.com"
-        draw = ImageDraw.Draw(self.image)
-        draw.text((x + 18, y - 1), brandText, 'gray')  # offsets are magic - should be based on font
-
-
     def drawLocation(self):
-        x, y = 12 if self.forecast.zipcode else 0, self.tableSize[1]    # hack to center. s/b based on font
+        x, y = 11 if self.forecast.zipcode else 3, -1    # hack to center. s/b based on font
         zipOrLatLon = self.forecast.zipcode if self.forecast.zipcode else self.forecast.latLonTruncated()
         location = ("Forecast for " if self.forecast.zipcode else "Loc: ") + zipOrLatLon
         draw = ImageDraw.Draw(self.image)
-        draw.text((x, y), location, 'gray') # offsets are magic
+        draw.text((x, y), location, 'gray')
+
+
+    def drawBrand(self):
+        x, y = 0, self.tableSize[1] + 1
+        brandText = "PeepWeather.com"
+        draw = ImageDraw.Draw(self.image)
+        draw.text((x + 18, y - 1), brandText, 'gray')  # offsets are magic - should be based on font
