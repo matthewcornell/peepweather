@@ -4,7 +4,7 @@ import logging
 import urllib.parse
 
 from flask import render_template, request, redirect, url_for, make_response
-from PIL import Image
+import Sticker
 
 from forecast.Forecast import Forecast
 from app import app
@@ -54,7 +54,7 @@ def generateStickerImage(zipOrLatLon):
     """
     zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
     forecast = Forecast(zipOrLatLonList)
-    image = imageForForecast(forecast)
+    image = Sticker.imageForForecast(forecast)
     bytesIO = BytesIO()
     image.save(bytesIO, format="png")
     response = make_response(bytesIO.getvalue())
@@ -71,27 +71,17 @@ def showStickersEditor(zipOrLatLon):
     try:
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(zipOrLatLonList)
+        image = Sticker.imageForForecast(forecast)  # todo this is an additional call just to get image size
         forecastUrl = urllib.parse.unquote(url_for('showForecast', _external=True, zipOrLatLon=zipOrLatLon))
         stickerImageUrl = urllib.parse.unquote(url_for('generateStickerImage', _external=True, zipOrLatLon=zipOrLatLon))
+        imageWidth = image.size[0]
         stickerCode = render_template("sticker-code.html", forecast=forecast,
-                                      forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=126)
+                                      forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=imageWidth)
         return render_template("stickers.html", forecast=forecast,
-                               forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=126,
+                               forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=imageWidth,
                                stickerCode=stickerCode)
     except Exception as ex:
         return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
-
-
-def imageForForecast(forecast):
-    # get a temporary png file so we have an Image to work with. later it will be generated
-    # dynamically - Sticker.generateImage(forecast)
-    import os
-
-    cwd = os.getcwd()
-    imagePath = url_for('static', filename='sticker-126x187-temp.png')  # /static/sticker-126x187-temp.png
-    fullPath = cwd + os.sep + 'app' + os.sep + imagePath
-    image = Image.open(fullPath)
-    return image
 
 
 @app.route('/forecast/<zipOrLatLon>')
