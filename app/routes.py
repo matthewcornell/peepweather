@@ -1,12 +1,11 @@
-from io import BytesIO
 import json
 import logging
 import urllib.parse
 
+from io import BytesIO
 from flask import render_template, request, redirect, url_for, make_response
 
 from forecast.Forecast import Forecast
-
 from forecast.Sticker import Sticker
 from app import app
 
@@ -25,97 +24,102 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/embed/<zipOrLatLon>')
-def embedForecast(zipOrLatLon):
-    """
-    same inputs and query parameters as showForecast() but returns a simpler HTML document suitable for an <iframe> embedding
-    """
-    try:
-        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
-            'p') else None  # check for at least one
-        rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
-        forecast = Forecast(zipOrLatLonList, rangeDictFromQuery)
-        queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
-        urlToShare = url_for('showForecast', zipOrLatLon=zipOrLatLon,
-                             _external=True,
-                             p=queryParamsDict['p'], t=queryParamsDict['t'], w=queryParamsDict['w'],
-                             c=queryParamsDict['c'])
-        fullUrl = urllib.parse.unquote(urlToShare)
-        return render_template("embedded-forecast.html", forecast=forecast, fullUrl=fullUrl)
-    except Exception as ex:
-        return render_template("embedded-forecast.html", error=ex.args[0])
-
-
-@app.route('/forecaststicker/<zipOrLatLon>')
-def generateStickerImage(zipOrLatLon):
-    """
-    :param zipOrLatLon:
-    todo pass customization query args like showForecast(), but not list
-    """
-    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
-    forecast = Forecast(zipOrLatLonList)
-    image = Sticker(forecast).image
-    bytesIO = BytesIO()
-    image.save(bytesIO, format="png")
-    response = make_response(bytesIO.getvalue())
-    response.mimetype = 'image/png'
-    return response
-
-
-@app.route('/stickers/<zipOrLatLon>')
-def showStickersEditor(zipOrLatLon):
-    """
-    :param zipOrLatLon: same as showForecast()
-    URL query parameters: none
-    """
-    try:
-        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
-        forecast = Forecast(zipOrLatLonList)
-        image = Sticker(forecast).image  # todo this is an additional call just to get image size
-        forecastUrl = urllib.parse.unquote(url_for('showForecast', _external=True, zipOrLatLon=zipOrLatLon))
-        stickerImageUrl = urllib.parse.unquote(url_for('generateStickerImage', _external=True, zipOrLatLon=zipOrLatLon))
-        imageWidth = image.size[0]
-        stickerCode = render_template("sticker-code.html", forecast=forecast,
-                                      forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=imageWidth)
-        return render_template("stickers.html", forecast=forecast,
-                               forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, imageWidth=imageWidth,
-                               stickerCode=stickerCode)
-    except Exception as ex:
-        return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
-
-
 @app.route('/forecast/<zipOrLatLon>')
 def showForecast(zipOrLatLon):
     """
     :param zipOrLatLon: location to get the forecast for. either a zip code string or a comma-separated list of
     latitude and longitude strings. ex: '01002' or '42.375370,-72.519249'.
+    
     URL query parameters:
     o list=true: shows list format for debugging
     o four customized weather parameters (p, t, w, and c) -> use them instead of default.
       there are four, pipe-delimited, one for each parameter: ?p=v1|v2&t=v1|v2|v3|v4&w=v1|v2&c=v1|v2
     """
     try:
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
         rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
-            'p') else None  # check for at least one
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
         template = "forecast-list.html" if request.args.get('list') else "forecast.html"
-        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(zipOrLatLonList, rangeDict)
         hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
-        fullUrl = urllib.parse.unquote(
-            url_for('showForecast', zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
-                    t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
-        embedUrl = urllib.parse.unquote(
-            url_for('embedForecast', zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
-                    t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
-        return render_template(template, forecast=forecast, hideIcons=hideIcons, fullUrl=fullUrl, embedUrl=embedUrl, 
+        fullUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
+        embedUrl = fullUrlForEndpoint('embedForecast', zipOrLatLon, queryParamsDict)
+        return render_template(template, forecast=forecast, hideIcons=hideIcons,
+                               fullUrl=fullUrl, embedUrl=embedUrl,
                                zipOrLatLon=zipOrLatLon)
     except Exception as ex:
         return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
+
+
+@app.route('/embed/<zipOrLatLon>')
+def embedForecast(zipOrLatLon):
+    """
+    :param zipOrLatLon:
+    URL query parameters: same as showForecast(), but not list
+    """
+    try:
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
+        rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
+        forecast = Forecast(zipOrLatLonList, rangeDict)
+        
+        queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
+        fullUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
+        return render_template("embedded-forecast.html", forecast=forecast, fullUrl=fullUrl)
+    except Exception as ex:
+        return render_template("embedded-forecast.html", error=ex.args[0])
+
+
+@app.route('/stickers/<zipOrLatLon>')
+def showStickersEditor(zipOrLatLon):
+    """
+    :param zipOrLatLon: same as showForecast()
+    URL query parameters: same as showForecast(), but not list
+    """
+    try:
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
+        rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
+        rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
+        forecast = Forecast(zipOrLatLonList, rangeDict)
+        image = Sticker(forecast).image
+
+        queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
+        forecastUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
+        stickerImageUrl = fullUrlForEndpoint('generateStickerImage', zipOrLatLon, queryParamsDict)
+        imageWidth = image.size[0]
+        stickerCode = render_template("sticker-code.html", forecast=forecast,
+                                      forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl,
+                                      imageWidth=imageWidth)
+        return render_template("stickers.html", forecast=forecast,
+                               forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, 
+                               imageWidth=imageWidth, stickerCode=stickerCode)
+    except Exception as ex:
+        return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
+
+
+@app.route('/forecaststicker/<zipOrLatLon>')
+def generateStickerImage(zipOrLatLon):
+    """
+    :param zipOrLatLon:
+    URL query parameters: same as showForecast(), but not list
+    """
+    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+    rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
+    rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
+    rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
+    rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
+    forecast = Forecast(zipOrLatLonList, rangeDict)
+    image = Sticker(forecast).image
+    bytesIO = BytesIO()
+    image.save(bytesIO, format="png")
+    response = make_response(bytesIO.getvalue())
+    response.mimetype = 'image/png'
+    return response
 
 
 @app.route('/settings')
@@ -149,6 +153,13 @@ def searchForZip(query):
 @app.route('/how-it-works')
 def showHowItWorks():
     return render_template("how-it-works.html")
+
+
+def fullUrlForEndpoint(endpoint, zipOrLatLon, queryParamsDict):
+    url = urllib.parse.unquote(
+        url_for(endpoint, zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
+                t=queryParamsDict['t'], w=queryParamsDict['w'], c=queryParamsDict['c']))
+    return url
 
 
 # ==== forms ====

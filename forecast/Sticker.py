@@ -48,8 +48,7 @@ class Sticker:
             self.drawRowHeading(x, y, rowHeading, rowHeadingColor)
             for hour in hourOfDayRow:  # day of week columns
                 x += squareSize[0]
-                cssClass = hour.cssClassForDesirability()
-                self.drawHourSquare(x, y, squareSize, cssClass)
+                self.drawHourSquare(x, y, squareSize, hour)
         self.drawGrid(squareSize, numCols, numHours)
 
 
@@ -58,7 +57,8 @@ class Sticker:
         draw.text((x + 2, y), rowHeading, rowHeadingColor)
 
 
-    def drawHourSquare(self, x, y, squareSize, cssClass):
+    def drawHourSquare(self, x, y, squareSize, hour):
+        cssClass = hour.cssClassForDesirability()
         cssClassToColor = {
             'Poor': '#ff0000',
             'Fair': '#ffaa00',
