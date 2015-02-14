@@ -6,27 +6,20 @@
 
 
 * >> current branch
-** stickers!
-wunderground ones are awesome
-
-todo:
-o finish basic layout
-o generate basic image - table only, no branding
-o pass image size, location, etc. through cleanly for <span>
-o clean up image and sticker link: location, brand, etc - see wunderground
-o add url query parameters to customize
-
-ideas:
-o thumbnail image of the forecast
-o later: query parameters to customize (size, format, include summary, etc.)
-o summary for the coming day/week - "Looks like the best times are __, __, and __."
-
-http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
-http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
+xx
 
 
 * bugs
+** sticker: move column text one pixel right
+
 ** 1e /settings should validate inputs, such as 8 < 1!
+*** REF: wtf
+https://www.airpair.com/python/posts/django-flask-pyramid
+http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
+https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
+http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
+http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
+
 
 ** 2d text input error-checking (and forgiveness, validation)
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
@@ -44,6 +37,10 @@ o search:
 
 o ranges : param values: not empty. ints. sorted
 
+** ?consider adding something like a 1/2 second delay for the pop-up so that you don't get a bunch of partial pop-ups as you move your mouse across the grid
+I have also noticed that they don't always pop up at first. I haven't been able to reliably reproduce it, so I can't give you better info about when it doesn't work right. If I figure it out, I'll let you know.
+
+
 ** 3d sunrise/set off by an hour? current: twilight = -12 * ephem.degree
 http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
 http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
@@ -53,6 +50,11 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 ** 3d appearance: responsive: when key goes below table, it stretches full width
 
 * features: to do
+** 1e after clicking on 'save' when changing settings, there's no link to get back to the calendar
+I have to click the main link then retype my zip to get back to the calendar
+
+I noticed this as well. You don't change settings that often (at least once you've got them tweaked the way you want), but ideally, changing settings should happen within the context of where you came from, and you should be able to easily get back to that. When using a zip code, it's not too bad, because it's easy to re-enter, however I used lat/long for one of my sites. So what I do is change my settings in another tab, and then simply refresh the one using lat/long to get the updated settings. It would be nice to not have to do that.
+
 ** 1e overview/summary
 "Looks like the best times are __, __, and __."
 "The best days to get out look to be ..."
@@ -63,6 +65,15 @@ o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
+** stickers: later
+ideas:
+o later: editor customize appearance (size, format, include summary, etc.)
+o summary for the coming day/week - "Looks like the best times are __, __, and __."
+
+http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
+http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
+
+
 ** 2m use jQuery everywhere
 
 ** 3e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
@@ -70,38 +81,92 @@ o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."
 
-* promotion ideas, branding
-** use 'PeepCast' ? :-)
-
-** think: what other integration opportunities are there?
-see [embed feature for clubs' sites]
-
-calendar integration - google or ical? see [mobile app]
-
-helifreak and other boards (hunting, etc): a widget/link in their signature based on their profile location. maybe it shows a shrunken snapshot of the current weather? would reload every time...
-
-** appearance: animation where chick peeks over/around something (heli, etc.) :-)
-
-** continue: subdomains, ads, etc.
-
-** when good enough -> announce
-rc sites, clubs, etc.
-
-
 * features: to consider
-** appearance: don't show first column if all white?
+** >> auto completion of search field :-)
+o 'Search for a location' field does auto-completion on the zip database
+o maybe later: merge it with 'Enter a location'? Q: lat/lon?
+o have: CACHED_ZIP_INFO_TUPLES (zipcode, name, latitude, longitude)
+  o loaded from zipcode-clean.csv - 2.5MB, 43K lines - way too big for in-memory javascript
 
-** user accounts so that settings follow user around on every computer
+xx
+
+
+*** typeahead.js
+http://twitter.github.io/typeahead.js/
+https://github.com/twitter/typeahead.js
+https://github.com/twitter/typeahead.js/blob/master/doc/bloodhound.md
+
+
+*** REF
+https://duckduckgo.com/?q=Bootstrap+TypeAhead&t=ffsb&ia=qa
+https://duckduckgo.com/?q=jQuery+UI+autocomplete&t=ffsb
+
+http://stackoverflow.com/questions/20198247/twitters-typeahead-js-suggestions-are-not-styled-have-no-border-transparent-b
+
+https://www.simple-talk.com/dotnet/asp.net/auto-completion-in-html-based--input-forms/
+http://stevedrivendevelopment.com/2013/02/10/using-twitter-bootstrap-typeahead-to-select-a-keyvalue-pair-not-a-string/
+http://stackoverflow.com/questions/16573619/from-jquery-ui-autocomplete-to-typeahead-js
+https://jqueryui.com/autocomplete/
+https://gist.github.com/daz/2168334
+https://williamjxj.wordpress.com/2013/01/10/jquerytwittersbootstrap-autocomplete/
+http://www.a2zwebhelp.com/bootstrap-autocomplete
+http://stackoverflow.com/questions/9232748/twitter-bootstrap-typeahead-ajax-example
+http://www.bootply.com/tagged/autocomplete
+http://blattchat.com/2013/01/09/bootstrap-typeahead/
+http://www.wrapcode.com/bootstrap/typeahead-json-objects/
+http://www.w3resource.com/twitter-bootstrap/typehead.php
+https://gist.github.com/gudbergur/1866577
+http://tatiyants.com/how-to-use-json-objects-with-twitter-bootstrap-typeahead/
+http://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-typeahead.php
+https://github.com/twitter/typeahead.js
+https://www.freelancer.com/jobs/PHP-AJAX/Add-Autocomplete-Bootstrap-Popup-Modal/
+http://runnable.com/UlXgeluakNULAAAv/create-an-autocomplete-input-box-with-typeahead-js-for-jquery-and-javascript
+
+
+** in-place form as service to webmaster visitors
+user enters zip, form refreshes in-place
+like: http://www.107thrc.com/
+
+I suppose you'd have a URL (or a special query string parameter) that instead of parsing the zip from the path it would display an input control prompting for zip. After entering the zip it would post back, the rest of the settings from the query string would apply and the grid would display. Without adding the zip to a cookie it would make the zip stateless, so a page refresh would necessitate entering the zip again. But at least it wouldn't be locked down to a single zip for cases like Rick is describing. If you did add the zip to the cookie it could lock it there for a user, but you'd probably want another button on the grid page to allow you to enter another zip.
+
+*** REF
+http://www.codeproject.com/Questions/635541/reloading-a-div-on-a-button-click-using-Jquery-or
+http://www.extremetechblog.com/refresh-div-without-reloading-page/
+http://community.sitepoint.com/t/refresh-div-content-without-reloading-page/5353
+http://www.coderanch.com/t/526538/HTML-CSS-JavaScript/refresh-DIV
+http://crunchify.com/how-to-refresh-div-content-without-reloading-page-using-jquery-and-ajax/
+http://stackoverflow.com/questions/7175038/how-to-reload-a-div-without-reloading-the-entire-page
+http://stackoverflow.com/questions/7218070/reload-contents-of-div-using-javascript
+http://www.kavoir.com/2009/01/using-javascript-to-refresh-and-reload-an-iframe-on-main-page.html
+
+
+** recently found - last 5 or so :-)
+
+** single location search (merges zip/lat/lon and search)
+
+** above single location search as form in header?
+
+** ~ don't show first column if all white?
+
+** ~ popover delay - too fast and distracting for some people
+
+** ~ nice PIL fonts instead of current blocky one?
+*** REF
+http://www.geeks3d.com/20131108/beginning-with-pillow-the-pil-fork-python-imaging-library-tutorial-programming/7/
+http://stackoverflow.com/questions/12384838/using-fonts-in-pil-without-freetype
+http://stackoverflow.com/questions/19337952/how-to-prepare-a-freetype-pil-pillow-package-for-heroku-and-django?lq=1
+http://stackoverflow.com/questions/12384838/using-fonts-in-pil-without-freetype/12388342#12388342
+http://stackoverflow.com/questions/619618/using-pixel-fonts-in-pil
+
+
+** ~ user accounts so that settings follow user around on every computer
 
 ** ~ favorite flying locations (like bookmarks)
 add my favorite locations to a list, and have that list saved for when I come back to the home page
 
-
 It could be as simple as a dropdown list somewhere. For example, a small drop down list in the header next to settings or something. It doesn't even need to have a title; an icon that represents favorites would be fine. You could then show a text hint when hovered over, or simply have it be at the top of the pop-up before your list of favorites.
 
 I'd personally rather have one bookmark to get to all the places I care about instead of one for each location. (OK, I've only got two so far, but, hey, that could always change... )
-
-** ~ recently found - last 5 or so :-)
 
 ** ~ daylight: add new setting for defining which hours to show - start, end (inclusive), rather than hard-coded
 
@@ -117,40 +182,6 @@ group on google+. He's the developer of the widget I posted a screenshot of earl
 o widget
 o alerts: mobile app that alerts me when local conditions are "green"
 o the integrate it with the existing android/iOS calendars (shade the background of your calendar's hourly blocks with flying condition colors). could see my actual appointments etc while being able to see flying conditions at a glance (and schedule everything for red times!)
-
-
-* 2015-01-19: forum postings
-Helifreak: Check out my RC Weather 'at a glance' proof-of-concept!
-http://helifreak.com/showthread.php?p=6307025#post6307025
-
-RunRyder: Check out my RC Weather 'at a glance' proof-of-concept!
-http://rc.runryder.com/helicopter/t781886p1/?p=6427847#RR
-
-2015-02-07 features blurb posted to RunRyder:
-
-o geolocation to use your current lat/lon
-o search for zip codes
-o much improved interface, including 'responsive' for small devices
-o user-customizable ranges for precip, wind, temp, and clouds
-o cloud cover now included
-o tasty weather icons (can be disabled)
-o url sharing that includes customized settings
-o embed link for web masters
-o tap/hover detail information for each hour (shows how the hour was rated)
-
-
-** referenced apps/sites
-** ! [Windalert](http://www.windalert.com/)
-** ! [ETSU Observatory Clear Sky Chart](http://cleardarksky.com/c/ETSUObTNkey.html?1)
-** [WindAlert iOS App] (https://itunes.apple.com/us/app/windalert/id317992025?mt=8)
-** [Windalert](http://www.windalert.com/)
-** [Meteogram weather widget](https://play.google.com/store/apps/details?id=be.inet.rainwidget)
-   yellow for wind, blue bars for rainfall, and colour coded temperature
-** [Windyty, wind forecast](https://www.windyty.com/spot/location/42.374/-72.518/name/Amherst?surface,wind,now,42.374,-72.264,11)
-** [Aviation Weather Report and Forecast - Wind Speed, Temperature, Wind Direction, Precipitation Forecast](http://www.usairnet.com/cgi-bin/launch/code.cgi?state=TX&sta=KTKI)
-** [meteocons](http://www.alessioatzeni.com/meteocons/res/img/screen.png)
-** [1Weather:Widget Forecast Radar | 1mobile.com] (http://www.1mobile.com/1weather-widget-forecast-radar-336436.html)
-** [windalert.com] (http://windalert.com/map#42.375,-72.513,10,1)
 
 
 * v! set up forwarding to rc-weather.herokuapp.com <- www.peepweather.com

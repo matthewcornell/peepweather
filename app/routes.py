@@ -13,11 +13,13 @@ from app import app
 logger = logging.getLogger(__name__)
 
 
-# ==== routes ====
+# ==== cookies ====
 
 HIDE_ICONS_COOKIE_NAME = 'display_preferences'
 RANGES_COOKIE_NAME = 'parameter_ranges'
 
+
+# ==== routes ====
 
 @app.route('/')
 def index():
@@ -162,10 +164,28 @@ def fullUrlForEndpoint(endpoint, zipOrLatLon, queryParamsDict):
     return url
 
 
+# ==== APIs ====
+
+@app.route('/place/<query>')
+def searchLocationsJson(query):
+    """
+    Called by the typeahead library, searches for locations containing <query> and returns a JSON list of dicts of the
+    form {loc: location name, zip: zip code}.
+    """
+    zipNameLatLonTuples = Forecast.searchZipcodes(query)
+    locZipResults = []
+    for tup in zipNameLatLonTuples:  # (zipcode, name, latitude, longitude)
+        locZipResults.append({'loc': tup[1], 'zip': tup[0]})
+    locZipResultsJson = json.dumps(locZipResults)
+    response = make_response(locZipResultsJson)
+    response.mimetype = 'application/json'
+    return response
+
+
 # ==== forms ====
 
-@app.route('/submit_zip', methods=['POST'])
-def do_zip_submit():
+@app.route('/zip_submit', methods=['POST'])
+def do_zip_or_latlon_submit():
     zipOrLatLon = request.values.get('zip_or_latlon_form_val', None)
     if not zipOrLatLon:
         return render_template("message.html", title="Nothing to search for",
@@ -210,14 +230,25 @@ def do_edit_parameters_submit():
             return 'error setting ranges - some were invalid: {}'.format(ex)
 
 
-@app.route('/zip_search_submit', methods=['POST'])
-def do_zip_search_submit():
-    queryVal = request.values.get('query_form_val', None)
-    if not queryVal:
+@app.route('/location_search_submit', methods=['POST'])
+def do_location_search_submit():
+    """
+    Called when the user searches for a location. If they used typeahead autocomplete then there will be a value in 
+    the zip_field, which means we can go directly to a forecast for that zip. Otherwise we have to search and show
+    results.
+    """
+    inputName = request.values.get('search_field')
+    inputZip = request.values.get('zip_field')
+    if inputZip:
+        print('xx inputZip', inputZip, inputName)
+        return redirect(url_for('showForecast', zipOrLatLon=inputZip))
+    elif inputName:
+        print('xx inputName')
+        return redirect(url_for('searchForZip', query=inputName))
+    else:
+        print('xx no inputName')
         return render_template("message.html", title="Nothing to search for",
                                message="Please enter a search term.", isError=False)
-    else:
-        return redirect(url_for('searchForZip', query=queryVal))
 
 
 # todo refactor to use rangesDictFromRequestArgs()
