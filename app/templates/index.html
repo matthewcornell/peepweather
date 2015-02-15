@@ -142,6 +142,14 @@
             jQueryEventObj.target.submit();
         });
 
+        /*
+         remove inserted style from #search_field because it contains "vertical-align: top", which screws up
+         positioning of field and button. REF:
+         http://stackoverflow.com/questions/18059161/css-issue-on-twitter-typeahead-with-bootstrap-3
+         http://stackoverflow.com/questions/4036857/jquery-remove-style-added-with-css-function#4036868
+         */
+        $("#search_field").css("vertical-align", "")
+
     </script>
 
 
