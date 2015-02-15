@@ -5,14 +5,15 @@
 ** embed code: make template like stickers.html
 
 
-* >> current branch
-xx
-
-
 * bugs
-** sticker: move column text one pixel right
+** 1e escape location and search inputs for things like '/'
+'Saint Matthews, SC/' -> not found ( http://127.0.0.1:5000/search/Saint%20Matthews%2C%20SC/ )
+'/' -> "" ( http://127.0.0.1:5000/search// )
+'\' -> sre_constants.error: bogus escape (end of line)
 
-** 1e /settings should validate inputs, such as 8 < 1!
+** 1e sticker: move column text one pixel right
+
+** 2d /settings should validate inputs, such as 8 < 1!
 *** REF: wtf
 https://www.airpair.com/python/posts/django-flask-pyramid
 http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
