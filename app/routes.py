@@ -41,7 +41,8 @@ def showForecast(zipOrLatLon):
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
         rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
+            'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
         template = "forecast-list.html" if request.args.get('list') else "forecast.html"
         forecast = Forecast(zipOrLatLonList, rangeDict)
@@ -64,10 +65,11 @@ def embedForecast(zipOrLatLon):
     """
     try:
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
+            'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
         forecast = Forecast(zipOrLatLonList, rangeDict)
-        
+
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
         fullUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
         return render_template("embedded-forecast.html", forecast=forecast, fullUrl=fullUrl)
@@ -85,7 +87,8 @@ def showStickersEditor(zipOrLatLon):
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
         rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
+            'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
         forecast = Forecast(zipOrLatLonList, rangeDict)
         image = Sticker(forecast).image
@@ -98,7 +101,7 @@ def showStickersEditor(zipOrLatLon):
                                       forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl,
                                       imageWidth=imageWidth)
         return render_template("stickers.html", forecast=forecast,
-                               forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl, 
+                               forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl,
                                imageWidth=imageWidth, stickerCode=stickerCode)
     except Exception as ex:
         return render_template("message.html", title="Error getting forecast", message=ex.args[0], isError=True)
@@ -113,7 +116,8 @@ def generateStickerImage(zipOrLatLon):
     zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
     rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
     rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
-    rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') else None  # check for at least one
+    rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
+        'p') else None  # check for at least one
     rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
     forecast = Forecast(zipOrLatLonList, rangeDict)
     image = Sticker(forecast).image
@@ -169,14 +173,14 @@ def fullUrlForEndpoint(endpoint, zipOrLatLon, queryParamsDict):
 @app.route('/place/<query>')
 def searchLocationsJson(query):
     """
-    Called by the typeahead library, searches for locations containing <query> and returns a JSON list of dicts of the
-    form {loc: location name, zip: zip code}.
+    Called by the typeahead library, searches for locations containing <query> and returns a JSON list of matching
+    names in the format returned by searchZipcodes(), i.e., "<city>, <state abbrev>"
     """
     zipNameLatLonTuples = Forecast.searchZipcodes(query)
-    locZipResults = []
+    locZipResults = set()
     for tup in zipNameLatLonTuples:  # (zipcode, name, latitude, longitude)
-        locZipResults.append({'loc': tup[1], 'zip': tup[0]})
-    locZipResultsJson = json.dumps(locZipResults)
+        locZipResults.add(tup[1])
+    locZipResultsJson = json.dumps(list(locZipResults))
     response = make_response(locZipResultsJson)
     response.mimetype = 'application/json'
     return response
@@ -233,22 +237,26 @@ def do_edit_parameters_submit():
 @app.route('/location_search_submit', methods=['POST'])
 def do_location_search_submit():
     """
-    Called when the user searches for a location. If they used typeahead autocomplete then there will be a value in 
-    the zip_field, which means we can go directly to a forecast for that zip. Otherwise we have to search and show
-    results.
+    Called when the user searches for a location, perhaps aided by typeahead autocompletion. The search field will
+    contain one of three cases:
+    1) empty -> show message (no input)
+    2) a partial match -> show hits in results page
+    3) a unique name thanks to typeahead choice -> show forecast for that one. note that it will be formatted same
+       was returned by serveCountries(), i.e., '<city>, <state abbrev>' (ex: 'Bay Minette, AL'), which we need to
+       unpack to find the corresponding zip code
     """
     inputName = request.values.get('search_field')
-    inputZip = request.values.get('zip_field')
-    if inputZip:
-        print('xx inputZip', inputZip, inputName)
-        return redirect(url_for('showForecast', zipOrLatLon=inputZip))
-    elif inputName:
-        print('xx inputName')
-        return redirect(url_for('searchForZip', query=inputName))
-    else:
-        print('xx no inputName')
+    if not inputName:
         return render_template("message.html", title="Nothing to search for",
-                               message="Please enter a search term.", isError=False)
+                               message="Please enter a town or city name.", isError=False)
+
+    matchTuples = Forecast.searchZipcodes(inputName)    # (zipcode, name, latitude, longitude)
+    if len(inputName) > 4 and inputName[-4:-2] == ', ':
+        # they entered/selected a name that matches one or more, so pick the first one (some names have > 1 zip codes, e.g., 'Chicago, IL')
+        zipcode, name, latitude, longitude = matchTuples[0]
+        return redirect(url_for('showForecast', zipOrLatLon=zipcode))
+
+    return redirect(url_for('searchForZip', query=inputName))
 
 
 # todo refactor to use rangesDictFromRequestArgs()

@@ -42,10 +42,8 @@
                 <h3 class="text-muted">Search for a location:</h3>
 
                 <form class="form-inline" method="POST" action="{{ url_for('do_location_search_submit') }}">
-                    <input id="search_field" class="form-control typeahead" type="text" placeholder="city or town" 
+                    <input id="search_field" class="form-control typeahead" type="text" placeholder="city or town"
                            name="search_field">
-{#                    <input id="zip_field" hidden type="text" name="zip_field">#}
-                    <input id="zip_field" type="text" name="zip_field">
                     <button class="btn btn-primary" type="submit">
                         <span class="glyphicon glyphicon-search"></span>
                     </button>
@@ -124,25 +122,24 @@
 
     <script>
 
-        var placeSearchEngine = new Bloodhound({
+        var zipCodeEngine = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,   // unused for remote
             queryTokenizer: Bloodhound.tokenizers.whitespace,
+            limit: 10,
             remote: 'place/%QUERY'
         });
-        placeSearchEngine.initialize();
+        zipCodeEngine.initialize();
 
-
-        // from http://jsfiddle.net/Fresh/cmq80qx3/ via http://stackoverflow.com/questions/26331390/extract-more-info-from-themoviedb-using-typeahead-js-and-put-it-in-other-inputs
         $('#search_field').typeahead({
-            minLength: 2
+            minLength: 1
         }, {
             name: 'zipcodes',
-            displayKey: 'loc',
-            source: placeSearchEngine.ttAdapter()
+            displayKey: function (suggestObj) {
+                return suggestObj;
+            },
+            source: zipCodeEngine.ttAdapter()
         }).on("typeahead:selected", function (jQueryEventObj, suggestObj, datasetName) {
-            $('#zip_field').val(suggestObj.zip);
-        }).on("typeahead:autocompleted", function (jQueryEventObj, suggestObj, datasetName) {
-            $('#zip_field').val(suggestObj.zip);
+            jQueryEventObj.target.submit();
         });
 
     </script>
