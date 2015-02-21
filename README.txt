@@ -7,20 +7,28 @@
 
 
 * bugs
-** 2d /settings o ranges: not empty, ints, sorted!
+** /settings o ranges: not empty, ints, sorted!
 
 
-** 3d sunrise/set off by an hour? current: twilight = -12 * ephem.degree
+** appearance: responsive: when key goes below table, it stretches full width
+
+
+** sunrise/set off by an hour? current: twilight = -12 * ephem.degree
 http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
 http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
 http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
 fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
-** 3d appearance: responsive: when key goes below table, it stretches full width
-
 
 * features: to do
-** 1e after clicking on 'save' when changing settings, there's no link to get back to the calendar
+** change terminology - confusion over Low/Med/High: desirability vs. amount
+o low rain vs. low desirability - high rain
+o Low means Low Desirability (like Orange or Red) not low amounts of clouds
+
+-> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
+
+
+** after clicking on 'save' when changing settings, there's no link to get back to the calendar
 I have to click the main link then retype my zip to get back to the calendar
 
 I noticed this as well. You don't change settings that often (at least once you've got them tweaked the way you want), but ideally, changing settings should happen within the context of where you came from, and you should be able to easily get back to that. When using a zip code, it's not too bad, because it's easy to re-enter, however I used lat/long for one of my sites. So what I do is change my settings in another tab, and then simply refresh the one using lat/long to get the updated settings. It would be nice to not have to do that.
@@ -28,21 +36,13 @@ I noticed this as well. You don't change settings that often (at least once you'
 request.referrer
 
 
-** 1e overview/summary :-)
+** overview/summary :-)
 "Looks like the best times are __, __, and __."
 "The best days to get out look to be ..."
 
 
-** 1m change terminology - confusion over Low/Med/High: desirability vs. amount
-o low rain vs. low desirability - high rain
-o Low means Low Desirability (like Orange or Red) not low amounts of clouds
-
--> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
-
-
 ** stickers: later
-ideas:
-o later: editor customize appearance (size, format, include summary, etc.)
+o editor customize appearance (size, format, include summary, etc.)
 o summary for the coming day/week - "Looks like the best times are __, __, and __."
 
 http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
@@ -60,10 +60,10 @@ http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
 http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
 
 
-** 2m use jQuery everywhere
+** use jQuery everywhere
 
 
-** 3e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
+** settings: if ranges need additional clarification (or people want to learn) then have help text under each group
 (wind, precip, etc.) that updates to show a sentence incorporating the current values
 
 ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."

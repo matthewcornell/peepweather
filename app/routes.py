@@ -258,6 +258,7 @@ def do_location_search_submit():
        unpack to find the corresponding zip code
     """
     inputName = request.values.get('search_field')
+    inputName = inputName.strip()
     inputName = re.sub(r'/', '', inputName) if inputName else None  # o/w gets treated like a URI
     if not inputName:
         return render_template("message.html", title="Nothing to search for",
