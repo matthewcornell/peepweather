@@ -194,11 +194,22 @@ def do_zip_or_latlon_submit():
     zipOrLatLon = request.values.get('zip_or_latlon_form_val', None)
     if not zipOrLatLon:
         return render_template("message.html", title="Nothing to search for",
-                               message="Please enter a zip code or a latitude, longitude.", isError=False)
-    else:
-        zipOrLatLon = zipOrLatLon.replace(',', '|')     # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
-        zipOrLatLon = re.sub('\s', '', zipOrLatLon)     # replace whitespace
-        return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
+                               message="Please enter a zip code or a comma-separated latitude and longitude.",
+                               isError=False)
+
+    # check input format. todo should be done via form flash, e.g., WTF + Flask flash. for now show message
+    # lat/lon regexp from http://stackoverflow.com/questions/3518504/regular-expression-for-matching-latitude-longitude-coordinates
+    zipOrLatLon = re.sub('\s', '', zipOrLatLon)
+    zipMatch = re.search(r'^\d\d\d\d\d$', zipOrLatLon)
+    latLonMatch = re.search(r'^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$', zipOrLatLon)
+    if not zipMatch and not latLonMatch:
+        return render_template("message.html", title="Invalid zip code or latitude/longitude format",
+                               message="Input must be either a five-digit zip code or a comma-separated latitude "
+                                       "and longitude.", isError=False)
+    
+    # use a pipe instead of a comma for lat/long delimiting b/c pipes are legal URI chars, whereas commas get encoded as %2C
+    zipOrLatLon = zipOrLatLon.replace(',', '|')
+    return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
 
 
 @app.route('/edit_display_submit', methods=['POST'])
@@ -251,7 +262,7 @@ def do_location_search_submit():
         return render_template("message.html", title="Nothing to search for",
                                message="Please enter a town or city name.", isError=False)
 
-    matchTuples = Forecast.searchZipcodes(inputName)    # (zipcode, name, latitude, longitude)
+    matchTuples = Forecast.searchZipcodes(inputName)  # (zipcode, name, latitude, longitude)
     if len(inputName) > 4 and inputName[-4:-2] == ', ':
         # they entered/selected a name that matches one or more, so pick the first one (some names have > 1 zip codes, e.g., 'Chicago, IL')
         zipcode, name, latitude, longitude = matchTuples[0]

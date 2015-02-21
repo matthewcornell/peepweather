@@ -6,10 +6,19 @@
 
 
 * bugs
-** 1e escape location and search inputs for things like '/'
+** 1e check location input for '/' . -> Not Found o/w
+'Saint Matthews, SC/'
+
+** 1e check search for '\' -> sre_constants.error: bogus escape (end of line)
 'Saint Matthews, SC/' -> not found ( http://127.0.0.1:5000/search/Saint%20Matthews%2C%20SC/ )
 '/' -> "" ( http://127.0.0.1:5000/search// )
-'\' -> sre_constants.error: bogus escape (end of line)
+'\' -> 
+
+*** later: use WTF and/or flashing
+http://flask.pocoo.org/docs/0.10/patterns/flashing/
+o zip/latlon validation: not empty. zip or lat/lon pattern (e.g., zip: five numbers, exists in zipcode file)
+o ranges : param values: not empty. ints. sorted
+
 
 ** 2d /settings o ranges: not empty, ints, sorted!
 *** REF
@@ -18,13 +27,6 @@ http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootst
 https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
 http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
 http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
-
-
-** 2d text input error-checking (and forgiveness, validation)
-http://flask.pocoo.org/docs/0.10/patterns/flashing/
-
-o zip/latlon validation: not empty. zip or lat/lon pattern (e.g., zip: five numbers, exists in zipcode file)
-o ranges : param values: not empty. ints. sorted
 
 
 ** 3d sunrise/set off by an hour? current: twilight = -12 * ephem.degree
