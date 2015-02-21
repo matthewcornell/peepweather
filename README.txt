@@ -11,10 +11,8 @@
 '/' -> "" ( http://127.0.0.1:5000/search// )
 '\' -> sre_constants.error: bogus escape (end of line)
 
-** 1e sticker: move column text one pixel right
-
-** 2d /settings should validate inputs, such as 8 < 1!
-*** REF: wtf
+** 2d /settings o ranges: not empty, ints, sorted!
+*** REF
 https://www.airpair.com/python/posts/django-flask-pyramid
 http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
 https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
@@ -25,21 +23,8 @@ http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_p
 ** 2d text input error-checking (and forgiveness, validation)
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
-o zip/latlon:
-  o validation: not empty. zip or lat/lon pattern (zip: five numbers, exists in zipcode file)
-  o trip spaces around comma, ends
-  o bug: empty -> Not Found
-
-o search:
-  o not empty, matches zipcode file. ideally: completion
-    http://stackoverflow.com/questions/9232748/twitter-bootstrap-typeahead-ajax-example
-  o trim space from ends
-  o bug: empty -> Not Found
-
+o zip/latlon validation: not empty. zip or lat/lon pattern (e.g., zip: five numbers, exists in zipcode file)
 o ranges : param values: not empty. ints. sorted
-
-** ?consider adding something like a 1/2 second delay for the pop-up so that you don't get a bunch of partial pop-ups as you move your mouse across the grid
-I have also noticed that they don't always pop up at first. I haven't been able to reliably reproduce it, so I can't give you better info about when it doesn't work right. If I figure it out, I'll let you know.
 
 
 ** 3d sunrise/set off by an hour? current: twilight = -12 * ephem.degree
@@ -50,11 +35,19 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 ** 3d appearance: responsive: when key goes below table, it stretches full width
 
+
 * features: to do
+** grey out the hour blocks for the after-dark hours
+done by setting opacity of those rows to something like 0.3.
+
+
 ** 1e after clicking on 'save' when changing settings, there's no link to get back to the calendar
 I have to click the main link then retype my zip to get back to the calendar
 
 I noticed this as well. You don't change settings that often (at least once you've got them tweaked the way you want), but ideally, changing settings should happen within the context of where you came from, and you should be able to easily get back to that. When using a zip code, it's not too bad, because it's easy to re-enter, however I used lat/long for one of my sites. So what I do is change my settings in another tab, and then simply refresh the one using lat/long to get the updated settings. It would be nice to not have to do that.
+
+request.referrer
+
 
 ** 1e overview/summary
 "Looks like the best times are __, __, and __."
@@ -83,15 +76,6 @@ http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
 ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."
 
 * features: to consider
-** >> auto completion of search field :-)
-o 'Search for a location' field does auto-completion on the zip database
-o maybe later: merge it with 'Enter a location'? Q: lat/lon?
-o have: CACHED_ZIP_INFO_TUPLES (zipcode, name, latitude, longitude)
-  o loaded from zipcode-clean.csv - 2.5MB, 43K lines - way too big for in-memory javascript
-
-xx
-
-
 *** typeahead.js
 http://twitter.github.io/typeahead.js/
 https://github.com/twitter/typeahead.js
@@ -152,6 +136,9 @@ http://www.kavoir.com/2009/01/using-javascript-to-refresh-and-reload-an-iframe-o
 ** ~ popover delay - too fast and distracting for some people
 
 ** ~ nice PIL fonts instead of current blocky one?
+would probably fix this: sticker 'T' column headings are cut off on the left
+
+
 *** REF
 http://www.geeks3d.com/20131108/beginning-with-pillow-the-pil-fork-python-imaging-library-tutorial-programming/7/
 http://stackoverflow.com/questions/12384838/using-fonts-in-pil-without-freetype

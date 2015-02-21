@@ -4,6 +4,7 @@ import urllib.parse
 
 from io import BytesIO
 from flask import render_template, request, redirect, url_for, make_response
+import re
 
 from forecast.Forecast import Forecast
 from forecast.Sticker import Sticker
@@ -195,8 +196,8 @@ def do_zip_or_latlon_submit():
         return render_template("message.html", title="Nothing to search for",
                                message="Please enter a zip code or a latitude, longitude.", isError=False)
     else:
-        zipOrLatLon = zipOrLatLon.replace(',',
-                                          '|')  # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
+        zipOrLatLon = zipOrLatLon.replace(',', '|')     # commas are convenient for forms, but pipes are legal chars in URIs, unlike commas which get encoded (%2C)
+        zipOrLatLon = re.sub('\s', '', zipOrLatLon)     # replace whitespace
         return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
 
 
