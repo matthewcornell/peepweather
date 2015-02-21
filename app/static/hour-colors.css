@@ -1,5 +1,3 @@
-/* current stoplight */
-
 .Poor {
     background-color: #ff0000;
 }
@@ -18,4 +16,22 @@
 
 .Missing {
     background-color: white;
+}
+
+
+.daylight-opacity {
+    opacity: 1.0;
+}
+
+.nighttime-opacity {
+    opacity: 0.5;
+}
+
+
+.daylight-day-of-week-header {
+    color: black
+}
+
+.nighttime-day-of-week-header {
+    color: gray
 }

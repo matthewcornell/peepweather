@@ -10,11 +10,12 @@
     {% for hourOfDayIndex in range(8, 21) %}
         {% set hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex] %}
         {% set hour0 = hourOfDayRow[0] %}
-        {% set rowHeadingColor = 'black' if forecast.isDaylightHour(hour0) else 'gray' %}   {# todo cleaner if css classes #}
+        {% set hourHeaderClass = 'daylight-day-of-week-header' if forecast.isDaylightHour(hour0) else 'nighttime-day-of-week-header' %}
+        {% set hourRowOpacityClass = 'daylight-opacity' if forecast.isDaylightHour(hour0) else 'nighttime-opacity' %}
         <tr>
-            <th style="color:{{ rowHeadingColor }}">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
+            <th class="{{ hourHeaderClass }}">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
             {% for hour in hourOfDayRow %}
-                <td class="{{ hour.cssClassForDesirability() }}"
+                <td class="{{ hour.cssClassForDesirability() }} {{ hourRowOpacityClass }}"
                     title="{{ hour.detailString()[0] }}"
                     data-content="{{ hour.detailString()[1] }}"
                     data-html="true"

@@ -37,10 +37,6 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 
 * features: to do
-** grey out the hour blocks for the after-dark hours
-done by setting opacity of those rows to something like 0.3.
-
-
 ** 1e after clicking on 'save' when changing settings, there's no link to get back to the calendar
 I have to click the main link then retype my zip to get back to the calendar
 
