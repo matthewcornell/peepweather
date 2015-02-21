@@ -199,7 +199,7 @@ def do_zip_or_latlon_submit():
 
     # check input format. todo should be done via form flash, e.g., WTF + Flask flash. for now show message
     # lat/lon regexp from http://stackoverflow.com/questions/3518504/regular-expression-for-matching-latitude-longitude-coordinates
-    zipOrLatLon = re.sub('\s', '', zipOrLatLon)
+    zipOrLatLon = re.sub(r'\s', '', zipOrLatLon)
     zipMatch = re.search(r'^\d\d\d\d\d$', zipOrLatLon)
     latLonMatch = re.search(r'^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$', zipOrLatLon)
     if not zipMatch and not latLonMatch:
@@ -258,6 +258,7 @@ def do_location_search_submit():
        unpack to find the corresponding zip code
     """
     inputName = request.values.get('search_field')
+    inputName = re.sub(r'/', '', inputName) if inputName else None  # o/w gets treated like a URI
     if not inputName:
         return render_template("message.html", title="Nothing to search for",
                                message="Please enter a town or city name.", isError=False)

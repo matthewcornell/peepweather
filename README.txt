@@ -2,31 +2,12 @@
 
 * refactoring
 ** titles: write Forecast method to help zipOrLatLon. use in stickers.html too
+
 ** embed code: make template like stickers.html
 
 
 * bugs
-** 1e check location input for '/' . -> Not Found o/w
-'Saint Matthews, SC/'
-
-** 1e check search for '\' -> sre_constants.error: bogus escape (end of line)
-'Saint Matthews, SC/' -> not found ( http://127.0.0.1:5000/search/Saint%20Matthews%2C%20SC/ )
-'/' -> "" ( http://127.0.0.1:5000/search// )
-'\' -> 
-
-*** later: use WTF and/or flashing
-http://flask.pocoo.org/docs/0.10/patterns/flashing/
-o zip/latlon validation: not empty. zip or lat/lon pattern (e.g., zip: five numbers, exists in zipcode file)
-o ranges : param values: not empty. ints. sorted
-
-
 ** 2d /settings o ranges: not empty, ints, sorted!
-*** REF
-https://www.airpair.com/python/posts/django-flask-pyramid
-http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
-https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
-http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
-http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
 
 
 ** 3d sunrise/set off by an hour? current: twilight = -12 * ephem.degree
@@ -47,15 +28,17 @@ I noticed this as well. You don't change settings that often (at least once you'
 request.referrer
 
 
-** 1e overview/summary
+** 1e overview/summary :-)
 "Looks like the best times are __, __, and __."
 "The best days to get out look to be ..."
+
 
 ** 1m change terminology - confusion over Low/Med/High: desirability vs. amount
 o low rain vs. low desirability - high rain
 o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
+
 
 ** stickers: later
 ideas:
@@ -66,47 +49,32 @@ http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
 http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
 
 
+** use WTF and flashing for cleaner form validation
+http://flask.pocoo.org/docs/0.10/patterns/flashing/
+
+*** REF
+https://www.airpair.com/python/posts/django-flask-pyramid
+http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
+https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
+http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
+http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
+
+
 ** 2m use jQuery everywhere
+
 
 ** 3e settings: if ranges need additional clarification (or people want to learn) then have help text under each group
 (wind, precip, etc.) that updates to show a sentence incorporating the current values
 
 ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."
 
+
 * features: to consider
-*** typeahead.js
-http://twitter.github.io/typeahead.js/
-https://github.com/twitter/typeahead.js
-https://github.com/twitter/typeahead.js/blob/master/doc/bloodhound.md
+** activity-based profiles selectable from list
+e.g., skiing - don't mind coder, windier
 
 
-*** REF
-https://duckduckgo.com/?q=Bootstrap+TypeAhead&t=ffsb&ia=qa
-https://duckduckgo.com/?q=jQuery+UI+autocomplete&t=ffsb
-
-http://stackoverflow.com/questions/20198247/twitters-typeahead-js-suggestions-are-not-styled-have-no-border-transparent-b
-
-https://www.simple-talk.com/dotnet/asp.net/auto-completion-in-html-based--input-forms/
-http://stevedrivendevelopment.com/2013/02/10/using-twitter-bootstrap-typeahead-to-select-a-keyvalue-pair-not-a-string/
-http://stackoverflow.com/questions/16573619/from-jquery-ui-autocomplete-to-typeahead-js
-https://jqueryui.com/autocomplete/
-https://gist.github.com/daz/2168334
-https://williamjxj.wordpress.com/2013/01/10/jquerytwittersbootstrap-autocomplete/
-http://www.a2zwebhelp.com/bootstrap-autocomplete
-http://stackoverflow.com/questions/9232748/twitter-bootstrap-typeahead-ajax-example
-http://www.bootply.com/tagged/autocomplete
-http://blattchat.com/2013/01/09/bootstrap-typeahead/
-http://www.wrapcode.com/bootstrap/typeahead-json-objects/
-http://www.w3resource.com/twitter-bootstrap/typehead.php
-https://gist.github.com/gudbergur/1866577
-http://tatiyants.com/how-to-use-json-objects-with-twitter-bootstrap-typeahead/
-http://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-typeahead.php
-https://github.com/twitter/typeahead.js
-https://www.freelancer.com/jobs/PHP-AJAX/Add-Autocomplete-Bootstrap-Popup-Modal/
-http://runnable.com/UlXgeluakNULAAAv/create-an-autocomplete-input-box-with-typeahead-js-for-jquery-and-javascript
-
-
-** in-place form as service to webmaster visitors
+** ~ in-place form as service to webmaster visitors
 user enters zip, form refreshes in-place
 like: http://www.107thrc.com/
 
@@ -125,17 +93,14 @@ http://www.kavoir.com/2009/01/using-javascript-to-refresh-and-reload-an-iframe-o
 
 ** recently found - last 5 or so :-)
 
-** single location search (merges zip/lat/lon and search)
+** ? single location search (merges zip/lat/lon and search)
 
 ** above single location search as form in header?
 
 ** ~ don't show first column if all white?
 
-** ~ popover delay - too fast and distracting for some people
-
 ** ~ nice PIL fonts instead of current blocky one?
 would probably fix this: sticker 'T' column headings are cut off on the left
-
 
 *** REF
 http://www.geeks3d.com/20131108/beginning-with-pillow-the-pil-fork-python-imaging-library-tutorial-programming/7/
