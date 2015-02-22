@@ -150,9 +150,11 @@ def searchForZip(query):
     zipNameLatLonTuples = Forecast.searchZipcodes(query)
     if not zipNameLatLonTuples:
         return render_template("message.html", title="No search results for ‘{}’".format(query),
-                               message="The search feature is primitive, so try a single word or part of one, " +
-                                       "such as 'york', instead of new york, new york. Also, spaces " +
-                                       "and commas cause trouble, as do state names/abbreviations", isError=False)
+                               # message="The search feature is primitive, so try a single word or part of one, " +
+                               #         "such as 'york', instead of new york, new york. Also, spaces " +
+                               #         "and commas cause trouble, as do state names/abbreviations", isError=False)
+                               message="Please enter a town name or zip code or a comma-separated latitude and "
+                               "longitude.", isError=False)
     else:
         return render_template("search.html", query=query, zipNameLatLonTuples=zipNameLatLonTuples)
 
@@ -189,27 +191,50 @@ def searchLocationsJson(query):
 
 # ==== forms ====
 
-@app.route('/zip_submit', methods=['POST'])
-def do_zip_or_latlon_submit():
-    zipOrLatLon = request.values.get('zip_or_latlon_form_val', None)
-    if not zipOrLatLon:
+@app.route('/location_submit', methods=['POST'])
+def do_location_submit():
+    """
+    Called with a single form value to find the forecast for, either a zip code, a lat<comma>lon, or a town/city name
+    (partial or typeahead-completed to match zipcode file entry).
+    """
+    nameOrZipOrLatLon = request.values.get('location_form_val', None)
+    if not nameOrZipOrLatLon:
         return render_template("message.html", title="Nothing to search for",
-                               message="Please enter a zip code or a comma-separated latitude and longitude.",
+                               message="Please enter a town name or zip code or a comma-separated latitude and longitude.",
                                isError=False)
 
     # check input format. todo should be done via form flash
     # lat/lon regexp from http://stackoverflow.com/questions/3518504/regular-expression-for-matching-latitude-longitude-coordinates
-    zipOrLatLon = re.sub(r'\s', '', zipOrLatLon)
-    zipMatch = re.search(r'^\d\d\d\d\d$', zipOrLatLon)
-    latLonMatch = re.search(r'^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$', zipOrLatLon)
+    nameOrZipOrLatLon = nameOrZipOrLatLon.strip()
+    zipMatch = re.search(r'^\d\d\d\d\d$', nameOrZipOrLatLon)
+    latLonMatch = re.search(r'^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$', nameOrZipOrLatLon)
     if not zipMatch and not latLonMatch:
-        return render_template("message.html", title="Invalid zip code or latitude/longitude format",
-                               message="Input must be either a five-digit zip code or a comma-separated latitude "
-                                       "and longitude.", isError=False)
+        return do_location_search_submit(nameOrZipOrLatLon)
 
     # use a pipe instead of a comma for lat/long delimiting b/c pipes are legal URI chars, whereas commas get encoded as %2C
-    zipOrLatLon = zipOrLatLon.replace(',', '|')
-    return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
+    nameOrZipOrLatLon = re.sub(r'\s', '', nameOrZipOrLatLon)\
+        .replace(',', '|')
+    return redirect(url_for('showForecast', zipOrLatLon=nameOrZipOrLatLon))
+
+
+def do_location_search_submit(inputName):
+    """
+    Called when the user searches for a location, perhaps aided by typeahead autocompletion. The search field will
+    contain one of three cases:
+    1) empty -> show message (no input)
+    2) a partial match -> show hits in results page
+    3) a unique name thanks to typeahead choice -> show forecast for that one. note that it will be formatted same
+       was returned by serveCountries(), i.e., '<city>, <state abbrev>' (ex: 'Bay Minette, AL'), which we need to
+       unpack to find the corresponding zip code
+    """
+    inputName = re.sub(r'/', '', inputName) if inputName else None  # o/w gets treated like a URI
+    matchTuples = Forecast.searchZipcodes(inputName)  # (zipcode, name, latitude, longitude)
+    if len(inputName) > 4 and inputName[-4:-2] == ', ':
+        # they entered/selected a name that matches one or more, so pick the first one (some names have > 1 zip codes, e.g., 'Chicago, IL')
+        zipcode, name, latitude, longitude = matchTuples[0]
+        return redirect(url_for('showForecast', zipOrLatLon=zipcode))
+
+    return redirect(url_for('searchForZip', query=inputName))
 
 
 @app.route('/edit_display_submit', methods=['POST'])
@@ -246,33 +271,6 @@ def do_edit_parameters_submit():
             # todo flash error
             return render_template("message.html", title="Error setting ranges",
                                    message="Some settings were invalid: {}".format(ex), isError=True)
-
-
-@app.route('/location_search_submit', methods=['POST'])
-def do_location_search_submit():
-    """
-    Called when the user searches for a location, perhaps aided by typeahead autocompletion. The search field will
-    contain one of three cases:
-    1) empty -> show message (no input)
-    2) a partial match -> show hits in results page
-    3) a unique name thanks to typeahead choice -> show forecast for that one. note that it will be formatted same
-       was returned by serveCountries(), i.e., '<city>, <state abbrev>' (ex: 'Bay Minette, AL'), which we need to
-       unpack to find the corresponding zip code
-    """
-    inputName = request.values.get('search_field')
-    inputName = inputName.strip()
-    inputName = re.sub(r'/', '', inputName) if inputName else None  # o/w gets treated like a URI
-    if not inputName:
-        return render_template("message.html", title="Nothing to search for",
-                               message="Please enter a town or city name.", isError=False)
-
-    matchTuples = Forecast.searchZipcodes(inputName)  # (zipcode, name, latitude, longitude)
-    if len(inputName) > 4 and inputName[-4:-2] == ', ':
-        # they entered/selected a name that matches one or more, so pick the first one (some names have > 1 zip codes, e.g., 'Chicago, IL')
-        zipcode, name, latitude, longitude = matchTuples[0]
-        return redirect(url_for('showForecast', zipOrLatLon=zipcode))
-
-    return redirect(url_for('searchForZip', query=inputName))
 
 
 # todo refactor to use rangesDictFromRequestArgs()

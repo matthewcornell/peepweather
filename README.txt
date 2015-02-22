@@ -7,6 +7,9 @@
 
 
 * bugs
+** ! 'Mercedes, TX -> IndexError: list index out of range
+
+
 ** /settings - ranges: not empty, ints, sorted!
 
 
@@ -117,9 +120,7 @@ http://www.kavoir.com/2009/01/using-javascript-to-refresh-and-reload-an-iframe-o
 
 ** recently found - last 5 or so :-)
 
-** ? single location search (merges zip/lat/lon and search)
-
-** above single location search as form in header?
+** location search as form in header?
 
 ** ~ don't show first column if all white?
 

@@ -13,41 +13,25 @@
             <div class="col-md-8">
                 <h1>In one glance, see how the outdoors look for the coming week.</h1>
 
-                <!-- geolocation input - enabled if permission given to browser -->
+                <!-- geolocation input - enabled if permission given in browser -->
                 <div id="latlon_form_id" class="hidden">
-                    <form class="form-inline" method="POST" action="{{ url_for('do_zip_or_latlon_submit') }}">
+                    <form class="form-inline" method="POST" action="{{ url_for('do_location_submit') }}">
                         <label class="h3 text-muted" for="latlon_field">Use your location:&nbsp;</label>
-                        <input class="form-control hidden" id="latlon_field" type="text"
-                               name="zip_or_latlon_form_val">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-crosshairs fa-lg"></i>
-                        </button>
+                        <input type="text" id="latlon_field" class="form-control hidden" name="location_form_val">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-crosshairs fa-lg"></i></button>
 
                     </form>
                     <p class="h4 text-muted"><em>&mdash; OR &mdash;</em></p>
 
                 </div>
 
-                <!-- zip or lat/lon input -->
+                <!-- location (town, zip, lat/lon) input -->
                 <h3 class="text-muted">Enter a location:</h3>
 
-                <form class="form-inline" method="POST" action="{{ url_for('do_zip_or_latlon_submit') }}">
-                    <input class="form-control" type="text" name="zip_or_latlon_form_val" placeholder="zip or lat,lon">
+                <form class="form-inline" method="POST" action="{{ url_for('do_location_submit') }}">
+                    <input type="text" class="form-control typeahead" id="location_field" name="location_form_val"
+                           placeholder="town or zip or lat,lon">
                     <button type="submit" class="btn btn-primary">Go!</button>
-                </form>
-                <p class="h4 text-muted"><em>&mdash; OR &mdash;</em></p>
-
-
-                <!-- search input -->
-                <h3 class="text-muted">Search for a location:</h3>
-
-                <form class="form-inline" method="POST" action="{{ url_for('do_location_search_submit') }}">
-                    <input id="search_field" class="form-control typeahead" type="text" placeholder="city or town"
-                           name="search_field">
-                    <button class="btn btn-primary" type="submit">
-                        <span class="glyphicon glyphicon-search"></span>
-                    </button>
-
                 </form>
             </div>
 
@@ -122,34 +106,50 @@
 
     <script>
 
-        var zipCodeEngine = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.whitespace,   // unused for remote
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            limit: 10,
-            remote: 'place/%QUERY'
-        });
-        zipCodeEngine.initialize();
+        $(document).ready(function () {
+            /*
+            set up Bloodhound search
+            */
+            var zipCodeEngine = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.whitespace,   // unused for remote
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                limit: 10,
+                remote: 'place/%QUERY'
+            });
+            zipCodeEngine.initialize();
+            
+            /*
+            initialize typeahead
+            */
+            locFieldSelector = $("#location_field");
+            
+            locFieldSelector.typeahead({
+                minLength: 1
+            }, {
+                name: 'zipcodes',
+                displayKey: function (suggestObj) {
+                    return suggestObj;
+                },
+                source: zipCodeEngine.ttAdapter()
+            }).on("typeahead:selected", function (jQueryEventObj, suggestObj, datasetName) {
+                jQueryEventObj.target.submit();
+            });
+            
+            /*
+             remove inserted style information that screws up positioning of field and button. REF:
+             http://stackoverflow.com/questions/18059161/css-issue-on-twitter-typeahead-with-bootstrap-3
+             http://stackoverflow.com/questions/4036857/jquery-remove-style-added-with-css-function#4036868
+             */
+            locFieldSelector.css("vertical-align", "");
+            {#        $(".twitter-typeahead").removeAttr("style")#}
+            {#        $(".twitter-typeahead").css("display", "")#}
+            
+            /*
+            focus on search form
+            */
+            locFieldSelector.focus();
 
-        $('#search_field').typeahead({
-            minLength: 1
-        }, {
-            name: 'zipcodes',
-            displayKey: function (suggestObj) {
-                return suggestObj;
-            },
-            source: zipCodeEngine.ttAdapter()
-        }).on("typeahead:selected", function (jQueryEventObj, suggestObj, datasetName) {
-            jQueryEventObj.target.submit();
         });
-
-        /*
-         remove inserted style information that screws up positioning of field and button. REF:
-         http://stackoverflow.com/questions/18059161/css-issue-on-twitter-typeahead-with-bootstrap-3
-         http://stackoverflow.com/questions/4036857/jquery-remove-style-added-with-css-function#4036868
-         */
-        $("#search_field").css("vertical-align", "")
-{#        $(".twitter-typeahead").removeAttr("style")#}
-{#        $(".twitter-typeahead").css("display", "")#}
 
     </script>
 
