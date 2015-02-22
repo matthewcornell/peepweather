@@ -197,7 +197,7 @@ def do_zip_or_latlon_submit():
                                message="Please enter a zip code or a comma-separated latitude and longitude.",
                                isError=False)
 
-    # check input format. todo should be done via form flash, e.g., WTF + Flask flash. for now show message
+    # check input format. todo should be done via form flash
     # lat/lon regexp from http://stackoverflow.com/questions/3518504/regular-expression-for-matching-latitude-longitude-coordinates
     zipOrLatLon = re.sub(r'\s', '', zipOrLatLon)
     zipMatch = re.search(r'^\d\d\d\d\d$', zipOrLatLon)
@@ -206,7 +206,7 @@ def do_zip_or_latlon_submit():
         return render_template("message.html", title="Invalid zip code or latitude/longitude format",
                                message="Input must be either a five-digit zip code or a comma-separated latitude "
                                        "and longitude.", isError=False)
-    
+
     # use a pipe instead of a comma for lat/long delimiting b/c pipes are legal URI chars, whereas commas get encoded as %2C
     zipOrLatLon = zipOrLatLon.replace(',', '|')
     return redirect(url_for('showForecast', zipOrLatLon=zipOrLatLon))
@@ -214,36 +214,38 @@ def do_zip_or_latlon_submit():
 
 @app.route('/edit_display_submit', methods=['POST'])
 def do_edit_display_submit():
+    referrer = request.values.get('referrer')
+    redirectURL = referrer if referrer else url_for('editSettings')
+    response = make_response(redirect(redirectURL))
     isChecked = request.values.get('show_icons_value')
-    if isChecked:  # default -> clear cookie
-        response = make_response(redirect(url_for('editSettings')))
+    if isChecked:  # default setting -> clear cookie
         response.set_cookie(HIDE_ICONS_COOKIE_NAME, expires=0)
-        return response  # todo flash reset and stay on page
-    else:  # customized -> set cookie
-        response = make_response(redirect(url_for('editSettings')))
+    else:  # customized setting -> set cookie
         response.set_cookie(HIDE_ICONS_COOKIE_NAME, 'true')
-        return response  # todo flash saved and stay on page
+    return response  # todo flash saved
 
 
 @app.route('/edit_parameters_submit', methods=['POST'])
 def do_edit_parameters_submit():
+    referrer = request.values.get('referrer')
+    redirectURL = referrer if referrer else url_for('editSettings')
+    response = make_response(redirect(redirectURL))
     isReset = request.values.get('reset_button')
     if isReset:
-        response = make_response(redirect(url_for('editSettings')))
         response.set_cookie(RANGES_COOKIE_NAME, expires=0)
-        return response  # todo flash reset and stay on page
+        return response  # todo flash reset
     else:
         # save form values as a json dict in the cookie
         try:
             rangesDict = rangesDictFromEditFormValues()
             # todo validate rangeDict - all ints increasing, for example
             rangesDictJson = json.dumps(rangesDict)
-            response = make_response(redirect(url_for('editSettings')))
             response.set_cookie(RANGES_COOKIE_NAME, rangesDictJson)
-            return response  # todo flash saved and stay on page
+            return response  # todo flash saved
         except Exception as ex:
             # todo flash error
-            return 'error setting ranges - some were invalid: {}'.format(ex)
+            return render_template("message.html", title="Error setting ranges",
+                                   message="Some settings were invalid: {}".format(ex), isError=True)
 
 
 @app.route('/location_search_submit', methods=['POST'])

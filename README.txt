@@ -24,6 +24,8 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 
 * features: to do
+** Forecast > Share: Use tabs or popup? (cluttered)
+
 ** change terminology - confusion over Low/Med/High: desirability vs. amount
 o low rain vs. low desirability - high rain
 o Low means Low Desirability (like Orange or Red) not low amounts of clouds
@@ -36,7 +38,26 @@ I have to click the main link then retype my zip to get back to the calendar
 
 I noticed this as well. You don't change settings that often (at least once you've got them tweaked the way you want), but ideally, changing settings should happen within the context of where you came from, and you should be able to easily get back to that. When using a zip code, it's not too bad, because it's easy to re-enter, however I used lat/long for one of my sites. So what I do is change my settings in another tab, and then simply refresh the one using lat/long to get the updated settings. It would be nice to not have to do that.
 
+
+*** note: must save the referrer that came in to settings/ (stack) b/c referrer in do_edit_parameters_submit() is submit/ itself
+maybe use a url query parameter (e.g., 'callback' or 'next')
+
 request.referrer
+
+http://flask.pocoo.org/docs/0.10/reqcontext/
+
+http://pastebin.com/0RQfHq5q
+
+http://stackoverflow.com/a/14941281/1082367
+
+
+http://stackoverflow.com/questions/14941030/request-environhttp-referer-is-none/14941281#14941281
+
+the most surefire way is to not leave this up to the browsers. Instead, include the URL of the referrer as a parameter in your URL. So, something like http://example.com/login?referrer=http%3A%2F%2Fexample.com%2Fpanel. –  Mark Hildreth Feb 18 '13 at 17:01
+
+For full belt and braces, encode the original referrer in the redirect URL so you can guarantee to retrieve it.
+
+If you can, why not add a ?override_referer=<old_url> parameter to the URL you redirect to, and parse that value instead of HTTP_REFERER. 
 
 
 ** overview/summary :-)

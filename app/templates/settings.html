@@ -15,7 +15,7 @@
             <hr>
             <h2>Display Preferences</h2>
 
-            <form class="form-group" method="POST" action="{{ url_for('do_edit_display_submit') }}">
+            <form class="form-group" method="POST" action="{{ url_for('do_edit_display_submit', referrer=request.referrer) }}">
                 <p>Controls whether icons are shown in each hour, or if they are simply displayed as colors. The default
                     is to show icons.</p>
 
@@ -48,7 +48,7 @@
             <p><a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
             </p>
 
-            <form class="form-group" method="POST" action="{{ url_for('do_edit_parameters_submit') }}">
+            <form class="form-group" method="POST" action="{{ url_for('do_edit_parameters_submit', referrer=request.referrer) }}">
                 <div>
                     <h3>Wind</h3>
 
