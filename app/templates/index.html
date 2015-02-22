@@ -108,8 +108,8 @@
 
         $(document).ready(function () {
             /*
-            set up Bloodhound search
-            */
+             set up Bloodhound search
+             */
             var zipCodeEngine = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.whitespace,   // unused for remote
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -117,12 +117,12 @@
                 remote: 'place/%QUERY'
             });
             zipCodeEngine.initialize();
-            
+
             /*
-            initialize typeahead
-            */
+             initialize typeahead
+             */
             locFieldSelector = $("#location_field");
-            
+
             locFieldSelector.typeahead({
                 minLength: 1
             }, {
@@ -134,19 +134,18 @@
             }).on("typeahead:selected", function (jQueryEventObj, suggestObj, datasetName) {
                 jQueryEventObj.target.submit();
             });
-            
+
             /*
              remove inserted style information that screws up positioning of field and button. REF:
              http://stackoverflow.com/questions/18059161/css-issue-on-twitter-typeahead-with-bootstrap-3
              http://stackoverflow.com/questions/4036857/jquery-remove-style-added-with-css-function#4036868
              */
-            locFieldSelector.css("vertical-align", "");
             {#        $(".twitter-typeahead").removeAttr("style")#}
-            {#        $(".twitter-typeahead").css("display", "")#}
-            
+            $(".twitter-typeahead").css("display", "");
+
             /*
-            focus on search form
-            */
+             focus on search form
+             */
             locFieldSelector.focus();
 
         });

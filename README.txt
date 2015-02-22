@@ -13,7 +13,10 @@
 ** /settings - ranges: not empty, ints, sorted!
 
 
-** appearance (responsive): when key goes below table, it stretches full width
+** bottom line of table flashes darker when popover shows
+
+
+** ~ appearance (responsive): when key goes below table, it stretches full width
 
 
 ** sunrise/set off by an hour? current: twilight = -12 * ephem.degree
@@ -21,9 +24,6 @@ http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-li
 http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
 http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
 fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
-
-
-** bottom line of table flashes darker when popover shows
 
 
 * features: to do
