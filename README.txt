@@ -5,19 +5,20 @@
 
 ** embed code: make template like stickers.html
 
+** change {% set %} to {% with %}
+http://flask.pocoo.org/docs/0.10/patterns/flashing/
+
 
 * bugs
 ** ! 'Mercedes, TX -> IndexError: list index out of range
 
+** 404 not found: http://127.0.0.1:5000/assets/js/ie10-viewport-bug-workaround.js
 
 ** /settings - ranges: not empty, ints, sorted!
 
-
 ** bottom line of table flashes darker when popover shows
 
-
 ** ~ appearance (responsive): when key goes below table, it stretches full width
-
 
 ** sunrise/set off by an hour? current: twilight = -12 * ephem.degree
 http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
@@ -27,6 +28,17 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 
 * features: to do
+** use WTF and flashing for cleaner form validation
+http://flask.pocoo.org/docs/0.10/patterns/flashing/
+
+REF:
+https://www.airpair.com/python/posts/django-flask-pyramid
+http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
+https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
+http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
+http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
+
+
 ** Forecast > Share: Use tabs or popup? (cluttered)
 
 ** change terminology - confusion over Low/Med/High: desirability vs. amount
@@ -34,33 +46,6 @@ o low rain vs. low desirability - high rain
 o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
-
-
-** after clicking on 'save' when changing settings, there's no link to get back to the calendar
-I have to click the main link then retype my zip to get back to the calendar
-
-I noticed this as well. You don't change settings that often (at least once you've got them tweaked the way you want), but ideally, changing settings should happen within the context of where you came from, and you should be able to easily get back to that. When using a zip code, it's not too bad, because it's easy to re-enter, however I used lat/long for one of my sites. So what I do is change my settings in another tab, and then simply refresh the one using lat/long to get the updated settings. It would be nice to not have to do that.
-
-
-*** note: must save the referrer that came in to settings/ (stack) b/c referrer in do_edit_parameters_submit() is submit/ itself
-maybe use a url query parameter (e.g., 'callback' or 'next')
-
-request.referrer
-
-http://flask.pocoo.org/docs/0.10/reqcontext/
-
-http://pastebin.com/0RQfHq5q
-
-http://stackoverflow.com/a/14941281/1082367
-
-
-http://stackoverflow.com/questions/14941030/request-environhttp-referer-is-none/14941281#14941281
-
-the most surefire way is to not leave this up to the browsers. Instead, include the URL of the referrer as a parameter in your URL. So, something like http://example.com/login?referrer=http%3A%2F%2Fexample.com%2Fpanel. –  Mark Hildreth Feb 18 '13 at 17:01
-
-For full belt and braces, encode the original referrer in the redirect URL so you can guarantee to retrieve it.
-
-If you can, why not add a ?override_referer=<old_url> parameter to the URL you redirect to, and parse that value instead of HTTP_REFERER. 
 
 
 ** overview/summary :-)
@@ -74,17 +59,6 @@ o summary for the coming day/week - "Looks like the best times are __, __, and _
 
 http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
 http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
-
-
-** use WTF and flashing for cleaner form validation
-http://flask.pocoo.org/docs/0.10/patterns/flashing/
-
-*** REF
-https://www.airpair.com/python/posts/django-flask-pyramid
-http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
-https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
-http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
-http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
 
 
 ** use jQuery everywhere
@@ -107,7 +81,7 @@ like: http://www.107thrc.com/
 
 I suppose you'd have a URL (or a special query string parameter) that instead of parsing the zip from the path it would display an input control prompting for zip. After entering the zip it would post back, the rest of the settings from the query string would apply and the grid would display. Without adding the zip to a cookie it would make the zip stateless, so a page refresh would necessitate entering the zip again. But at least it wouldn't be locked down to a single zip for cases like Rick is describing. If you did add the zip to the cookie it could lock it there for a user, but you'd probably want another button on the grid page to allow you to enter another zip.
 
-*** REF
+REF:
 http://www.codeproject.com/Questions/635541/reloading-a-div-on-a-button-click-using-Jquery-or
 http://www.extremetechblog.com/refresh-div-without-reloading-page/
 http://community.sitepoint.com/t/refresh-div-content-without-reloading-page/5353
@@ -127,7 +101,7 @@ http://www.kavoir.com/2009/01/using-javascript-to-refresh-and-reload-an-iframe-o
 ** ~ nice PIL fonts instead of current blocky one?
 would probably fix this: sticker 'T' column headings are cut off on the left
 
-*** REF
+REF:
 http://www.geeks3d.com/20131108/beginning-with-pillow-the-pil-fork-python-imaging-library-tutorial-programming/7/
 http://stackoverflow.com/questions/12384838/using-fonts-in-pil-without-freetype
 http://stackoverflow.com/questions/19337952/how-to-prepare-a-freetype-pil-pillow-package-for-heroku-and-django?lq=1

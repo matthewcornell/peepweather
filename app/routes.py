@@ -3,7 +3,7 @@ import logging
 import urllib.parse
 
 from io import BytesIO
-from flask import render_template, request, redirect, url_for, make_response
+from flask import render_template, request, redirect, url_for, make_response, flash
 import re
 
 from forecast.Forecast import Forecast
@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 HIDE_ICONS_COOKIE_NAME = 'display_preferences'
 RANGES_COOKIE_NAME = 'parameter_ranges'
+
+app.secret_key = 'why would I tell you my secret key?'
 
 
 # ==== routes ====
@@ -129,22 +131,6 @@ def generateStickerImage(zipOrLatLon):
     return response
 
 
-@app.route('/settings')
-def editSettings():
-    rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
-    hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
-    if rangesDictJson:
-        rangesDict = json.loads(rangesDictJson)
-    else:
-        rangesDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
-    return render_template("settings.html",
-                           hideIcons='true' if hideIcons else 'false',
-                           precipVals=rangesDict['precip'],
-                           tempVals=rangesDict['temp'],
-                           windVals=rangesDict['wind'],
-                           cloudVals=rangesDict['clouds'])
-
-
 @app.route('/search/<query>')
 def searchForZip(query):
     zipNameLatLonTuples = Forecast.searchZipcodes(query)
@@ -157,6 +143,24 @@ def searchForZip(query):
                                "longitude.", isError=False)
     else:
         return render_template("search.html", query=query, zipNameLatLonTuples=zipNameLatLonTuples)
+
+
+@app.route('/settings')
+def editSettings():
+    rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
+    if rangesDictJson:
+        rangesDict = json.loads(rangesDictJson)
+    else:
+        rangesDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
+    hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
+    referrer = request.values.get('referrer') or request.referrer
+    return render_template("settings.html",
+                           referrer=referrer,
+                           hideIcons='true' if hideIcons else 'false',
+                           precipVals=rangesDict['precip'],
+                           tempVals=rangesDict['temp'],
+                           windVals=rangesDict['wind'],
+                           cloudVals=rangesDict['clouds'])
 
 
 @app.route('/how-it-works')
@@ -240,25 +244,25 @@ def do_location_search_submit(inputName):
 @app.route('/edit_display_submit', methods=['POST'])
 def do_edit_display_submit():
     referrer = request.values.get('referrer')
-    redirectURL = referrer if referrer else url_for('editSettings')
-    response = make_response(redirect(redirectURL))
     isChecked = request.values.get('show_icons_value')
+    response = make_response(redirect(url_for('editSettings', referrer=referrer)))
     if isChecked:  # default setting -> clear cookie
         response.set_cookie(HIDE_ICONS_COOKIE_NAME, expires=0)
     else:  # customized setting -> set cookie
         response.set_cookie(HIDE_ICONS_COOKIE_NAME, 'true')
-    return response  # todo flash saved
+    flash("Show icons is now {}.".format("on" if isChecked else "off"))
+    return response
 
 
 @app.route('/edit_parameters_submit', methods=['POST'])
 def do_edit_parameters_submit():
     referrer = request.values.get('referrer')
-    redirectURL = referrer if referrer else url_for('editSettings')
-    response = make_response(redirect(redirectURL))
     isReset = request.values.get('reset_button')
+    response = make_response(redirect(url_for('editSettings', referrer=referrer)))
     if isReset:
         response.set_cookie(RANGES_COOKIE_NAME, expires=0)
-        return response  # todo flash reset
+        flash("Settings have been reset to defaults.")
+        return response
     else:
         # save form values as a json dict in the cookie
         try:
@@ -266,7 +270,8 @@ def do_edit_parameters_submit():
             # todo validate rangeDict - all ints increasing, for example
             rangesDictJson = json.dumps(rangesDict)
             response.set_cookie(RANGES_COOKIE_NAME, rangesDictJson)
-            return response  # todo flash saved
+            flash("Settings have been saved.")
+            return response
         except Exception as ex:
             # todo flash error
             return render_template("message.html", title="Error setting ranges",
