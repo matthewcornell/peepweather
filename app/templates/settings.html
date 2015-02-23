@@ -175,19 +175,19 @@
     </div>
 
 
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
+            {% set modalTitle = 'Invalid settings' if messages[0][0] == 'error' else 'Settings updated' %}
+
             <!-- modal for flashing save or reset results -->
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            <div class="modal fade" id="flashModal" tabindex="-1" role="dialog" aria-labelledby="flashModalLabel"
                  aria-hidden="true" data-keyboard="false" data-backdrop="static">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Settings updated</h4>
+                            <h4 class="modal-title" id="flashModalLabel">{{ modalTitle }}</h4>
                         </div>
-                        <div class="modal-body"> {{ messages[0] }} </div>
+                        <div class="modal-body"> {{ messages[0][1] }} </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
                         </div>
@@ -203,9 +203,27 @@
 
 {% block scripts %}
 
+    <script>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                $(document).ready(function () {
+                    flashModalSelector = $('#flashModal');
+                    flashModalSelector.modal();
+
+                    {% if messages[0][0] != 'error' %}
+                        flashModalSelector.on('hidden.bs.modal', function () {
+                            var referrer = '{{ referrer }}';
+                            window.location.replace(referrer);  // per http://stackoverflow.com/questions/503093/how-can-i-make-a-redirect-page
+                        });
+                    {% endif %}
+                });
+            {% endif %}
+        {% endwith %}
+    </script>
+
+
     <!-- populate the range form with current values -->
     <!-- todo 1) jquery, 2) on document ready -->
-
     <script type="text/javascript">
         function initialize_form_values() {
             document.getElementById('show_icons_id').checked = ! {{ hideIcons }};
@@ -226,21 +244,6 @@
             document.getElementById('temp_v4_text').value = tempVals[3];
         }
         initialize_form_values();
-    </script>
-
-    <script>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                // invoke the modal if any flashed messages
-                $(document).ready(function () {
-                    $('#myModal').modal().on('hidden.bs.modal', function () {
-                        var referrer = '{{ referrer }}';
-                        console.log('hidden.bs.modal' + referrer);
-                        window.location.replace(referrer);  // per http://stackoverflow.com/questions/503093/how-can-i-make-a-redirect-page
-                    });
-                });
-            {% endif %}
-        {% endwith %}
     </script>
 
 {% endblock %}

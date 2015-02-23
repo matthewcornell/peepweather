@@ -266,64 +266,72 @@ def do_edit_parameters_submit():
     else:
         # save form values as a json dict in the cookie
         try:
-            rangesDict = rangesDictFromEditFormValues()
-            # todo validate rangeDict - all ints increasing, for example
+            rangesDict = rangesDictFromEditFormValues(request.values)
             rangesDictJson = json.dumps(rangesDict)
             response.set_cookie(RANGES_COOKIE_NAME, rangesDictJson)
             flash("Settings have been saved.")
             return response
         except Exception as ex:
             # todo flash error
-            return render_template("message.html", title="Error setting ranges",
-                                   message="Some settings were invalid: {}".format(ex), isError=True)
+            # return render_template("message.html", title="Error setting ranges",
+            #                        message="Some settings were invalid: {}".format(ex), isError=True)
+            flash("Some parameters were invalid: {}".format(ex), 'error')
+            return redirect(url_for('editSettings', referrer=referrer))
 
 
-# todo refactor to use rangesDictFromRequestArgs()
-def rangesDictFromEditFormValues():
-    wind_v1_value = request.values.get('wind_v1_value')
-    wind_v2_value = request.values.get('wind_v2_value')
-    precip_v1_value = request.values.get('precip_v1_value')
-    precip_v2_value = request.values.get('precip_v2_value')
-    cloud_v1_value = request.values.get('cloud_v1_value')
-    cloud_v2_value = request.values.get('cloud_v2_value')
-    temp_v1_value = request.values.get('temp_v1_value')
-    temp_v2_value = request.values.get('temp_v2_value')
-    temp_v3_value = request.values.get('temp_v3_value')
-    temp_v4_value = request.values.get('temp_v4_value')
-    rangesDict = {'precip': list(map(int, [precip_v1_value, precip_v2_value])),
-                  'temp': list(map(int, [temp_v1_value, temp_v2_value, temp_v3_value, temp_v4_value])),
-                  'wind': list(map(int, [wind_v1_value, wind_v2_value])),
-                  'clouds': list(map(int, [cloud_v1_value, cloud_v2_value])),
-    }
-    return rangesDict
+def rangesDictFromEditFormValues(requestVals):
+    wind_v1_value = requestVals.get('wind_v1_value')
+    wind_v2_value = requestVals.get('wind_v2_value')
+    precip_v1_value = requestVals.get('precip_v1_value')
+    precip_v2_value = requestVals.get('precip_v2_value')
+    cloud_v1_value = requestVals.get('cloud_v1_value')
+    cloud_v2_value = requestVals.get('cloud_v2_value')
+    temp_v1_value = requestVals.get('temp_v1_value')
+    temp_v2_value = requestVals.get('temp_v2_value')
+    temp_v3_value = requestVals.get('temp_v3_value')
+    temp_v4_value = requestVals.get('temp_v4_value')
+    
+    pRangeStrs = [precip_v1_value, precip_v2_value]
+    tRangeStrs = [temp_v1_value, temp_v2_value, temp_v3_value, temp_v4_value]
+    wRangeInts = [wind_v1_value, wind_v2_value]
+    cRangeStrs = [cloud_v1_value, cloud_v2_value]
+
+    return rangesDictFromRangeStrs(pRangeStrs, tRangeStrs, wRangeInts, cRangeStrs)
 
 
 def rangesDictFromRequestArgs(requestArgs):
     ptwcArgs = [requestArgs.get('p'), requestArgs.get('t'), requestArgs.get('w'), requestArgs.get('c')]
     if not all(ptwcArgs):
-        raise ValueError("Not all query parameters were passed: p, t, w, c: {}".format(ptwcArgs))
+        raise ValueError("Not all URL query parameters were passed: p, t, w, c: {}".format(ptwcArgs))
 
     pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs = map(lambda x: x.split('|'), ptwcArgs)
-    if len(pRangeStrs) != 2 or len(tRangeStrs) != 4 or len(wRangeStrs) != 2 or len(cRangeStrs) != 2:
-        raise ValueError("Not all query parameters had correct # of items: p, t, w, c: {}".
-                         format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
+    return rangesDictFromRangeStrs(pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs)
 
+
+def rangesDictFromRangeStrs(pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs):
+    """
+    :return: a range dict akin to Forecast.PARAM_RANGE_STEPS_DEFAULT corresponding to the args, which are either 2-tuple
+    (pRangeStrs, wRangeStrs, cRangeStrs) or 4-tuple (tRangeStrs) lists of (ideally int) strings
+    """
+    if len(pRangeStrs) != 2 or len(tRangeStrs) != 4 or len(wRangeStrs) != 2 or len(cRangeStrs) != 2:
+        raise ValueError("Not all parameters had correct # of items: precip: {}, temp: {}, wind: {}, clouds: {}".format(
+            pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs))
 
     def intsForStrs(intStrs):
         return list(map(int, intStrs))
-
 
     try:
         pRangeInts, tRangeInts, wRangeInts, cRangeInts = list(
             map(intsForStrs, [pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
     except ValueError:
         raise ValueError(
-            "Not all query parameters were integers: {}".format([pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs]))
+            "Not all  parameters were integers: precip: {}, temp: {}, wind: {}, clouds: {}".format(
+                pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs))
 
     if not all(map(lambda intList: intList == sorted(intList), [pRangeInts, tRangeInts, wRangeInts, cRangeInts])):
         raise ValueError(
-            "Not all query parameters were sorted: p, t, w, c: {}".format(
-                [pRangeInts, tRangeInts, wRangeInts, cRangeInts]))
+            "Not all parameters were sorted: precip: {}, temp: {}, wind: {}, clouds: {}".format(
+                pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs))
 
     # finally!
     return {'precip': pRangeInts,

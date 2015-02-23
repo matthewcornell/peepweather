@@ -3,24 +3,22 @@
 * refactoring
 ** titles: write Forecast method to help zipOrLatLon. use in stickers.html too
 
-** embed code: make template like stickers.html
+** embed code: make it a template like stickers.html
 
 ** change {% set %} to {% with %}
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
 
 * bugs
-** ! 'Mercedes, TX -> IndexError: list index out of range
+** 'Mercedes, TX -> IndexError: list index out of range
 
-** 404 not found: http://127.0.0.1:5000/assets/js/ie10-viewport-bug-workaround.js
+** ~ bottom line of table flashes darker when popover shows
 
-** /settings - ranges: not empty, ints, sorted!
-
-** bottom line of table flashes darker when popover shows
+** ~ 404 not found: http://127.0.0.1:5000/assets/js/ie10-viewport-bug-workaround.js
 
 ** ~ appearance (responsive): when key goes below table, it stretches full width
 
-** sunrise/set off by an hour? current: twilight = -12 * ephem.degree
+** ? sunrise/set off by an hour? current: twilight = -12 * ephem.degree
 http://stackoverflow.com/questions/26501745/how-to-determine-if-it-is-daytime-light-outside-in-python-using-ephem-library
 http://rhodesmill.org/pyephem/rise-set.html#computing-twilight
 http://stackoverflow.com/questions/2637293/calculating-dawn-and-sunset-times-using-pyephem
@@ -28,18 +26,7 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 
 * features: to do
-** use WTF and flashing for cleaner form validation
-http://flask.pocoo.org/docs/0.10/patterns/flashing/
-
-REF:
-https://www.airpair.com/python/posts/django-flask-pyramid
-http://www.reddit.com/r/flask/comments/1q1pfx/flask_wtfforms_with_twitter_bootstrapangularjs/
-https://www.safaribooksonline.com/library/view/flask-web-development/9781491947586/ch04.html
-http://bear-z.com/python/render-bootstrap-3-forms-with-wtforms-and-jinja/
-http://pythonthusiast.pythonblogs.com/230_pythonthusiast/archive/1315_building_python_flask_application_in_openshiftheroku_replacement_part_vi__adding_sign_up_form_using_bootstrap_3_and_flask-wtf.html
-
-
-** Forecast > Share: Use tabs or popup? (cluttered)
+** Forecast > Share: consoliate into tabs or popup? (getting cluttered)
 
 ** change terminology - confusion over Low/Med/High: desirability vs. amount
 o low rain vs. low desirability - high rain
@@ -47,11 +34,9 @@ o Low means Low Desirability (like Orange or Red) not low amounts of clouds
 
 -> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
-
 ** overview/summary :-)
 "Looks like the best times are __, __, and __."
 "The best days to get out look to be ..."
-
 
 ** stickers: later
 o editor customize appearance (size, format, include summary, etc.)
@@ -60,20 +45,14 @@ o summary for the coming day/week - "Looks like the best times are __, __, and _
 http://www.wunderground.com/stickers/?query=Amherst,%20Massachusetts
 http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
 
-
 ** use jQuery everywhere
-
-
-** settings: if ranges need additional clarification (or people want to learn) then have help text under each group
-(wind, precip, etc.) that updates to show a sentence incorporating the current values
-
-ex: Wind (8, 12): "Wind between 0 and 8 MPH is considered High desirability, between 8 and 12 is Medium, and anything higher than 12 is Low desirability."
 
 
 * features: to consider
 ** activity-based profiles selectable from list
 e.g., skiing - don't mind coder, windier
 
+** ~ replace message.html with modal?
 
 ** ~ in-place form as service to webmaster visitors
 user enters zip, form refreshes in-place
@@ -91,12 +70,7 @@ http://stackoverflow.com/questions/7175038/how-to-reload-a-div-without-reloading
 http://stackoverflow.com/questions/7218070/reload-contents-of-div-using-javascript
 http://www.kavoir.com/2009/01/using-javascript-to-refresh-and-reload-an-iframe-on-main-page.html
 
-
 ** recently found - last 5 or so :-)
-
-** location search as form in header?
-
-** ~ don't show first column if all white?
 
 ** ~ nice PIL fonts instead of current blocky one?
 would probably fix this: sticker 'T' column headings are cut off on the left
@@ -108,6 +82,7 @@ http://stackoverflow.com/questions/19337952/how-to-prepare-a-freetype-pil-pillow
 http://stackoverflow.com/questions/12384838/using-fonts-in-pil-without-freetype/12388342#12388342
 http://stackoverflow.com/questions/619618/using-pixel-fonts-in-pil
 
+** ~ don't show first column if all white?
 
 ** ~ user accounts so that settings follow user around on every computer
 
@@ -123,6 +98,7 @@ I'd personally rather have one bookmark to get to all the places I care about in
 ** ~ a checkbox controlling whether apparent or actual temp is used
 
 ** ~ editable parameter weights for combined importance to the final rating
+
 
 * future: major features
 ** international. I don't know the details myself, but drop Benny Wydooghe a line on google+, or in the Meteogram Widget
