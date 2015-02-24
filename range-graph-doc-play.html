@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" dir="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+
+<!-- http://jsxgraph.uni-bayreuth.de/wiki/index.php/Step_function_II
+    PARAM_RANGE_STEPS_DEFAULT = {'precip': [10, 30],         # H->M, M->L
+                                 'temp': [35, 59, 89, 100],  # L->, M->H, H->, M->L
+                                 'wind': [8, 12],            # H->M, M->L
+                                 'clouds': [33, 66],         # H->M, M->L
+    }
+-->
+
+<script src='http://jsxgraph.uni-bayreuth.de/distrib/jsxgraphcore.js' type='text/javascript'></script>
+<div id='jxgbox' class='jxgbox' style='width:600px; height:400px;'></div>
+<script type='text/javascript'>
+
+    var high = 8;
+    var med = 4;
+    var low = 0;
+
+    function makeHML(board, x) {
+        board.create('point', [x, high], {name: 'High', color: 'black'});
+        board.create('point', [x, med], {name: 'Med', color: 'black'});
+        board.create('point', [x, low], {name: 'Low', color: 'black'});
+    }
+    
+    function precip() {
+        var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [0, 10, 110, -1], axis: true}); // LTRB
+        makeHML(board, 10);
+        board.create('text', [30, 6, 'Probability of Precipitation (%)'], {fontSize: 18});
+        board.create('stepfunction', [[0, 10, 30, 100], [high, med, low, low]]);
+    }
+
+    function temperature() {
+        var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [20, 10, 110, -1], axis: true}); // LTRB
+        makeHML(board, 25);
+        board.create('text', [30, 6, 'Temperature (&deg;F)'], {fontSize: 18});
+        board.create('stepfunction', [[0, 35, 59, 89, 100, 108], [low, med, high, med, low, low]], {strokeColor: 'orange'});
+    }
+
+    function wind() {
+        var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-3, 10, 110, -1], axis: true}); // LTRB
+        makeHML(board, 15);
+        board.create('text', [30, 6, 'Wind (MPH)'], {fontSize: 18});
+        board.create('stepfunction', [[0, 8, 12, 100], [high, med, low, low]], {strokeColor:'red'});
+    }
+
+    function clouds() {
+        var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-3, 10, 110, -1], axis: true}); // LTRB
+        makeHML(board, 0);
+        board.create('text', [45, 6, 'Cloud Cover (%)'], {fontSize: 18});
+        board.create('stepfunction', [[0, 33, 66, 100], [high, med, low, low]], {strokeColor:'green'});
+    }
+    
+    // precip();
+    // temperature();
+    // wind();
+    clouds();
+
+
+</script>
+
+</body>
+</html>

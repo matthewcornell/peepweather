@@ -28,12 +28,6 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 * features: to do
 ** Forecast > Share: consoliate into tabs or popup? (getting cluttered)
 
-** change terminology - confusion over Low/Med/High: desirability vs. amount
-o low rain vs. low desirability - high rain
-o Low means Low Desirability (like Orange or Red) not low amounts of clouds
-
--> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
-
 ** overview/summary :-)
 "Looks like the best times are __, __, and __."
 "The best days to get out look to be ..."
@@ -98,6 +92,17 @@ I'd personally rather have one bookmark to get to all the places I care about in
 ** ~ a checkbox controlling whether apparent or actual temp is used
 
 ** ~ editable parameter weights for combined importance to the final rating
+
+
+** ~ editable graph via http://jsxgraph.uni-bayreuth.de/wp/ :-)
+user can drag points around to edit
+
+
+** ~ change terminology - confusion over Low/Med/High: desirability vs. amount
+o low rain vs. low desirability - high rain
+o Low means Low Desirability (like Orange or Red) not low amounts of clouds
+
+-> It might help to change the terms from Low, Medium, High to something like Bad, OK, and Great (or anything else that is more easily understandable without explanation).
 
 
 * future: major features

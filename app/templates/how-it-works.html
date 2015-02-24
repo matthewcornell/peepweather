@@ -10,7 +10,7 @@
             <h1>How does it work?</h1>
 
             <p><img src="{{ url_for('static', filename='traffic-light.png') }}" align="left"/> PeepWeather shows the
-                upcoming week's forecast in a familiar colored "traffic light" coding of each hour, formatted as a
+                upcoming week's forecast in a familiar "traffic light" color coding of each hour, formatted as a
                 calendar-like table. A green square means the weather looks Great, yellow is Okay, orange is Fair, and
                 red is just plain Poor. By simply looking at the colors you can tell at a glance how the week is
                 shaping up.</p>
@@ -21,12 +21,12 @@
                 made an hour not green. (Note that icons can be disabled in settings.)</p>
 
             <p>Details are below about how those weather parameters - probability of precipitation, temperature, and
-                windiness - get combined into one color, but in a nutshell parameters "add up" - the more bad ones
+                windiness - get combined into one color, but in a nutshell the parameters "add up" - the more bad ones
                 there are, the worse the color is.</p>
 
-            <p>Cloud cover is treated specially and does not influence color. Instead it's a secondary consideration
+            <p>(Cloud cover is treated specially and does not influence color. Instead it's a secondary consideration
                 for you and is shown as adjunct information in the form of an icon. That's why some green days will
-                have a cloud icon. This way you can factor in sky cover given your preferences.</p>
+                have a cloud icon. This way you can factor in sky cover given your preferences.)</p>
 
 
             <h2>Overall operation</h2>
@@ -34,9 +34,10 @@
             <p><img src="{{ url_for('static', filename='noaa-logo.png') }}" align="right"/> When you enter a location,
                 PeepWeather converts it to a latitude and longitude and then passes that to a query of the U.S.
                 Government's <a href="http://www.nws.noaa.gov/ndfd/">National Digital Forecast Database</a>
-                <a href="http://graphical.weather.gov/xml/rest.php">REST Web Service</a>. It processes the resulting
-                file to find hourly data, filling in gaps for missing hours. Finally it builds a hourly calendar-like
-                table for display on the page, coloring in each hour using the below algorithm.
+                <a href="http://graphical.weather.gov/xml/rest.php">REST Web Service</a>. It processes the result to
+                find hourly data, filling in gaps for missing hours. (Some weather information is only available on a
+                three-hour or 12-hour schedule, for example.) Finally it builds a hourly calendar-like table for
+                display on the page, coloring in each hour using the below algorithm.
             </p>
 
             <h2>Color calculation details</h2>
@@ -46,35 +47,30 @@
             <ol>
                 <li>
                     First, each weather parameter (percent of precipitation, temperature, and wind speed - but
-                    <strong>not</strong> cloud cover) is assessed individually to get one of three desirability ratings
+                    not cloud cover) is assessed individually to get one of three <em>desirability</em> ratings
                     - <code>Low</code>, <code>Medium</code>, and <code>High</code> - based on a simple formula.
                 </li>
                 <li>Second, those three ratings are combined to get one of four overall desirability ratings for the
                     hour - <code>Poor</code>, <code>Fair</code>, <code>Okay</code>, and <code>Great</code>.
                 </li>
-                <li>Finally, the overall desirability rating is mapped to a color, such as: Great = green,
-                    Okay = yellow, Fair = Orange, and Poor = red.
+                <li>Finally, the overall desirability rating is mapped to a color: Great = green, Okay = yellow,
+                    Fair = Orange, and Poor = red.
                 </li>
             </ol>
 
-            <p>
-                This means there are two types of <a href="http://en.wikipedia.org/wiki/Function_%28mathematics%29">functions</a>
+            <p>Put another way, there are two types of <a href="http://en.wikipedia.org/wiki/Function_%28mathematics%29">functions</a>
                 involved: One to convert each of the three parameter values into a Low, Medium, and High rating, and a
-                second one to combine these into a Poor, Fair, Okay, and Great hour rating. Let's call these the
-                <code>Parameter Function</code> and the <code>Hourly Function</code>.</p>
+                second one to combine these into a Poor, Fair, Okay, and Great rating for the hour. We call these the
+                <code>Parameter Function</code> and the <code>Hourly Function</code>. To learn more, keep reading!</p>
 
 
             <h2>Parameter Function</h2>
-            On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, wind
+            <p>On this site, the Parameter Function breaks the parameter (percent of precipitation, temperature, wind
             speed, or cloud cover) into ranges that determine the rating. An example might be that if wind is between 0
-            MPH and 5 MPH
-            then consider that desirability High. If it is between 6 MPH and 10 MPH consider it Medium desirable, and if
-            it's higher
-            than 10 MPH then its desirability is Low. Percent of precipitation would work similarly, for example: 0% to
-            10% might be
-            High desirability, 10% to 20% Medium, and Low for anything higher than 20%. Both of these are essentially
-            three
-            step ranges, graphically shown as:
+            MPH and 8 MPH then consider that desirability High. If it is between 8 MPH and 12 MPH consider it Medium
+            desirable, and if it's higher than 12 MPH then its desirability is Low. Percent of precipitation would
+            work similarly, for example: 0% to 10% might be High desirability, 10% to 30% Medium, and Low for anything
+            higher than 30%. Both of these can be visualized as essentially three "steps", graphically shown as:</p>
 
             <div class="row">
 <pre class="col-md-3 col-md-offset-1">
@@ -84,21 +80,38 @@ M |  +---+
   |      |
 L +      +--->
 
-  0  v1  v2
+     v1  v2
 </pre>
             </div>
 
-            This makes clear that all it takes is two parameter values (called v1 and v2 above) to identify the range.
+            <p>This makes clear that all it takes is two parameter values (called v1 and v2 above) to identify the range.
             When viewed from left to right, v1 is the High-to-Medium transition, and v2 is the Medium-to-Low transition.
-            In the wind
-            example, v1 = 5 MPH and v2 = 10 MPH. The precipitation example had 10% and 20% for v1 and v2, respectively.
-            In other words, these two numbers identify the 'breaks' where the steps go down from left to right. We call
-            this first type of Parameter Function a "H-M-L" step.
+            In the wind example, v1 = 8 MPH and v2 = 12 MPH. And the precipitation example had 10% and 30% for v1 and
+            v2, respectively. In other words, these two numbers identify the 'breaks' where the steps go down from
+            left to right. We call this first type of Parameter Function "H-M-L". Here are the default functions
+            for the three "H-M-L" parameters (percent of precipitation, wind speed, and cloud cover):</p>
+            
+            <div class="row">
+              <div class="col-xs-6 col-md-3">
+                <a href="{{ url_for('static', filename='wind.png') }}" class="thumbnail">
+                  <img src="{{ url_for('static', filename='wind.png') }}" alt="wind graph">
+                </a>
+              </div>
+              <div class="col-xs-6 col-md-3">
+                <a href="{{ url_for('static', filename='precip.png') }}" class="thumbnail">
+                  <img src="{{ url_for('static', filename='precip.png') }}" alt="precip graph">
+                </a>
+              </div>
+              <div class="col-xs-6 col-md-3">
+                <a href="{{ url_for('static', filename='cloud.png') }}" class="thumbnail">
+                  <img src="{{ url_for('static', filename='cloud.png') }}" alt="cloud graph">
+                </a>
+              </div>
+            </div>
 
-            But what about temperature? Well, temperature is different because it has a low range too - it can't be too
-            cold OR too warm, but between those two Low-desirability extremes there are Medium and High values. Our
-            Parameter
-            Function for temperature has this shape:
+            <p>But what about temperature? Well, temperature is different because it has a low range too - it can't be
+            too cold OR too warm, but between those two Low-desirability extremes there are Medium and High values. Our
+            Parameter Function for temperature has a "hat" shape:</p>
 
             <div class="row">
 <pre class="col-md-3 col-md-offset-1">
@@ -112,23 +125,29 @@ L <- -+           +--->
 </pre>
             </div>
 
-            We call this Parameter Function a "L-M-H-M-L" hat, and it is characterized by four values, from left to
+            <p>We call this Parameter Function "L-M-H-M-L", and it is characterized by four values, from left to
             right: v1 (the L-to-M transition), v2 (Medium-to-High), v3 (High-to-Medium), and v4 (Medium-to-Low). For
-            example,
-            the four values 32, 40, 70, and 85 (all °F) say that anything colder than 32°F or warmer than 85°F are
-            considered Low desirability, Medium is between 32 and 40, and between 70 and 85, and the 40 to 70 sweet spot
-            is High
-            desirability. Simple!
+            example, the four values 35, 59, 89, and 100 (all °F) say that anything colder than 35°F or warmer than
+            100°F are considered Low desirability, Medium is between 35 and 59, and between 89 and 100, and the 59 to
+            89 sweet spot is High desirability. Simple! Here is the default function for our only "L-M-H-M-L" parameter
+            - temperature:</p>
 
-            That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly
-            Function.
+            <div class="row">
+              <div class="col-xs-6 col-md-3">
+                <a href="{{ url_for('static', filename='temp.png') }}" class="thumbnail">
+                  <img src="{{ url_for('static', filename='temp.png') }}" alt="temperature graph">
+                </a>
+              </div>
+            </div>
+
+            <p>That describes the two kinds of Parameter Functions. Now let's look at how those are combined by the Hourly
+            Function.</p>
 
 
             <h2>Hourly Function</h2>
-            For each hour, once the program uses the Parameter Functions to get Low, Medium, and High values for the
-            three weather parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour
-            rating.
-            Currently this is determined by non-editable rules:
+            <p>For each hour, once the program uses the Parameter Functions to get Low, Medium, and High values for the
+            weather parameters, it runs them through an Hourly Function to get the Poor, Fair, Okay, or Great hour
+            rating. Currently this is determined by non-editable rules:</p>
 
             <ul>
                 <li>If any of the three parameters is Low, then the hour is considered Poor.</li>
@@ -137,7 +156,7 @@ L <- -+           +--->
                 <li>Otherwise (one High and two Medium) then the hour is Fair.</li>
             </ul>
 
-            The weather parameters are treated equally and are not weighted in any way.
+            <p>The weather parameters are treated equally and are not weighted in any way.</p>
 
             <h2>Changing the defaults</h2>
 
