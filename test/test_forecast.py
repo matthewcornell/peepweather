@@ -262,6 +262,13 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(hoursWithNoGaps, forecast.hours)
 
 
+    def testCloudsNone(self):
+        elementTree = ET.parse('test/test-clouds-none.xml')
+        forecast = Forecast('01002', elementTree=elementTree)
+        for hour in forecast.hours:
+            self.assertIsNotNone(hour.clouds)
+
+
     def testColumnHeaderRow(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree=elementTree)

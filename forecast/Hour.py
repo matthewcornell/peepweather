@@ -67,7 +67,7 @@ class Hour():
         dateTimeStr = '{}'.format(self.datetime.strftime('%a %m/%d %I:%M %p'))
         if self.isMissingHour():
             return dateTimeStr, "No data"
-        elif self.precip is None or self.temp is None or self.wind is None or self.clouds is None:  # todo why!?
+        elif self.precip is None or self.temp is None or self.wind is None or self.clouds is None:
             return dateTimeStr, "Missing data?"
         else:
             titleStr = '{} - {}'.format(dateTimeStr, self.cssClassForDesirability())
@@ -106,7 +106,7 @@ class Hour():
 
         if self.isMissingHour():
             return chars
-        elif self.precip is None or self.temp is None or self.wind is None or self.clouds is None:  # todo why!?
+        elif self.precip is None or self.temp is None or self.wind is None or self.clouds is None:
             return chars
 
         # add precip or clouds
@@ -146,6 +146,8 @@ class Hour():
         returns None if this is a missing hour. NB: Does not factor in cloudiness.
         """
         if self.isMissingHour():
+            return None
+        elif self.precip is None or self.temp is None or self.wind is None or self.clouds is None:
             return None
 
         hDesHighCount = 0
