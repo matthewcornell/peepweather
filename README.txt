@@ -10,11 +10,6 @@ http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
 
 * bugs
-** 2015-03-01: weird: http://www.peepweather.com/forecast/95610 -> list index out of range
-xml buggered up?
-prob: hour.clouds is None
-DO: write test exposing problem using downloaded example data
-
 ** 'Mercedes, TX -> IndexError: list index out of range
 
 ** ~ bottom line of table flashes darker when popover shows
