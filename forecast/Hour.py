@@ -1,5 +1,6 @@
-from functools import total_ordering
 from numbers import Number
+
+from functools import total_ordering
 
 
 @total_ordering
@@ -66,6 +67,8 @@ class Hour():
         dateTimeStr = '{}'.format(self.datetime.strftime('%a %m/%d %I:%M %p'))
         if self.isMissingHour():
             return dateTimeStr, "No data"
+        elif self.precip is None or self.temp is None or self.wind is None or self.clouds is None:  # todo why!?
+            return dateTimeStr, "Missing data?"
         else:
             titleStr = '{} - {}'.format(dateTimeStr, self.cssClassForDesirability())
             paramDesToChar = {Hour.P_DES_HIGH: '&check;', Hour.P_DES_MED: '~', Hour.P_DES_LOW: 'x', }
@@ -74,8 +77,7 @@ class Hour():
                 paramDesToChar[self.paramDesirabilityForValue('precip', self.precip)], self.precip,
                 paramDesToChar[self.paramDesirabilityForValue('temp', self.temp)], self.temp,
                 paramDesToChar[self.paramDesirabilityForValue('wind', self.wind)], self.wind,
-                paramDesToChar[self.paramDesirabilityForValue('clouds', self.clouds)], self.clouds,
-                )
+                paramDesToChar[self.paramDesirabilityForValue('clouds', self.clouds)], self.clouds)
             return titleStr, bodyStr
 
 
@@ -103,6 +105,8 @@ class Hour():
         chars = [None, None, None]  # precip, temp, wind
 
         if self.isMissingHour():
+            return chars
+        elif self.precip is None or self.temp is None or self.wind is None or self.clouds is None:  # todo why!?
             return chars
 
         # add precip or clouds
@@ -163,7 +167,7 @@ class Hour():
     @classmethod
     def hourDesirabilityForParamDesCounts(cls, hDesLowCount, hDesMedCount, hDesHighCount):
         """
-        Gives an overall rating for a set of paramaneter desirability counts.
+        Gives an overall rating for a set of parameter desirability counts.
 
         :param paramDesireTuple: a 3-tuple of counts for these param desirabilities, in order:
             (Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH). NB: Should only include precip, temp, and wind, and

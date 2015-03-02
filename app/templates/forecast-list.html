@@ -11,11 +11,12 @@
 
     <div class="container">
         <div class="row">
-        
+
             {% set location = forecast.zipcode + " (" + forecast.name + ")" if forecast.zipcode else forecast.latLonTruncated() %}
-        
-            <h1>Forecast for {{ zipOrLatLon }} {% if forecast.name %} <small>({{ forecast.name }})</small>{% endif %}</h1>
-        
+
+            <h1>Forecast for {{ zipOrLatLon }} {% if forecast.name %}
+                <small>({{ forecast.name }})</small>{% endif %}</h1>
+
             <table class="table table-condensed table-striped" style="font-family: monospace">
                 {% for hour in forecast.hours %}
                     <tr>
@@ -26,6 +27,17 @@
                 {% endfor %}
             </table>
         </div>
+
+        <div class="row">
+            <h2>Debuging tools</h2>
+
+            {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + '|' + forecast.latLon[1] %}
+
+            <ul>
+                <li><a href="{{ forecast.weatherDotGovUrl() }}">Download raw data</a></li>
+            </ul>
+        </div>
+
     </div>
 
 {% endblock %}
