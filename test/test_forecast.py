@@ -272,11 +272,9 @@ class MyTestCase(unittest.TestCase):
 
     def testListIndexOutOfBounds(self):
         elementTree = ET.parse('test/test-list-index-out-of-bounds.xml')
-        dwmlElement = elementTree.getroot()
-        hoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
-        hoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
         forecast = Forecast('01002', elementTree=elementTree)
         forecast.hoursAsCalendarRows()  # raises IndexError: list index out of range
+        self.fail() # todo see: temporary workaround to testListIndexOutOfBounds() bug
 
 
     def testColumnHeaderRow(self):
