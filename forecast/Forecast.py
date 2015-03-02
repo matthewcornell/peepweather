@@ -237,13 +237,14 @@ class Forecast:
 
         # 3) fill in missing data by projecting forward the most recently set value. note that the first item will
         # likely have missing values because there are no older items to project from
-        lastPrecipTempWind = (None, None, None)
+        lastPTWC = (None, None, None, None)
         for hour in hours:
-            precipTempWind = hour.precip, hour.temp, hour.wind
-            lastPrecipTempWind = (precipTempWind[0] if precipTempWind[0] is not None else lastPrecipTempWind[0],
-                                  precipTempWind[1] if precipTempWind[1] is not None else lastPrecipTempWind[1],
-                                  precipTempWind[2] if precipTempWind[2] is not None else lastPrecipTempWind[2])
-            hour.precip, hour.temp, hour.wind = lastPrecipTempWind
+            precipTempWind = hour.precip, hour.temp, hour.wind, hour.clouds
+            lastPTWC = (precipTempWind[0] if precipTempWind[0] is not None else lastPTWC[0],
+                        precipTempWind[1] if precipTempWind[1] is not None else lastPTWC[1],
+                        precipTempWind[2] if precipTempWind[2] is not None else lastPTWC[2],
+                        precipTempWind[3] if precipTempWind[3] is not None else lastPTWC[3],)
+            hour.precip, hour.temp, hour.wind, hour.clouds = lastPTWC
 
         # 4) remove Hours that still have missing values
         # hours = [hour for hour in hours if all((hour.precip, hour.temp, hour.wind))]

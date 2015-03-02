@@ -266,7 +266,6 @@ class MyTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-clouds-none.xml')
         dwmlElement = elementTree.getroot()
         actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
-        print('xx', actHoursWithGaps)
         for hour in actHoursWithGaps:
             self.assertIsNotNone(hour.clouds)
 
