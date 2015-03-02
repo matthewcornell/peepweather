@@ -20,7 +20,7 @@ class MyTestCase(unittest.TestCase):
             Forecast('99999', elementTree=elementTree)
 
         # zip bad: None
-        with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
+        with self.assertRaisesRegex(ValueError, "location wasn't a zip code or comma-separated lat/lon: None"):
             Forecast(None, elementTree=elementTree)
 
         # latLon good: valid format
@@ -28,7 +28,7 @@ class MyTestCase(unittest.TestCase):
 
         # latLon bad: invalid formats
         for zipOrLatLon in [[]], [None], ['42.375370', None], [1, '-72.519249']:
-            with self.assertRaisesRegex(ValueError, 'invalid zipOrLatLon'):
+            with self.assertRaisesRegex(ValueError, "location wasn't a zip code or comma-separated lat/lon"):
                 Forecast(zipOrLatLon, elementTree=elementTree)
 
         # default rangeDict:
@@ -149,8 +149,8 @@ class MyTestCase(unittest.TestCase):
         expDict = self.expDict_testXmlToParamSamplesSkyCover()
         paramSamplesDict = Forecast.parameterSamplesDictFromXml(dwmlElement)
         self.assertEqual(expDict, paramSamplesDict)
-        
-    
+
+
     def testHourInstanceVariablesInclCloudiness(self):
         elementTree = ET.parse('test/test-forecast-data-sky-cover.xml')
         forecast = Forecast('01002', elementTree=elementTree)
@@ -264,8 +264,10 @@ class MyTestCase(unittest.TestCase):
 
     def testCloudsNone(self):
         elementTree = ET.parse('test/test-clouds-none.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
-        for hour in forecast.hours:
+        dwmlElement = elementTree.getroot()
+        actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
+        print('xx', actHoursWithGaps)
+        for hour in actHoursWithGaps:
             self.assertIsNotNone(hour.clouds)
 
 
@@ -421,7 +423,7 @@ class MyTestCase(unittest.TestCase):
                 dt = Forecast.parseStartValidTime(startValidTimeText)
                 isDaylight = Forecast.isDaylightDatetime(latLon, dt)
                 self.assertEqual(expIsDaylight, isDaylight)
-            
+
         with self.assertRaisesRegex(ValueError, "datetime has no tzinfo"):
             Forecast.isDaylightDatetime(None, datetime.datetime.now())
 
@@ -492,9 +494,10 @@ class MyTestCase(unittest.TestCase):
                             (20, 65, 0): Hour.H_DES_MED_HIGH, # precip med, temp high, wind high
                             (0, 65, 0): Hour.H_DES_HIGH,  # all high
         }
-        for precipTempWindTuple, expColor in paramToColorDict.items():
-            hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT, *precipTempWindTuple)
-            self.assertEqual(expColor, hour.desirability())
+        for precipTempWindTuple, expHourDes in paramToColorDict.items():
+            hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT, precipTempWindTuple[0], precipTempWindTuple[1],
+                        precipTempWindTuple[2], 0)  # include no-op cloud so that Hour.isMissingHour() won't return None
+            self.assertEqual(expHourDes, hour.desirability())
 
 
     # ==== support methods and long test data ====
