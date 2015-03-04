@@ -2,7 +2,8 @@
 
 {% set zipOrLatLonForTitle = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
 
-{% block title %}Forecast for {{ zipOrLatLonForTitle }} {% if forecast.name %}({{ forecast.name }}){% endif %} {% endblock %}
+{% block title %}Forecast for {{ zipOrLatLonForTitle }} {% if forecast.name %}({{ forecast.name }})
+{% endif %} {% endblock %}
 
 {% block content %}
 
@@ -36,26 +37,24 @@
         </div>
 
         <div class="row">
-            <h2>Customize</h2>
-
-            <p>To learn about how colors are chosen and how to customize them:</p>
-
-            <p>
-                <a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
-            </p>
-        </div>
-
-        <div class="row">
             <h2>Share</h2>
+
+            <p class="help-block">Tools to share PeepWeather</p>
+
+            <p class="h4">1) Facebook & Twitter</p>
 
             <p><span id="sharethis">
                 <span class='st_facebook_button'></span>
                 <span class='st_twitter_button'></span>
             </span></p>
 
+            <p class="h4">2) A fun widget for your homepage:</p>
+            <a class="btn btn-success" role="button"
+               href="{{ url_for('showStickersEditor', zipOrLatLon=zipOrLatLon) }}">Get a Sticker!</a>
+
             <form onsubmit="return false;">
                 <div>
-                    <p class="help-block">Copy this URL to share the forecast:</p>
+                    <p class="h4">3) URL for this forecast:</p>
 
                     <div class="form-group">
                         <label for="full_url_text"></label>
@@ -64,13 +63,9 @@
                 </div>
             </form>
 
-            <p class="help-block">Make a fun dynamic widget for your homepage:</p>
-            <a class="btn btn-success" role="button"
-               href="{{ url_for('showStickersEditor', zipOrLatLon=zipOrLatLon) }}">Get a Sticker!</a>
-
             <form onsubmit="return false;">
                 <div>
-                    <p class="help-block">To embed the forecast:</p>
+                    <p class="h4">4) HTML to embed the forecast:</p>
 
                     <div class="form-group">
                         {% set embedUrlAsText = '<iframe src="' + embedUrl + '" width="350" height="300" frameborder="0" style="border:0"></iframe>' %}
@@ -81,6 +76,16 @@
                 </div>
             </form>
 
+        </div>
+
+        <div class="row">
+            <h2>Customize</h2>
+
+            <p>To learn about how colors are chosen and how to customize them:</p>
+
+            <p>
+                <a class="btn btn-default" href="{{ url_for('showHowItWorks') }}" role="button">How it works &raquo;</a>
+            </p>
         </div>
 
         <div class="row">
