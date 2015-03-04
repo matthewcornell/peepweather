@@ -10,8 +10,6 @@ http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
 
 * bugs
-** 'Mercedes, TX -> IndexError: list index out of range
-
 ** ~ bottom line of table flashes darker when popover shows
 
 ** ~ 404 not found: http://127.0.0.1:5000/assets/js/ie10-viewport-bug-workaround.js
@@ -26,7 +24,7 @@ fred.horizon = '-6' #-6=civil twilight, -12=nautical, -18=astronomical
 
 
 * features: to do
-** Forecast > Share: consoliate into tabs or popup? (getting cluttered)
+** Forecast > Share: consolidate into tabs or popup? (getting cluttered)
 
 ** overview/summary :-)
 "Looks like the best times are __, __, and __."
@@ -43,6 +41,10 @@ http://www.wunderground.com/stickers/classic.html?query=Amherst,%20Massachusetts
 
 
 * features: to consider
+** ? add activity popup menu for turn-key parameter settings?
+
+** ~ fog
+
 ** activity-based profiles selectable from list
 e.g., skiing - don't mind coder, windier
 

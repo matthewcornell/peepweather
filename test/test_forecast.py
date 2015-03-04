@@ -270,13 +270,6 @@ class MyTestCase(unittest.TestCase):
             self.assertIsNotNone(hour.clouds)
 
 
-    def testListIndexOutOfBounds(self):
-        elementTree = ET.parse('test/test-list-index-out-of-bounds.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
-        forecast.hoursAsCalendarRows()  # raises IndexError: list index out of range
-        self.fail() # todo see: temporary workaround to testListIndexOutOfBounds() bug
-
-
     def testColumnHeaderRow(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         forecast = Forecast('01002', elementTree=elementTree)
@@ -296,8 +289,8 @@ class MyTestCase(unittest.TestCase):
 
         # test structure
         self.assertEqual(24, len(actCaledarRows))  # one row for each hour of the day
-        for row in actCaledarRows:
-            self.assertEqual(8, len(row))
+        for hourOfDayRow in actCaledarRows:
+            self.assertEqual(8, len(hourOfDayRow))
 
         # flatten the table and compare to hours with no gaps. the first 18 and the last 4 are missing Hours
         hoursWithNoGaps = forecast.hours
@@ -335,8 +328,21 @@ class MyTestCase(unittest.TestCase):
             forecast = Forecast('01002', elementTree=elementTree)
             actCaledarRows = forecast.hoursAsCalendarRows()
             self.assertEqual(24, len(actCaledarRows))
-            for row in actCaledarRows:
-                self.assertEqual(expRowCount, len(row))
+            for hourOfDayRow in actCaledarRows:
+                self.assertEqual(expRowCount, len(hourOfDayRow))
+
+
+    def testHoursAsCalendarRowsIndexOutOfBounds(self):
+        elementTree = ET.parse('test/test-list-index-out-of-bounds.xml')
+        forecast = Forecast('01002', elementTree=elementTree)
+        # used to raise IndexError: list index out of range:
+        actCaledarRows = forecast.hoursAsCalendarRows()
+        
+        # also test for normalized hours:
+        hour0Tz = actCaledarRows[0][0].datetime.tzinfo
+        for hourOfDayRow in actCaledarRows:
+            for hour in hourOfDayRow:
+                self.assertEqual(hour.datetime.tzinfo, hour0Tz)
 
 
     def testIsDaylightInternal(self):

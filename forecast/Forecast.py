@@ -343,49 +343,57 @@ class Forecast:
         
         :return: Format: a list of 24 8-tuples containing day-of-the-week Hours. Conceptually returns a table where 
         there are 24 rows correspond to hours of the day (0 through 23), and 8 columns corresponding to the days of 
-        the week. Each column is the Hour for that combination of hourOfDay and dayOfWeek. (Note that we have 8 
+        the week. Each cell is the Hour for that combination of hourOfDay and dayOfWeek. (Note that we have 8
         columns and not 7 because a 7-day forecast will very likely 'overflow' into an eighth day. Not having 7 is OK 
         because the display is not a weekly calendar; it's a tabular display that's extended into the future as far 
         necessary. If 14 day forecasts become available then we will have 15 columns, and so forth.) To get a table 
         with no missing Hours, we have to interpolate from the most recently seen Hour, similar to what 
         hoursWithGapsFromXml() does.
         """
-        # since we have my hours, which has no gaps, all we need to do is create missing Hours from the start of the 
-        # first day (hour 0) to newest sampled hour - call them the head ones, and create missing Hours from the
-        # oldest sampled hour to the end of that last day (hour 23) - call them the tail
+        # since we have my hours, which have no gaps, we need to: 1) create missing Hours from hour 0 of the
+        # first day to the first sampled hour - call those the head missing hours, and 2) create missing Hours from the
+        # last sampled hour to hour 23 of that last day - call those the tail missing hours
         oneHour = datetime.timedelta(hours=1)
 
-        # create headMissingHours by working backward from the oldest hour to hour 0
-        headMissingHours = []
-        oldestHour = self.hours[0]
+        # normalize my Hours' timezones b/c weather service sometimes changes tz *within* one <time-layout> - go figure
+        # - and this causes problems: see testHoursAsCalendarRowsIndexOutOfBounds(). we normalize by:
+        # 1) adopting the first/closest Hour's TZ as the standard for the calendar, and
+        # 2) work forward through ea. Hour, adding one hour and saving that as a new Hour's new datetime
+        #  
+        closestHour = self.hours[0]
+        normalizedHours = [closestHour]
+        for index, hour in enumerate(self.hours[1:]):
+            newHour = Hour(closestHour.datetime + (oneHour * (index + 1)),
+                           hour.rangeDict, hour.precip, hour.temp, hour.wind, hour.clouds)
+            normalizedHours.append(newHour)
 
-        currDatetime = oldestHour.datetime
-        while currDatetime.hour != 0:
-            currDatetime -= oneHour
+        # create headMissingHours by working backward from the closest hour until the date goes to the previous day
+        headMissingHours = []
+        closestDay = closestHour.datetime.day
+        currDatetime = closestHour.datetime - oneHour
+        while currDatetime.day == closestDay:
             headMissingHours.append(Hour(currDatetime, self.rangeDict))
+            currDatetime -= oneHour
         headMissingHours.sort()
 
-        # create tailMissingHours by working forward from the newest hour to hour 23
+        # create tailMissingHours by working forward from the farthest hour until the date goes to the next day
         tailMissingHours = []
-        newestHour = self.hours[-1]
-
-        currDatetime = newestHour.datetime
-        while currDatetime.hour != 23:
-            currDatetime += oneHour
+        farthestHour = normalizedHours[-1]
+        farthestDay = farthestHour.datetime.day
+        currDatetime = farthestHour.datetime + oneHour
+        while currDatetime.day == farthestDay:
             tailMissingHours.append(Hour(currDatetime, self.rangeDict))
+            currDatetime += oneHour
         tailMissingHours.sort()
 
         # rows
-        allHours = headMissingHours + self.hours + tailMissingHours
-        numDays = 1 + (newestHour.datetime - oldestHour.datetime).days
+        allHours = headMissingHours + normalizedHours + tailMissingHours
+        numDays = 1 + (farthestHour.datetime - closestHour.datetime).days
         calendarRows = []
         for hourNum in range(24):  # calendar row
             hourRow = []
             for dayNum in range(numDays):  # calendar column
-                try:
-                    hour = allHours[hourNum + (24 * dayNum)]
-                    hourRow.append(hour)
-                except: # todo temporary workaround to testListIndexOutOfBounds() bug
-                    pass
+                hour = allHours[hourNum + (24 * dayNum)]
+                hourRow.append(hour)
             calendarRows.append(hourRow)
         return calendarRows
