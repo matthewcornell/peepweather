@@ -8,6 +8,11 @@
 ** change {% set %} to {% with %}
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
+** Make Heroku run non-master Git branch - Stack Overflow
+http://stackoverflow.com/questions/14593538/make-heroku-run-non-master-git-branch/14593582?noredirect=1#comment45877147_14593582
+
+ @MatthewCornell branch-remote/master doesn't have to be the same branch as origin/master, so the suggestion in this answer works well (that is, git push branch-remote branch:master) and you don't have to merge into origin/master. I do wish Heroku would let you specify deploy branch as a config setting, but this isn't a bad alternative. –  Marnen Laibow-Koser Mar 2 at 2:10 
+
 
 * bugs
 ** ~ bottom line of table flashes darker when popover shows
@@ -134,7 +139,7 @@ All Host Records:
 Q: use 'http://' above? DEC: yes, per instructions below
 Q: TTL: 1800? DEC: leave empty
 
-
+ 
 *** v heroku side
 https://dashboard.heroku.com/apps/rc-weather/settings
   Domain Names
