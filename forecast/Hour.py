@@ -191,7 +191,7 @@ class Hour():
         """
         Gives a rating for a particular parameter value using the current ranges.
 
-        :param paramName: one of ['precip', 'temp', 'wind', 'clouds]
+        :param paramName: one of ['precip', 'temp', 'wind', 'clouds']
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """

@@ -1,6 +1,8 @@
 ;; -*- mode: outline -*-
 
 * refactoring
+** >> refactor Location, Source out!
+
 ** titles: write Forecast method to help zipOrLatLon. use in stickers.html too
 
 ** embed code: make it a template like stickers.html

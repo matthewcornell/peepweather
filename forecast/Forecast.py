@@ -1,15 +1,13 @@
 import datetime
-import functools
 import operator
-import urllib.request
-import xml.etree.ElementTree as ET
-import re
 import logging
 
+import functools
 import ephem
 
 from forecast.Hour import Hour
-from forecast import CACHED_ZIP_INFO_TUPLES
+from forecast.Location import Location
+from forecast.WeatherSource import WeatherSource
 
 
 logger = logging.getLogger(__name__)
@@ -28,58 +26,94 @@ class Forecast:
     }
 
 
-    def __init__(self, zipOrLatLon, rangeDict=None, elementTree=None):
+    def __init__(self, location, sourceClass, rangeDict=None):
         """
-        :param zipOrLatLon: location to get the forecast for. either a zip code string or a 2-tuple of latitude and
-        longitude strings. ex: '01002' or ('42.375370', '-72.519249').
+        :param location: location to get the forecast for
         :param rangeDict: optional as in PARAM_RANGE_STEPS_DEFAULT. uses that default if not passed
         :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
         :return:
         """
-        if type(zipOrLatLon) == str:
-            self.zipcode = zipOrLatLon
-            (lat, lon, name) = self.latLonNameForZipcode(zipOrLatLon)
-            self.latLon = (lat, lon)
-            self.name = name
-        elif type(zipOrLatLon) == list and len(zipOrLatLon) == 2 \
-                and type(zipOrLatLon[0]) == str \
-                and type(zipOrLatLon[1]) == str:
-            self.zipcode = None
-            self.latLon = zipOrLatLon
-            self.name = None
+        
+        # todo: remove when instantiating a WeatherSource (handles for me)
+        if not isinstance(location, Location):
+            raise ValueError("location is not a Location instance: {}".format(location))
+
+        if not sourceClass or not issubclass(sourceClass, WeatherSource):
+            raise ValueError("sourceClass is not a WeatherSource subclass: {}".format(sourceClass))
+
+
+        def isIntList(theList):
+            return isinstance(theList, list) and len(theList) != 0 and \
+                   all(map(lambda val: isinstance(val, int), theList))
+
+
+        def isSortedList(theList):
+            return theList == sorted(theList)
+
+
+        if rangeDict:
+            if not isinstance(rangeDict, dict):
+                raise ValueError("rangeDict is not a dict: {}".format(rangeDict))
+            if set(rangeDict.keys()) != {'precip', 'temp', 'wind', 'clouds'}:
+                raise ValueError("rangeDict is missing a parameter key: {}".format(rangeDict))
+            if not all(map(isIntList, rangeDict.values())):
+                raise ValueError("rangeDict values were not all lists of ints: {}".format(rangeDict))
+            if len(rangeDict['precip']) != 2 or len(rangeDict['wind']) != 2 or len(rangeDict['clouds']) != 2:
+                raise ValueError("rangeDict precip, wind, or clouds is not a list of two ints: {}".format(rangeDict))
+            if len(rangeDict['temp']) != 4:
+                raise ValueError("rangeDict temp is not a list of four ints".format(rangeDict))
+            if not all(map(isSortedList, rangeDict.values())):
+                raise ValueError("rangeDict values were not all sorted: {}".format(rangeDict))
+
+            self.rangeDict = rangeDict
         else:
-            raise ValueError("location wasn't a zip code or comma-separated lat/lon: {}".format(zipOrLatLon))
+            self.rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
 
-        if not elementTree:
-            httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
-            logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(
-                self.zipcode, datetime.datetime.now(), self.latLon, self.name, self.weatherDotGovUrl()))
-            elementTree = ET.parse(httpResponse)
-        dwmlElement = elementTree.getroot()
-        if dwmlElement.tag == 'error':
-            errorString = ET.tostring(dwmlElement.find('pre'),
-                                      encoding='unicode')  # "xml", "html" or "text" (default xml)
-            logger.error(
-                "error getting data for zipOrLatLon {}\nurl: \t{}\nerror: {}".format(
-                    zipOrLatLon, self.weatherDotGovUrl(), errorString))
-            raise ValueError(errorString)
+        sourceInstance = sourceClass(location)
+        self.hours = self.hoursWithoutGaps(sourceInstance.makeHours())
+        self.source = sourceInstance
 
-        # no error
-        self.rangeDict = rangeDict or Forecast.PARAM_RANGE_STEPS_DEFAULT
-        self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement, self.rangeDict)
+
+        # todo: old:
+        # if type(zipOrLatLon) == str:
+        # self.zipcode = zipOrLatLon
+        #     (lat, lon, name) = self.latLonNameForZipcode(zipOrLatLon)
+        #     self.latLon = (lat, lon)
+        #     self.name = name
+        # elif type(zipOrLatLon) == list and len(zipOrLatLon) == 2 \
+        #         and type(zipOrLatLon[0]) == str \
+        #         and type(zipOrLatLon[1]) == str:
+        #     self.zipcode = None
+        #     self.latLon = zipOrLatLon
+        #     self.name = None
+        # else:
+        #     raise ValueError("location wasn't a zip code or comma-separated lat/lon: {}".format(zipOrLatLon))
+        #
+        # if not elementTree:
+        #     httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
+        #     logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(
+        #         self.zipcode, datetime.datetime.now(), self.latLon, self.name, self.weatherDotGovUrl()))
+        #     elementTree = ET.parse(httpResponse)
+        # dwmlElement = elementTree.getroot()
+        # if dwmlElement.tag == 'error':
+        #     errorString = ET.tostring(dwmlElement.find('pre'),
+        #                               encoding='unicode')  # "xml", "html" or "text" (default xml)
+        #     logger.error(
+        #         "error getting data for zipOrLatLon {}\nurl: \t{}\nerror: {}".format(
+        #             zipOrLatLon, self.weatherDotGovUrl(), errorString))
+        #     raise ValueError(errorString)
+        #
+        # # no error
+        # self.rangeDict = rangeDict or Forecast.PARAM_RANGE_STEPS_DEFAULT
+        # self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement, self.rangeDict)
 
 
     def __repr__(self):
-        return '{cls}({zipcode})'.format(cls=self.__class__.__name__, zipcode=self.zipcode)
+        return '{cls}({source})'.format(cls=self.__class__.__name__, source=self.source)
 
 
-    def latLonTruncated(self):
-        # truncate to four digits after decimal
-        latStr = self.latLon[0]
-        lonStr = self.latLon[1]
-        latStr = latStr[:latStr.index('.') + 5]
-        lonStr = lonStr[:lonStr.index('.') + 5]
-        return '{}, {}'.format(latStr, lonStr)
+    def hoursWithoutGaps(self, hoursWithGaps):
+        return []   # todo
 
 
     def weatherDotGovUrl(self):
@@ -125,35 +159,6 @@ class Forecast:
         twilight = -12 * ephem.degree
         isDaylight = sun.alt > twilight
         return isDaylight
-
-
-    # ==== zipcode utilities ====
-
-    @staticmethod
-    def latLonNameForZipcode(zipcode):
-        """
-        :param zipcode:
-        :return: looks up and returns information for zipcode as a 3-tuple of the form: (latitude, longitude, name)
-        """
-        for (csv_zipcode, city, state, latitude, longitude) in CACHED_ZIP_INFO_TUPLES:
-            if csv_zipcode == zipcode:
-                return latitude, longitude, city + ", " + state
-        raise ValueError("couldn't find zipcode: {}".format(zipcode))
-
-
-    @classmethod
-    def searchZipcodes(cls, query):
-        """
-        :param query: 
-        :return: a list of 4-tuples containing places matching query. format: (zipcode, name, latitude, longitude),
-        where name is the same as latLonNameForZipcode()
-        """
-        zipNameTuples = []
-        for (csv_zipcode, city, state, latitude, longitude) in CACHED_ZIP_INFO_TUPLES:
-            name = city + ", " + state
-            if re.search(query, name, re.IGNORECASE):
-                zipNameTuples.append((csv_zipcode, name, latitude, longitude))
-        return sorted(zipNameTuples, key=lambda theTuple: theTuple[1])
 
 
     # ==== hoursWithNoGapsFromXml() and friends ====
@@ -359,7 +364,7 @@ class Forecast:
         # - and this causes problems: see testHoursAsCalendarRowsIndexOutOfBounds(). we normalize by:
         # 1) adopting the first/closest Hour's TZ as the standard for the calendar, and
         # 2) work forward through ea. Hour, adding one hour and saving that as a new Hour's new datetime
-        #  
+        #
         closestHour = self.hours[0]
         normalizedHours = [closestHour]
         for index, hour in enumerate(self.hours[1:]):
@@ -397,3 +402,5 @@ class Forecast:
                 hourRow.append(hour)
             calendarRows.append(hourRow)
         return calendarRows
+
+
