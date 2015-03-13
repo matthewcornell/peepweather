@@ -4,7 +4,7 @@ import logging
 from forecast.Hour import Hour
 
 from forecast.Location import Location
-from forecast.WeatherSourceFactory import WeatherSourceFactory
+from forecast.WeatherGovSource import WeatherGovSource
 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Forecast:
     """
-    Computes a forecast based on a zip code using http://www.nws.noaa.gov/ndfd/technical.htm as a sequence of Hours.
+    Computes a forecast using WeatherGovSource and its sequence of Hours.
     """
 
     # default ranges (AKA a 'range dict'). see range-documentation.txt for detail
@@ -23,7 +23,7 @@ class Forecast:
     }
 
 
-    def __init__(self, location, sourceName, rangeDict=None, weatherSourceFactory=WeatherSourceFactory):
+    def __init__(self, location, rangeDict=None):
         """
         :param location: location to get the forecast for
         :param rangeDict: optional as in PARAM_RANGE_STEPS_DEFAULT. uses that default if not passed
@@ -62,8 +62,8 @@ class Forecast:
         else:
             self.rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
 
-        # instantiate the WeatherSource
-        self.source = weatherSourceFactory.makeSource(sourceName, location, self)
+        # instantiate the weather source
+        self.source = WeatherGovSource(location, self)
 
 
     def __repr__(self):
@@ -121,8 +121,8 @@ class Forecast:
         closestHour = self.source.hours[0]
         normalizedHours = [closestHour]
         for index, hour in enumerate(self.source.hours[1:]):
-            newHour = Hour(closestHour.datetime + (oneHour * (index + 1)),
-                           hour.rangeDict, hour.precip, hour.temp, hour.wind, hour.clouds)
+            newHour = Hour(self, closestHour.datetime + (oneHour * (index + 1)),
+                           hour.precip, hour.temp, hour.wind, hour.clouds)
             normalizedHours.append(newHour)
 
         # create headMissingHours by working backward from the closest hour until the date goes to the previous day
@@ -130,7 +130,7 @@ class Forecast:
         closestDay = closestHour.datetime.day
         currDatetime = closestHour.datetime - oneHour
         while currDatetime.day == closestDay:
-            headMissingHours.append(Hour(currDatetime, self.rangeDict))
+            headMissingHours.append(Hour(self, currDatetime))
             currDatetime -= oneHour
         headMissingHours.sort()
 
@@ -140,7 +140,7 @@ class Forecast:
         farthestDay = farthestHour.datetime.day
         currDatetime = farthestHour.datetime + oneHour
         while currDatetime.day == farthestDay:
-            tailMissingHours.append(Hour(currDatetime, self.rangeDict))
+            tailMissingHours.append(Hour(self, currDatetime))
             currDatetime += oneHour
         tailMissingHours.sort()
 

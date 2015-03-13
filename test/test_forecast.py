@@ -1,22 +1,33 @@
 import unittest
 import datetime
 
-from mock import Mock
+from mock import Mock, patch
 
 from forecast.Forecast import Forecast
 from forecast.Location import Location
-from forecast.Hour import Hour
 
 
 class ForecastTestCase(unittest.TestCase):
     """
     """
 
+    def testCalendarHeaderRow_TODO(self):
+        self.fail()
 
-    def testForecastRangeDict(self):
+
+    def testRowHeadingForHour_TODO(self):
+        self.fail()
+
+
+    def testHoursAsCalendarRows_TODO(self):
+        self.fail()
+
+
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testForecastRangeDict(self, MockWeatherGovSource):
         location = Location('42.375370', '-72.519249')
         rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
-        forecast = Forecast(location, 'weather.gov')
+        forecast = Forecast(location)
         self.assertEqual(rangeDict, forecast.rangeDict)
 
         for rangeDict, errorMessage in [
@@ -38,24 +49,21 @@ class ForecastTestCase(unittest.TestCase):
              "rangeDict values were not all sorted"),
         ]:
             with self.assertRaisesRegex(ValueError, errorMessage):
-                Forecast(location, 'weather.gov', rangeDict=rangeDict)
+                Forecast(location, rangeDict=rangeDict)
 
 
-    def testWeatherSourceFactory(self):
+    def testForecastSource(self):
         with self.assertRaisesRegex(ValueError, "location is not a Location instance"):
-            Forecast(None, 'weather.gov')
+            Forecast(None)
 
         location = Location('42.375370', '-72.519249')
-        with self.assertRaisesRegex(ValueError, "sourceName did not name a valid WeatherSource factory"):
-            Forecast(location, 'BAD')
+        with patch ('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
+            MockWeatherGovSource.side_effect = ValueError("error message")
+            with self.assertRaisesRegex(ValueError, "error message"):
+                Forecast(location)
 
-        mockWeatherSourceFactory = Mock()
-        mockWeatherSourceFactory.makeSource.side_effect = ValueError("error message")
-        with self.assertRaisesRegex(ValueError, "error message"):
-            Forecast(location, 'weather.gov', weatherSourceFactory=mockWeatherSourceFactory)
-
-        mockWeatherSource = Mock()
-        mockWeatherSourceFactory = Mock()
-        mockWeatherSourceFactory.makeSource.return_value = mockWeatherSource
-        forecast = Forecast(location, 'weather.gov', weatherSourceFactory=mockWeatherSourceFactory)
-        self.assertEqual(mockWeatherSource, forecast.source)
+        with patch ('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
+            fakeInstance = 'fake instance'
+            MockWeatherGovSource.return_value = fakeInstance
+            forecast = Forecast(location)
+            self.assertEqual(fakeInstance, forecast.source)

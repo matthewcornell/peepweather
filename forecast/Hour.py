@@ -131,8 +131,7 @@ class Hour():
                                    Hour.H_DES_MED_LOW: 'Fair',
                                    Hour.H_DES_MED_HIGH: 'Okay',
                                    Hour.H_DES_HIGH: 'Great'}
-        cssClass = hourDesirabilityToClass[self.desirability()]
-        return cssClass
+        return hourDesirabilityToClass[self.desirability()]
 
 
     def charIconsForParams(self):
@@ -140,7 +139,6 @@ class Hour():
         :return: list of three Weather Icons 'specific icon class' strings, one each for precip, temp, and wind
         respectively, or None if no applicable. 
         """
-        desirability = self.desirability()
         chars = [None, None, None]  # precip, temp, wind
 
         if self.isMissingHour():
@@ -236,10 +234,10 @@ class Hour():
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
-        if paramName not in self.rangeDict.keys():
+        if paramName not in self.forecast.rangeDict.keys():
             raise ValueError("invalid parameter: {}".format(paramName))
 
-        paramStep = self.rangeDict[paramName]
+        paramStep = self.forecast.rangeDict[paramName]
         if len(paramStep) == 2:  # H-M-L
             if value < paramStep[0]:
                 return Hour.P_DES_HIGH
