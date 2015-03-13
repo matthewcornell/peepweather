@@ -1,5 +1,11 @@
 import datetime
+import logging
+import urllib
+
 from forecast.Location import Location
+
+
+logger = logging.getLogger(__name__)
 
 
 class WeatherGovSource(object):
@@ -10,12 +16,13 @@ class WeatherGovSource(object):
     A WeatherSource that uses weather.gov to get forecast data.
     """
 
+
     def __repr__(self):
         return '{cls}({location})'.format(
             cls=self.__class__.__name__, location=self.location.__repr__())
 
 
-    def __init__(self, location, forecast):
+    def __init__(self, location, forecast, elementTree=None):
         """
         :param location: a Location
         :param forecast: a Forecast. passed through to Hour instantiation
@@ -28,49 +35,29 @@ class WeatherGovSource(object):
         if not isinstance(forecast, Forecast):
             raise ValueError("forecast is not a Forecast instance: {}".format(forecast))
 
-        self.hours = self.makeHours(location, forecast)
+        self.hours = self.makeHours(location, forecast, elementTree)
         self.location = location
-        
-        
-        # todo: old from Forecast.__init__():
-        # if type(zipOrLatLon) == str:
-        # self.zipcode = zipOrLatLon
-        # (lat, lon, name) = self.latLonNameForZipcode(zipOrLatLon)
-        # self.latLon = (lat, lon)
-        #     self.name = name
-        # elif type(zipOrLatLon) == list and len(zipOrLatLon) == 2 \
-        #         and type(zipOrLatLon[0]) == str \
-        #         and type(zipOrLatLon[1]) == str:
-        #     self.zipcode = None
-        #     self.latLon = zipOrLatLon
-        #     self.name = None
-        # else:
-        #     raise ValueError("location wasn't a zip code or comma-separated lat/lon: {}".format(zipOrLatLon))
-        #
-        # if not elementTree:
-        #     httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
-        #     logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(
-        #         self.zipcode, datetime.datetime.now(), self.latLon, self.name, self.weatherDotGovUrl()))
-        #     elementTree = ET.parse(httpResponse)
-        # dwmlElement = elementTree.getroot()
-        # if dwmlElement.tag == 'error':
-        #     errorString = ET.tostring(dwmlElement.find('pre'),
-        #                               encoding='unicode')  # "xml", "html" or "text" (default xml)
-        #     logger.error(
-        #         "error getting data for zipOrLatLon {}\nurl: \t{}\nerror: {}".format(
-        #             zipOrLatLon, self.weatherDotGovUrl(), errorString))
-        #     raise ValueError(errorString)
-        #
-        # # no error
-        # self.rangeDict = rangeDict or Forecast.PARAM_RANGE_STEPS_DEFAULT
-        # self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement, self.rangeDict)
 
 
-    def makeHours(self, location, forecast):
+    def makeHours(self, location, forecast, elementTree):
         """
         :return: a list of Hour instances for location
         """
-        raise NotImplementedError()
+        if not elementTree:
+            httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
+            logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(
+                self.zipcode, datetime.datetime.now(), self.latLon, self.name, self.weatherDotGovUrl()))
+            elementTree = ET.parse(httpResponse)
+        dwmlElement = elementTree.getroot()
+        if dwmlElement.tag == 'error':
+            errorString = ET.tostring(dwmlElement.find('pre'),
+                                      encoding='unicode')  # "xml", "html" or "text" (default xml)
+            logger.error(
+                "error getting data for zipOrLatLon {}\nurl: \t{}\nerror: {}".format(
+                    zipOrLatLon, self.weatherDotGovUrl(), errorString))
+            raise ValueError(errorString)
+
+        self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement, self.rangeDict)
 
 
     def weatherDotGovUrl(self):

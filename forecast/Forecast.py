@@ -30,10 +30,6 @@ class Forecast:
         :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
         :return:
         """
-        # check location
-        if not isinstance(location, Location):
-            raise ValueError("location is not a Location instance: {}".format(location))
-
         # check rangeDict
         def isIntList(theList):
             return isinstance(theList, list) and len(theList) != 0 and \

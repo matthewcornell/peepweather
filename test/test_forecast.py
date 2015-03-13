@@ -1,7 +1,6 @@
 import unittest
-import datetime
 
-from mock import Mock, patch
+from mock import patch
 
 from forecast.Forecast import Forecast
 from forecast.Location import Location
@@ -10,17 +9,6 @@ from forecast.Location import Location
 class ForecastTestCase(unittest.TestCase):
     """
     """
-
-    def testCalendarHeaderRow_TODO(self):
-        self.fail()
-
-
-    def testRowHeadingForHour_TODO(self):
-        self.fail()
-
-
-    def testHoursAsCalendarRows_TODO(self):
-        self.fail()
 
 
     @patch('forecast.Forecast.WeatherGovSource')
@@ -57,13 +45,25 @@ class ForecastTestCase(unittest.TestCase):
             Forecast(None)
 
         location = Location('42.375370', '-72.519249')
-        with patch ('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
+        with patch('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
             MockWeatherGovSource.side_effect = ValueError("error message")
             with self.assertRaisesRegex(ValueError, "error message"):
                 Forecast(location)
 
-        with patch ('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
+        with patch('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
             fakeInstance = 'fake instance'
             MockWeatherGovSource.return_value = fakeInstance
             forecast = Forecast(location)
             self.assertEqual(fakeInstance, forecast.source)
+
+
+    def testCalendarHeaderRow_TODO(self):
+        self.fail()
+
+
+    def testRowHeadingForHour_TODO(self):
+        self.fail()
+
+
+    def testHoursAsCalendarRows_TODO(self):
+        self.fail()
