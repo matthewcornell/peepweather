@@ -1,4 +1,4 @@
-from forecast.ZipCodeUtil import latLonNameForZipcode
+from forecast.ZipcodeUtil import latLonNameForZipcode
 
 
 class Location(object):
@@ -14,7 +14,7 @@ class Location(object):
         self.latitude = latitude
         self.longitude = longitude
 
-        
+
     def __repr__(self):
         return '{cls}({latitude}, {longitude})'.format(
             cls=self.__class__.__name__, latitude=self.latitude, longitude=self.longitude)

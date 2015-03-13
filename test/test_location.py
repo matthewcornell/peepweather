@@ -1,11 +1,15 @@
 import unittest
 
 from forecast.Location import Location, ZipCodeLocation
-from forecast.ZipCodeUtil import latLonNameForZipcode
-from forecast.ZipCodeUtil import searchZipcodes
+from forecast.ZipcodeUtil import latLonNameForZipcode
+from forecast.ZipcodeUtil import searchZipcodes
 
 
 class LocationTestCase(unittest.TestCase):
+    """
+    """
+
+
     def testPlainLocation(self):
         latLon = ['42.377651', '-72.50323']
         for latLonPair in [(None, None), (latLon[0], None), (None, latLon[1])]:
@@ -34,7 +38,7 @@ class LocationTestCase(unittest.TestCase):
                                   ('99723', 'Barrow, AK', '71.299525', '-156.74891')]
         zipNameLatLonTuples = searchZipcodes(query)
         self.assertListEqual(expZipNameLatLonTuples, zipNameLatLonTuples)
-        
+
         for expZipNameLatLon in expZipNameLatLonTuples:
             latitude, longitude, name = latLonNameForZipcode(expZipNameLatLon[0])
             self.assertEqual(expZipNameLatLon[2], latitude)

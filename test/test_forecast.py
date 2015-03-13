@@ -1,40 +1,23 @@
-import datetime
 import unittest
+import datetime
 
-from forecast.WeatherSource import WeatherSource
+from mock import Mock
+
 from forecast.Forecast import Forecast
-
-from forecast.Hour import Hour
 from forecast.Location import Location
-
-
-class TestSource(WeatherSource):
-    HOURS = [Hour(datetime.datetime(2015, 1, 13, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, None, None, None),
-             Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 3, 2, -1)]
-
-
-    def makeHours(self):
-        return self.HOURS
+from forecast.Hour import Hour
 
 
 class ForecastTestCase(unittest.TestCase):
-    def testForecastConstructor(self):
+    """
+    """
+
+
+    def testForecastRangeDict(self):
         location = Location('42.375370', '-72.519249')
-        forecast = Forecast(location, TestSource)
-        self.assertTrue(isinstance(forecast.source, TestSource))
-        self.assertEqual(location, forecast.source.location)
-
         rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
-        forecast = Forecast(location, TestSource, rangeDict)
+        forecast = Forecast(location, 'weather.gov')
         self.assertEqual(rangeDict, forecast.rangeDict)
-
-        with self.assertRaisesRegex(ValueError, "location is not a Location instance: None"):
-            Forecast(None, TestSource, rangeDict)
-
-        with self.assertRaisesRegex(ValueError, "sourceClass is not a WeatherSource subclass: None"):
-            Forecast(location, None, rangeDict)
 
         for rangeDict, errorMessage in [
             (1, "rangeDict is not a dict"),
@@ -55,23 +38,24 @@ class ForecastTestCase(unittest.TestCase):
              "rangeDict values were not all sorted"),
         ]:
             with self.assertRaisesRegex(ValueError, errorMessage):
-                Forecast(location, TestSource, rangeDict)
+                Forecast(location, 'weather.gov', rangeDict=rangeDict)
 
 
-    def testForecastHours(self):
+    def testWeatherSourceFactory(self):
+        with self.assertRaisesRegex(ValueError, "location is not a Location instance"):
+            Forecast(None, 'weather.gov')
+
         location = Location('42.375370', '-72.519249')
-        forecast = Forecast(location, TestSource)
-        for expHour, actHour in zip(TestSource.HOURS, forecast.hours):
-            self.assertEqual(expHour, actHour)
+        with self.assertRaisesRegex(ValueError, "sourceName did not name a valid WeatherSource factory"):
+            Forecast(location, 'BAD')
 
+        mockWeatherSourceFactory = Mock()
+        mockWeatherSourceFactory.makeSource.side_effect = ValueError("error message")
+        with self.assertRaisesRegex(ValueError, "error message"):
+            Forecast(location, 'weather.gov', weatherSourceFactory=mockWeatherSourceFactory)
 
-    def testFillsGaps_TODO(self):
-        self.fail()  # todo
-
-
-    def testUSGovWeatherSourceSanityCheck_TODO(self):
-        self.fail()  # todo
-
-
-    def testHourDaylight_TODO(self):
-        self.fail()  # todo move from Forecast to Hour
+        mockWeatherSource = Mock()
+        mockWeatherSourceFactory = Mock()
+        mockWeatherSourceFactory.makeSource.return_value = mockWeatherSource
+        forecast = Forecast(location, 'weather.gov', weatherSourceFactory=mockWeatherSourceFactory)
+        self.assertEqual(mockWeatherSource, forecast.source)

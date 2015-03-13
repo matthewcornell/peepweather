@@ -10,8 +10,8 @@
     {% for hourOfDayIndex in range(8, 21) %}
         {% set hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex] %}
         {% set hour0 = hourOfDayRow[0] %}
-        {% set hourHeaderClass = 'daylight-day-of-week-header' if forecast.isDaylightHour(hour0) else 'nighttime-day-of-week-header' %}
-        {% set hourRowOpacityClass = 'daylight-opacity' if forecast.isDaylightHour(hour0) else 'nighttime-opacity' %}
+        {% set hourHeaderClass = 'daylight-day-of-week-header' if hour0.isDaylight() else 'nighttime-day-of-week-header' %}
+        {% set hourRowOpacityClass = 'daylight-opacity' if hour0.isDaylight() else 'nighttime-opacity' %}
         <tr>
             <th class="{{ hourHeaderClass }}">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
             {% for hour in hourOfDayRow %}

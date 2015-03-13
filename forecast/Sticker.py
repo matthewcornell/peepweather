@@ -43,7 +43,7 @@ class Sticker:
             x, y = 0, self.brandSize[1] + squareSize[1] + (squareSize[1] * rowNum)
             hourOfDayIndex = rowNum + firstHour
             hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex]
-            rowHeadingColor = 'black' if self.forecast.isDaylightHour(hourOfDayRow[0]) else 'gray'  # todo cleaner if css classes
+            rowHeadingColor = 'black' if hourOfDayRow[0].isDaylight() else 'gray'  # todo cleaner if css classes
             rowHeading = self.forecast.rowHeadingForHour(hourOfDayIndex)  # '8', '12p', etc.
             self.drawRowHeading(x, y, rowHeading, rowHeadingColor)
             for hour in hourOfDayRow:  # day of week columns

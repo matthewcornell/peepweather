@@ -1,3 +1,4 @@
+import ephem
 from numbers import Number
 
 from functools import total_ordering
@@ -12,16 +13,16 @@ class Hour():
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
 
 
-    def __init__(self, datetime, rangeDict, precip=None, temp=None, wind=None, clouds=None):
+    def __init__(self, forecast, datetime, precip=None, temp=None, wind=None, clouds=None):
         """
         Pass None for the weather parameters to represent missing data, i.e., a 'missing' hour.
         """
+        self.forecast = forecast
         self.datetime = datetime  # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
         self.precip = precip  # probability of precipitation percent: integers range(101). todo couldn't find docs about range end
         self.temp = temp  # degrees Fahrenheit: integers (negative and possitive)
         self.wind = wind  # MPH: whole numbers (integers from 0 up)
         self.clouds = clouds  # cloud cover percentage
-        self.rangeDict = rangeDict
 
 
     def key(self):
@@ -56,6 +57,46 @@ class Hour():
 
     def isMissingHour(self):
         return self.precip is None or self.temp is None or self.wind is None or self.clouds is None
+
+
+    # ==== daylight methods ====
+
+    def isDaylight(self):
+        """
+        :return: main method that returns True if I am in daylight hours according to isDaylightDatetime()
+        """
+        return Hour.isDaylightDatetime(self.latLon, self.datetime)
+
+
+    @classmethod
+    def isDaylightDatetime(cls, latLon, dt):
+        """
+        internal method
+        :param latLon: 2-tuple of strings
+        :param dt: a Python datetime containing timezone information as returned by Forecast.parseStartValidTime()
+        :return: True if dt is daytime according to my latLon, and False o/w
+        """
+        if not dt.tzinfo:
+            raise ValueError("datetime has no tzinfo: {!r}".format(dt))  # 'naive' datetime
+
+        observer = ephem.Observer()
+        observer.lat = latLon[0]
+        observer.lon = latLon[1]
+
+        # now set observer.date. Note: because forecast times are local to the lat/lon (<time-layout time-coordinate="local" ...">),
+        # and because ephem requires all dates in UTC and does not honor time zones, we need to covert to UTC. do so by
+        # adding the # hours represented by the included datetime timezone
+        tzd = dt.tzinfo.utcoffset(None)
+        e = ephem.Date(dt)
+        tzUtcOffsetHours = (tzd.days * 24) + (tzd.seconds / (60 * 60))
+        eMinusTzdHours = e - (tzUtcOffsetHours * ephem.hour)  # 42017.25 Q: intuition behind subtracting?
+        observer.date = ephem.Date(eMinusTzdHours)
+
+        sun = ephem.Sun()
+        sun.compute(observer)
+        twilight = -12 * ephem.degree
+        isDaylight = sun.alt > twilight
+        return isDaylight
 
 
     # ==== UI methods ====
