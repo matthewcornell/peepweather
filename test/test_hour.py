@@ -109,9 +109,8 @@ class ForecastTestCase(unittest.TestCase):
             Hour.isDaylightDatetime(None, datetime.datetime.now())
 
 
-    def testCharIconsForParams_TODO(self):
-        # mockHour = Mock()   # todo paramDesirabilityForValue()
-        self.fail()
+    # def testCharIconsForParams(self):
+    #     self.fail()
 
 
     @patch('forecast.Forecast.WeatherGovSource')
