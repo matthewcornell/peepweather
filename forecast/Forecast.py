@@ -23,8 +23,8 @@ class Forecast:
 
     def __init__(self, location, rangeDict=None):
         """
+        :param location: Location to get the forecast for
         :param rangeDict: optional as in PARAM_RANGE_STEPS_DEFAULT. uses that default if not passed
-        :param location: location to get the forecast for
         :return:
         """
         # check rangeDict
@@ -64,6 +64,10 @@ class Forecast:
         except AttributeError:
             source = '<no source>'
         return '{cls}({source})'.format(cls=self.__class__.__name__, source=source)
+
+
+    def latLonTruncated(self):
+        return self.source.location.latLonTruncated()
 
 
     # ==== calendar layout methods ====

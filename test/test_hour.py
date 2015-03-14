@@ -109,10 +109,6 @@ class ForecastTestCase(unittest.TestCase):
             Hour.isDaylightDatetime(None, datetime.datetime.now())
 
 
-    def testCssClassForDesirability_TODO(self):
-        self.fail()
-
-
     def testCharIconsForParams_TODO(self):
         # mockHour = Mock()   # todo paramDesirabilityForValue()
         self.fail()
@@ -155,7 +151,7 @@ class ForecastTestCase(unittest.TestCase):
                        (100, Hour.P_DES_LOW),
             ],
         }
-        location = Location('42.375370', '-72.519249')
+        location = Location('01002')
         forecast = Forecast(location)
         for paramName, expParamValRatings in expParamValRatings.items():
             for paramval, expParamRating in expParamValRatings:

@@ -13,7 +13,7 @@ class ForecastTestCase(unittest.TestCase):
 
     @patch('forecast.Forecast.WeatherGovSource')
     def testForecastRangeDict(self, MockWeatherGovSource):
-        location = Location('42.375370', '-72.519249')
+        location = Location('01002')
         rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
         forecast = Forecast(location)
         self.assertEqual(rangeDict, forecast.rangeDict)
@@ -44,7 +44,7 @@ class ForecastTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "location is not a Location instance"):
             Forecast(None)
 
-        location = Location('42.375370', '-72.519249')
+        location = Location('01002')
         with patch('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
             MockWeatherGovSource.side_effect = ValueError("error message")
             with self.assertRaisesRegex(ValueError, "error message"):

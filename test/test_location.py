@@ -1,6 +1,6 @@
 import unittest
 
-from forecast.Location import Location, ZipCodeLocation
+from forecast.Location import Location
 from forecast.ZipCodeUtil import latLonNameForZipcode, searchZipcodes
 
 
@@ -9,21 +9,21 @@ class LocationTestCase(unittest.TestCase):
     """
 
 
-    def testPlainLocation(self):
+    def testLatLonInit(self):
         latLon = ['42.377651', '-72.50323']
         for latLonPair in [(None, None), (latLon[0], None), (None, latLon[1])]:
-            with self.assertRaisesRegex(ValueError, "invalid format for latitude or longitude: None"):
-                Location(*latLonPair)
+            with self.assertRaisesRegex(ValueError, "location wasn't a zip code or comma-separated lat/lon"):
+                Location(latLonPair)
 
-        location = Location(*latLon)
+        location = Location(latLon)
         self.assertEqual(latLon[0], location.latitude)
         self.assertEqual(latLon[1], location.longitude)
         self.assertEqual('42.3776, -72.5032', location.latLonTruncated())
 
 
-    def testZipCodeLocation(self):
+    def testZipInit(self):
         latLonZipName = ['42.377651', '-72.50323', '01002', 'Amherst, MA']
-        location = ZipCodeLocation(latLonZipName[2])
+        location = Location(latLonZipName[2])
         self.assertEqual(latLonZipName[0], location.latitude)
         self.assertEqual(latLonZipName[1], location.longitude)
         self.assertEqual(latLonZipName[2], location.zipcode)

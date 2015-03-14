@@ -3,21 +3,35 @@ from forecast.ZipCodeUtil import latLonNameForZipcode
 
 class Location(object):
     """
-    A latitude/longitude-based location. Concrete class.
+    A latitude/longitude-based location with optional zip code and name information.
     """
 
 
-    def __init__(self, latitude, longitude):
-        if not latitude or not longitude:
-            raise ValueError("invalid format for latitude or longitude: None")
-
-        self.latitude = latitude
-        self.longitude = longitude
+    def __init__(self, zipOrLatLon):
+        """
+        :param zipOrLatLon: location to get the forecast for. either a zip code string or a 2-tuple of latitude and
+        longitude strings. ex: '01002' or ('42.375370', '-72.519249').
+        """
+        if type(zipOrLatLon) == str:
+            (lat, lon, name) = latLonNameForZipcode(zipOrLatLon)
+            self.zipcode = zipOrLatLon
+            self.latitude = lat
+            self.longitude = lon
+            self.name = name
+        elif type(zipOrLatLon) == list and len(zipOrLatLon) == 2 \
+                and type(zipOrLatLon[0]) == str \
+                and type(zipOrLatLon[1]) == str:
+            self.zipcode = None
+            self.latitude = zipOrLatLon[0]
+            self.longitude = zipOrLatLon[1]
+            self.name = None
+        else:
+            raise ValueError("location wasn't a zip code or comma-separated lat/lon: {}".format(zipOrLatLon))
 
 
     def __repr__(self):
-        return '{cls}({latitude}, {longitude})'.format(
-            cls=self.__class__.__name__, latitude=self.latitude, longitude=self.longitude)
+        zipOrLatLon = self.zipcode if self.zipcode else (self.latitude, self.longitude)
+        return '{cls}({zipOrLatLon!r})'.format(cls=self.__class__.__name__, zipOrLatLon=zipOrLatLon)
 
 
     def latLonTruncated(self):
@@ -25,21 +39,3 @@ class Location(object):
         latStr = self.latitude[:self.latitude.index('.') + 5]
         lonStr = self.longitude[:self.longitude.index('.') + 5]
         return '{}, {}'.format(latStr, lonStr)
-
-
-class ZipCodeLocation(Location):
-    """
-    A Location with zip code information. Looked up via ZipCodeUtil (zip code file).
-    """
-
-
-    def __init__(self, zipcode):
-        latitude, longitude, name = latLonNameForZipcode(zipcode)
-        super().__init__(latitude, longitude)
-        self.zipcode = zipcode
-        self.name = name
-
-
-    def __repr__(self):
-        return '{cls}({zipcode})'.format(
-            cls=self.__class__.__name__, zipcode=self.zipcode)

@@ -1,10 +1,14 @@
 import json
 import logging
 import urllib.parse
-
 from io import BytesIO
-from flask import render_template, request, redirect, url_for, make_response, flash
 import re
+
+from flask import render_template, request, redirect, url_for, make_response, flash
+
+from forecast.Location import Location
+
+from forecast.ZipCodeUtil import searchZipcodes
 
 from forecast.Forecast import Forecast
 from forecast.Sticker import Sticker
@@ -41,18 +45,23 @@ def showForecast(zipOrLatLon):
       there are four, pipe-delimited, one for each parameter: ?p=v1|v2&t=v1|v2|v3|v4&w=v1|v2&c=v1|v2
     """
     try:
-        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        # make the rangeDict
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
         rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
-        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
-            'p') else None  # check for at least one
+        rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get('p') \
+            else None  # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
-        template = "forecast-list.html" if request.args.get('list') else "forecast.html"
-        forecast = Forecast(zipOrLatLonList, rangeDict)
+
+        # make the Forecast
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        forecast = Forecast(Location(zipOrLatLonList), rangeDict)
+
+        # render the forecast with other args
         hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
         fullUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
         embedUrl = fullUrlForEndpoint('embedForecast', zipOrLatLon, queryParamsDict)
+        template = "forecast-list.html" if request.args.get('list') else "forecast.html"
         return render_template(template, forecast=forecast, hideIcons=hideIcons,
                                fullUrl=fullUrl, embedUrl=embedUrl,
                                zipOrLatLon=zipOrLatLon)
@@ -133,14 +142,14 @@ def generateStickerImage(zipOrLatLon):
 
 @app.route('/search/<query>')
 def searchForZip(query):
-    zipNameLatLonTuples = Forecast.searchZipcodes(query)
+    zipNameLatLonTuples = searchZipcodes(query)
     if not zipNameLatLonTuples:
         return render_template("message.html", title="No search results for ‘{}’".format(query),
                                # message="The search feature is primitive, so try a single word or part of one, " +
-                               #         "such as 'york', instead of new york, new york. Also, spaces " +
+                               # "such as 'york', instead of new york, new york. Also, spaces " +
                                #         "and commas cause trouble, as do state names/abbreviations", isError=False)
                                message="Please enter a town name or zip code or a comma-separated latitude and "
-                               "longitude.", isError=False)
+                                       "longitude.", isError=False)
     else:
         return render_template("search.html", query=query, zipNameLatLonTuples=zipNameLatLonTuples)
 
@@ -183,7 +192,7 @@ def searchLocationsJson(query):
     Called by the typeahead library, searches for locations containing <query> and returns a JSON list of matching
     names in the format returned by searchZipcodes(), i.e., "<city>, <state abbrev>"
     """
-    zipNameLatLonTuples = Forecast.searchZipcodes(query)
+    zipNameLatLonTuples = searchZipcodes(query)
     locZipResults = set()
     for tup in zipNameLatLonTuples:  # (zipcode, name, latitude, longitude)
         locZipResults.add(tup[1])
@@ -216,7 +225,7 @@ def do_location_submit():
         return do_location_search_submit(nameOrZipOrLatLon)
 
     # use a pipe instead of a comma for lat/long delimiting b/c pipes are legal URI chars, whereas commas get encoded as %2C
-    nameOrZipOrLatLon = re.sub(r'\s', '', nameOrZipOrLatLon)\
+    nameOrZipOrLatLon = re.sub(r'\s', '', nameOrZipOrLatLon) \
         .replace(',', '|')
     return redirect(url_for('showForecast', zipOrLatLon=nameOrZipOrLatLon))
 
@@ -232,7 +241,7 @@ def do_location_search_submit(inputName):
        unpack to find the corresponding zip code
     """
     inputName = re.sub(r'/', '', inputName) if inputName else None  # o/w gets treated like a URI
-    matchTuples = Forecast.searchZipcodes(inputName)  # (zipcode, name, latitude, longitude)
+    matchTuples = searchZipcodes(inputName)  # (zipcode, name, latitude, longitude)
     if len(inputName) > 4 and inputName[-4:-2] == ', ':
         # they entered/selected a name that matches one or more, so pick the first one (some names have > 1 zip codes, e.g., 'Chicago, IL')
         zipcode, name, latitude, longitude = matchTuples[0]
@@ -274,7 +283,7 @@ def do_edit_parameters_submit():
         except Exception as ex:
             # todo flash error
             # return render_template("message.html", title="Error setting ranges",
-            #                        message="Some settings were invalid: {}".format(ex), isError=True)
+            # message="Some settings were invalid: {}".format(ex), isError=True)
             flash("Some parameters were invalid: {}".format(ex), 'error')
             return redirect(url_for('editSettings', referrer=referrer))
 
@@ -290,7 +299,7 @@ def rangesDictFromEditFormValues(requestVals):
     temp_v2_value = requestVals.get('temp_v2_value')
     temp_v3_value = requestVals.get('temp_v3_value')
     temp_v4_value = requestVals.get('temp_v4_value')
-    
+
     pRangeStrs = [precip_v1_value, precip_v2_value]
     tRangeStrs = [temp_v1_value, temp_v2_value, temp_v3_value, temp_v4_value]
     wRangeInts = [wind_v1_value, wind_v2_value]
