@@ -27,25 +27,20 @@ class WeatherGovSource(object):
             cls=self.__class__.__name__, location=self.location.__repr__())
 
 
-    def __init__(self, location, forecast, elementTree=None):
+    def __init__(self, location, rangeDict, elementTree=None):
         """
         :param location: a Location
-        :param forecast: a Forecast. passed through to Hour instantiation
+        :param rangeDict: optional as in PARAM_RANGE_STEPS_DEFAULT. uses that default if not passed
         :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
         """
         if not isinstance(location, Location):
             raise ValueError("location is not a Location instance: {}".format(location))
 
-        from forecast.Forecast import Forecast  # smelly avoidance of recursive import
-
-        if not isinstance(forecast, Forecast):
-            raise ValueError("forecast is not a Forecast instance: {}".format(forecast))
-
         self.location = location
-        self.hours = self.makeHours(forecast, elementTree)
+        self.hours = self.makeHours(elementTree, rangeDict)
 
 
-    def makeHours(self, forecast, elementTree):
+    def makeHours(self, elementTree, rangeDict):
         """
         :return: a list of Hour instances for location
         """
@@ -64,7 +59,7 @@ class WeatherGovSource(object):
                     self.location, self.weatherDotGovUrl(), errorString))
             raise ValueError(errorString)
 
-        self.hours = self.hoursWithNoGapsFromXml(dwmlElement, forecast)
+        return self.hoursWithNoGapsFromXml(dwmlElement, rangeDict)
 
 
     def weatherDotGovUrl(self):
@@ -86,7 +81,7 @@ class WeatherGovSource(object):
 
 
     @classmethod
-    def hoursWithNoGapsFromXml(cls, dwmlElement, forecast):
+    def hoursWithNoGapsFromXml(cls, dwmlElement, rangeDict):
         """
         Takes the output from hoursWithGapsFromXml() and interpolates missing hoursWithGaps to create a finished list
         of Hours that starts at the first hour in hoursWithGapsFromXml() and finishes with the last.
@@ -95,7 +90,7 @@ class WeatherGovSource(object):
         where all even hoursWithGaps are represented 
         """
         oneHour = datetime.timedelta(hours=1)
-        hoursWithGaps = WeatherGovSource.hoursWithGapsFromXml(dwmlElement, forecast)
+        hoursWithGaps = WeatherGovSource.hoursWithGapsFromXml(dwmlElement, rangeDict)
         oldestHour = hoursWithGaps[0]
         newestHour = hoursWithGaps[-1]
 
@@ -105,7 +100,7 @@ class WeatherGovSource(object):
         while currDatetime <= newestHour.datetime:
             foundHour = WeatherGovSource.findHourForDatetimeFromHoursWithGaps(currDatetime, hoursWithGaps)
             if not foundHour:
-                foundHour = Hour(forecast, currDatetime, prevFoundHour.precip,
+                foundHour = Hour(currDatetime, rangeDict, prevFoundHour.precip,
                                  prevFoundHour.temp, prevFoundHour.wind, prevFoundHour.clouds)
             hoursWithNoGaps.append(foundHour)
             prevFoundHour = foundHour
@@ -129,7 +124,7 @@ class WeatherGovSource(object):
 
 
     @classmethod
-    def hoursWithGapsFromXml(cls, dwmlElement, forecast):
+    def hoursWithGapsFromXml(cls, dwmlElement, rangeDict):
         """
         :param dwmlElement:
         :return: a sequence of Hour instances corresponding to the passed DWML document element. 
@@ -141,7 +136,7 @@ class WeatherGovSource(object):
         # 1) build empty Hours with no data based on min and max dates in layoutKeysToStartValidTimes
         timeLayoutDict = cls.timeLayoutDictFromXml(dwmlElement)
         uniqueDatetimes = set(functools.reduce(operator.add, timeLayoutDict.values()))
-        hours = list(map(lambda dt: Hour(forecast, dt), sorted(uniqueDatetimes)))
+        hours = list(map(lambda dt: Hour(dt, rangeDict), sorted(uniqueDatetimes)))
 
         # 2) iterate over weather data and plug into corresponding hour. NB: will leave gaps, i.e., some Hours will not
         # have all three values set

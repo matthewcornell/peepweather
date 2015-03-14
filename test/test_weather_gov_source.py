@@ -3,7 +3,7 @@ import unittest
 import datetime
 import operator
 
-from mock import patch
+from unittest.mock import patch
 import functools
 
 from forecast.WeatherGovSource import WeatherGovSource
@@ -22,8 +22,7 @@ class WeatherGovSourceTestCase(unittest.TestCase):
         expErrorXml = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
         with self.assertRaisesRegex(ValueError, expErrorXml):
             location = Location('42.375370', '-72.519249')
-            forecast = Forecast(location)
-            WeatherGovSource(location, forecast, elementTree=elementTree)
+            WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
 
 
     def testXmlToTimeLayoutDict(self):
@@ -83,8 +82,7 @@ class WeatherGovSourceTestCase(unittest.TestCase):
     def testHourInstanceVariablesInclCloudiness(self):
         elementTree = ET.parse('test/test-forecast-data-sky-cover.xml')
         location = Location('42.375370', '-72.519249')
-        forecast = Forecast(location)
-        wgSource = WeatherGovSource(location, forecast, elementTree=elementTree)
+        wgSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
         expCloudsDatetime = [
             (100, datetime.datetime(2015, 1, 27, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
             (99, datetime.datetime(2015, 1, 27, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
@@ -192,40 +190,43 @@ class WeatherGovSourceTestCase(unittest.TestCase):
             self.assertIsNotNone(hour.clouds)
 
 
-    def testCalendarHeaderRow(self):
-        print('xx')
-        with patch('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
-            location = Location('42.375370', '-72.519249')
-            forecast = Forecast(location)   # using MockWeatherGovSource at this point
-            elementTree = ET.parse('test/test-forecast-data.xml')
-            testWGSource = WeatherGovSource(location, forecast, elementTree=elementTree)
-            MockWeatherGovSource.hours = testWGSource.hours
-            calendarHeader = forecast.calendarHeaderRow()
-            self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testCalendarHeaderRow(self, MockWeatherGovSource):
+        location = Location('42.375370', '-72.519249')
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        testWGSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
+        MockWeatherGovSource.return_value = testWGSource
+        calendarHeader = Forecast(location).calendarHeaderRow()
+        self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
 
+        MockWeatherGovSource.reset_mock()
         elementTree = ET.parse('test/test-forecast-only-seven-days.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
-        calendarHeader = forecast.calendarHeaderRow()
+        testWGSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
+        MockWeatherGovSource.return_value = testWGSource
+        calendarHeader = Forecast(location).calendarHeaderRow()
         self.assertEqual(['S', 'S', 'M', 'T', 'W', 'T', 'F'], calendarHeader)
 
 
-    def testHoursAsCalendarRows(self):
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testHoursAsCalendarRows(self, MockWeatherGovSource):
+        location = Location('42.375370', '-72.519249')
         elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
-        actCaledarRows = forecast.hoursAsCalendarRows()
+        testWGSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
+        MockWeatherGovSource.return_value = testWGSource
+        actCalendarRows = Forecast(location).hoursAsCalendarRows()
 
         # test structure
-        self.assertEqual(24, len(actCaledarRows))  # one row for each hour of the day
-        for hourOfDayRow in actCaledarRows:
+        self.assertEqual(24, len(actCalendarRows))  # one row for each hour of the day
+        for hourOfDayRow in actCalendarRows:
             self.assertEqual(8, len(hourOfDayRow))
 
         # flatten the table and compare to hours with no gaps. the first 18 and the last 4 are missing Hours
-        hoursWithNoGaps = forecast.hours
-        flattenedCaledarHours = list(functools.reduce(operator.add, actCaledarRows))
-        flattenedCaledarHours.sort()
-        self.assertEqual(hoursWithNoGaps, flattenedCaledarHours[19:-4])
-        self.assertTrue(all(map(lambda hour: hour.precip is None, flattenedCaledarHours[:19])))
-        self.assertTrue(all(map(lambda hour: hour.precip is None, flattenedCaledarHours[-4:])))
+        hoursWithNoGaps = testWGSource.hours
+        flattenedCalendarsHours = list(functools.reduce(operator.add, actCalendarRows))
+        flattenedCalendarsHours.sort()
+        self.assertEqual(hoursWithNoGaps, flattenedCalendarsHours[19:-4])
+        self.assertTrue(all(map(lambda hour: hour.precip is None, flattenedCalendarsHours[:19])))
+        self.assertTrue(all(map(lambda hour: hour.precip is None, flattenedCalendarsHours[-4:])))
 
         # spot check a few rows
         expRow1 = [
@@ -245,25 +246,33 @@ class WeatherGovSourceTestCase(unittest.TestCase):
                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 28, 4, -1),
             Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 18, 3, -1)]
-        self.assertEqual(expRow1, actCaledarRows[1])
+        self.assertEqual(expRow1, actCalendarRows[1])
 
 
-    def testHoursAsCalendarRowsStructure(self):
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testHoursAsCalendarRowsStructure(self, MockWeatherGovSource):
         fileRowCount = {'test/test-forecast-data.xml': 8, 'test/test-forecast-only-seven-days.xml': 7}
         for xmlFileName, expRowCount in fileRowCount.items():
+            location = Location('42.375370', '-72.519249')
             elementTree = ET.parse(xmlFileName)
-            forecast = Forecast('01002', elementTree=elementTree)
-            actCaledarRows = forecast.hoursAsCalendarRows()
+            testWGSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
+            MockWeatherGovSource.return_value = testWGSource
+
+            actCaledarRows = Forecast(location).hoursAsCalendarRows()
             self.assertEqual(24, len(actCaledarRows))
             for hourOfDayRow in actCaledarRows:
                 self.assertEqual(expRowCount, len(hourOfDayRow))
 
 
-    def testHoursAsCalendarRowsIndexOutOfBounds(self):
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testHoursAsCalendarRowsIndexOutOfBounds(self, MockWeatherGovSource):
+        location = Location('42.375370', '-72.519249')
         elementTree = ET.parse('test/test-list-index-out-of-bounds.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
+        testWGSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
+        MockWeatherGovSource.return_value = testWGSource
+
         # used to raise IndexError: list index out of range:
-        actCaledarRows = forecast.hoursAsCalendarRows()
+        actCaledarRows = Forecast(location).hoursAsCalendarRows()
 
         # also test for normalized hours:
         hour0Tz = actCaledarRows[0][0].datetime.tzinfo

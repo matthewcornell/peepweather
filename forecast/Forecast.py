@@ -23,9 +23,8 @@ class Forecast:
 
     def __init__(self, location, rangeDict=None):
         """
-        :param location: location to get the forecast for
         :param rangeDict: optional as in PARAM_RANGE_STEPS_DEFAULT. uses that default if not passed
-        :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
+        :param location: location to get the forecast for
         :return:
         """
         # check rangeDict
@@ -56,7 +55,7 @@ class Forecast:
         else:
             self.rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
 
-        self.source = WeatherGovSource(location, self)
+        self.source = WeatherGovSource(location, rangeDict)
 
 
     def __repr__(self):
@@ -70,7 +69,6 @@ class Forecast:
     # ==== calendar layout methods ====
 
     def calendarHeaderRow(self):
-        print('yy', self, self.source.hours)
         dayOfWeekNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
         oldestHour = self.source.hours[0]
         newestHour = self.source.hours[-1]
@@ -119,7 +117,7 @@ class Forecast:
         closestHour = self.source.hours[0]
         normalizedHours = [closestHour]
         for index, hour in enumerate(self.source.hours[1:]):
-            newHour = Hour(self, closestHour.datetime + (oneHour * (index + 1)),
+            newHour = Hour(closestHour.datetime + (oneHour * (index + 1)), self.rangeDict,
                            hour.precip, hour.temp, hour.wind, hour.clouds)
             normalizedHours.append(newHour)
 
@@ -128,7 +126,7 @@ class Forecast:
         closestDay = closestHour.datetime.day
         currDatetime = closestHour.datetime - oneHour
         while currDatetime.day == closestDay:
-            headMissingHours.append(Hour(self, currDatetime))
+            headMissingHours.append(Hour(currDatetime, self.rangeDict))
             currDatetime -= oneHour
         headMissingHours.sort()
 
@@ -138,7 +136,7 @@ class Forecast:
         farthestDay = farthestHour.datetime.day
         currDatetime = farthestHour.datetime + oneHour
         while currDatetime.day == farthestDay:
-            tailMissingHours.append(Hour(self, currDatetime))
+            tailMissingHours.append(Hour(currDatetime, self.rangeDict))
             currDatetime += oneHour
         tailMissingHours.sort()
 

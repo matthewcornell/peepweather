@@ -1,7 +1,7 @@
 import unittest
 import datetime
 
-from mock import patch
+from unittest.mock import patch
 
 from forecast.Location import Location
 from forecast.Forecast import Forecast
@@ -159,7 +159,7 @@ class ForecastTestCase(unittest.TestCase):
         forecast = Forecast(location)
         for paramName, expParamValRatings in expParamValRatings.items():
             for paramval, expParamRating in expParamValRatings:
-                hour = Hour(forecast, None)
+                hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT)   # todo xx
                 self.assertEqual(expParamRating, hour.paramDesirabilityForValue(paramName, paramval))
 
 
@@ -191,10 +191,9 @@ class ForecastTestCase(unittest.TestCase):
                           (20, 65, 0): Hour.H_DES_MED_HIGH,  # precip med, temp high, wind high
                           (0, 65, 0): Hour.H_DES_HIGH,  # all high
         }
-        location = Location('42.375370', '-72.519249')
-        forecast = Forecast(location)
         for precipTempWindTuple, expHourDes in paramToHourDes.items():
-            hour = Hour(forecast, None, precipTempWindTuple[0], precipTempWindTuple[1],
+            hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT,   # todo xx
+                        precipTempWindTuple[0], precipTempWindTuple[1],
                         precipTempWindTuple[2], 0)  # include no-op cloud so that Hour.isMissingHour() won't return None
             self.assertEqual(expHourDes, hour.desirability())
 

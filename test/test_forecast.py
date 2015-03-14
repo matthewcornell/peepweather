@@ -1,6 +1,6 @@
 import unittest
 
-from mock import patch
+from unittest.mock import patch
 
 from forecast.Forecast import Forecast
 from forecast.Location import Location
@@ -57,15 +57,10 @@ class ForecastTestCase(unittest.TestCase):
             self.assertEqual(fakeInstance, forecast.source)
 
 
-    def testCalendarHeaderRow_TODO(self):
-        # todo see testColumnHeaderRow()
-        self.fail()
+    # @unittest.skip("tested by WeatherGovSourceTestCase, which has realistic data")
+    # def testCalendarHeaderRow(self):
+    #     pass
 
-
-    def testRowHeadingForHour_TODO(self):
-        self.fail()
-
-
-    def testHoursAsCalendarRows_TODO(self):
-        # todo see testHoursAsCalendarRows(), testHoursAsCalendarRowsStructure(), testHoursAsCalendarRowsIndexOutOfBounds()
-        self.fail()
+    # @unittest.skip("tested by WeatherGovSourceTestCase, which has realistic data")
+    # def testHoursAsCalendarRows(self):
+    #     pass

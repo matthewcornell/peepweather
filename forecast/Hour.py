@@ -13,12 +13,12 @@ class Hour():
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
 
 
-    def __init__(self, forecast, datetime, precip=None, temp=None, wind=None, clouds=None):
+    def __init__(self, datetime, rangeDict, precip=None, temp=None, wind=None, clouds=None):
         """
         Pass None for the weather parameters to represent missing data, i.e., a 'missing' hour.
         """
-        self.forecast = forecast
         self.datetime = datetime  # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
+        self.rangeDict = rangeDict
         self.precip = precip  # probability of precipitation percent: integers range(101). todo couldn't find docs about range end
         self.temp = temp  # degrees Fahrenheit: integers (negative and possitive)
         self.wind = wind  # MPH: whole numbers (integers from 0 up)
@@ -204,8 +204,8 @@ class Hour():
         """
         Gives an overall rating for a set of parameter desirability counts.
 
-        :param paramDesireTuple: a 3-tuple of counts for these param desirabilities, in order:
-            (Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH). NB: Should only include precip, temp, and wind, and
+        :param hDesLowCount, hDesMedCount, hDesHighCount: counts for these param desirabilities, in order:
+            Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH. NB: Should only include precip, temp, and wind, and
             *not* clouds
         :return: one of H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH
         """
@@ -234,10 +234,10 @@ class Hour():
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
-        if paramName not in self.forecast.rangeDict.keys():
+        if paramName not in self.rangeDict.keys():
             raise ValueError("invalid parameter: {}".format(paramName))
 
-        paramStep = self.forecast.rangeDict[paramName]
+        paramStep = self.rangeDict[paramName]
         if len(paramStep) == 2:  # H-M-L
             if value < paramStep[0]:
                 return Hour.P_DES_HIGH
