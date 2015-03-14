@@ -1,15 +1,13 @@
 import json
 import logging
 import urllib.parse
+
 from io import BytesIO
 import re
-
 from flask import render_template, request, redirect, url_for, make_response, flash
 
 from forecast.Location import Location
-
 from forecast.ZipCodeUtil import searchZipcodes
-
 from forecast.Forecast import Forecast
 from forecast.Sticker import Sticker
 from app import app
@@ -18,7 +16,7 @@ from app import app
 logger = logging.getLogger(__name__)
 
 
-# ==== cookies ====
+# ==== cookie defs ====
 
 HIDE_ICONS_COOKIE_NAME = 'display_preferences'
 RANGES_COOKIE_NAME = 'parameter_ranges'
@@ -56,7 +54,7 @@ def showForecast(zipOrLatLon):
         zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(Location(zipOrLatLonList), rangeDict)
 
-        # render the forecast with other args
+        # render the forecast
         hideIcons = request.cookies.get(HIDE_ICONS_COOKIE_NAME)
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
         fullUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
@@ -76,12 +74,16 @@ def embedForecast(zipOrLatLon):
     URL query parameters: same as showForecast(), but not list
     """
     try:
-        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        # make the rangeDict
         rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
             'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
+
+        # make the Forecast
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
         forecast = Forecast(Location(zipOrLatLonList), rangeDict)
 
+        # render the forecast
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
         fullUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
         return render_template("embedded-forecast.html", forecast=forecast, fullUrl=fullUrl)
@@ -96,22 +98,29 @@ def showStickersEditor(zipOrLatLon):
     URL query parameters: same as showForecast(), but not list
     """
     try:
-        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        # make the rangeDict
         rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
         rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
         rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
             'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
-        forecast = Forecast(Location(zipOrLatLonList), rangeDict)
-        image = Sticker(forecast).image
 
+        # make the Forecast
+        zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+        forecast = Forecast(Location(zipOrLatLonList), rangeDict)
+
+        # construct the sticker image
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
-        forecastUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
         stickerImageUrl = fullUrlForEndpoint('generateStickerImage', zipOrLatLon, queryParamsDict)
+        image = Sticker(forecast).image
         imageWidth = image.size[0]
+
+        # render the forecast
+        forecastUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
         stickerCode = render_template("sticker-code.html", forecast=forecast,
                                       forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl,
                                       imageWidth=imageWidth)
+
         return render_template("stickers.html", forecast=forecast,
                                forecastUrl=forecastUrl, stickerImageUrl=stickerImageUrl,
                                imageWidth=imageWidth, stickerCode=stickerCode)
@@ -125,13 +134,18 @@ def generateStickerImage(zipOrLatLon):
     :param zipOrLatLon:
     URL query parameters: same as showForecast(), but not list
     """
-    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
+    # make the rangeDict
     rangesDictJson = request.cookies.get(RANGES_COOKIE_NAME)
     rangeDictFromCookie = json.loads(rangesDictJson) if rangesDictJson else None
     rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
         'p') else None  # check for at least one
     rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
+
+    # make the Forecast
+    zipOrLatLonList = zipOrLatLon.split('|') if '|' in zipOrLatLon else zipOrLatLon
     forecast = Forecast(Location(zipOrLatLonList), rangeDict)
+
+    # construct the sticker image and return it as a png
     image = Sticker(forecast).image
     bytesIO = BytesIO()
     image.save(bytesIO, format="png")
@@ -145,9 +159,6 @@ def searchForZip(query):
     zipNameLatLonTuples = searchZipcodes(query)
     if not zipNameLatLonTuples:
         return render_template("message.html", title="No search results for ‘{}’".format(query),
-                               # message="The search feature is primitive, so try a single word or part of one, " +
-                               # "such as 'york', instead of new york, new york. Also, spaces " +
-                               #         "and commas cause trouble, as do state names/abbreviations", isError=False)
                                message="Please enter a town name or zip code or a comma-separated latitude and "
                                        "longitude.", isError=False)
     else:
@@ -177,6 +188,8 @@ def showHowItWorks():
     return render_template("how-it-works.html")
 
 
+# ==== URL utils ====
+
 def fullUrlForEndpoint(endpoint, zipOrLatLon, queryParamsDict):
     url = urllib.parse.unquote(
         url_for(endpoint, zipOrLatLon=zipOrLatLon, _external=True, p=queryParamsDict['p'],
@@ -202,7 +215,7 @@ def searchLocationsJson(query):
     return response
 
 
-# ==== forms ====
+# ==== form handling ====
 
 @app.route('/location_submit', methods=['POST'])
 def do_location_submit():
@@ -288,6 +301,8 @@ def do_edit_parameters_submit():
             return redirect(url_for('editSettings', referrer=referrer))
 
 
+# ==== rangeDict utils ====
+
 def rangesDictFromEditFormValues(requestVals):
     wind_v1_value = requestVals.get('wind_v1_value')
     wind_v2_value = requestVals.get('wind_v2_value')
@@ -326,8 +341,10 @@ def rangesDictFromRangeStrs(pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs):
         raise ValueError("Not all parameters had correct # of items: precip: {}, temp: {}, wind: {}, clouds: {}".format(
             pRangeStrs, tRangeStrs, wRangeStrs, cRangeStrs))
 
+
     def intsForStrs(intStrs):
         return list(map(int, intStrs))
+
 
     try:
         pRangeInts, tRangeInts, wRangeInts, cRangeInts = list(

@@ -270,7 +270,7 @@ class WeatherGovSourceTestCase(unittest.TestCase):
         testWGSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
         MockWeatherGovSource.return_value = testWGSource
 
-        # used to raise IndexError: list index out of range:
+        # this used to raise IndexError: list index out of range:
         actCaledarRows = Forecast(location).hoursAsCalendarRows()
 
         # also test for normalized hours:

@@ -1,8 +1,6 @@
 ;; -*- mode: outline -*-
 
 * refactoring
-** move timezone normalization from Forecast.hoursAsCalendarRows() to WeatherGovSource.makeHours()
-
 ** titles: write Forecast method to help zipOrLatLon. use in stickers.html too
 
 ** embed code: make it a template like stickers.html
@@ -10,13 +8,10 @@
 ** change {% set %} to {% with %}
 http://flask.pocoo.org/docs/0.10/patterns/flashing/
 
-** Make Heroku run non-master Git branch - Stack Overflow
-http://stackoverflow.com/questions/14593538/make-heroku-run-non-master-git-branch/14593582?noredirect=1#comment45877147_14593582
-
- @MatthewCornell branch-remote/master doesn't have to be the same branch as origin/master, so the suggestion in this answer works well (that is, git push branch-remote branch:master) and you don't have to merge into origin/master. I do wish Heroku would let you specify deploy branch as a config setting, but this isn't a bad alternative. –  Marnen Laibow-Koser Mar 2 at 2:10 
-
 
 * bugs
+** ~ sticker title: center based on image width - sometimes has 7 or 8 columns
+
 ** ~ make screen shot on main page clickable :-)
 
 ** ~ bottom line of table flashes darker when popover shows
@@ -296,3 +291,11 @@ inline frame (floating frame) .. Technically, an iframe element is a text-level 
 <iframe src="news.html" width="40%" height="80" align="right"> <p>See our <a href="news.html">newsflashes</a>.</p> </iframe>
 
 
+* REF: Make Heroku run non-master Git branch - Stack Overflow
+http://stackoverflow.com/questions/14593538/make-heroku-run-non-master-git-branch/14593582?noredirect=1#comment45877147_14593582
+
+@MatthewCornell branch-remote/master doesn't have to be the same branch as origin/master, so the suggestion in this answer works well (that is, git push branch-remote branch:master) and you don't have to merge into origin/master. I do wish Heroku would let you specify deploy branch as a config setting, but this isn't a bad alternative. –  Marnen Laibow-Koser Mar 2 at 2:10 
+
+
+worked:
+$ git push staging source_refactor:master

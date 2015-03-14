@@ -59,7 +59,21 @@ class WeatherGovSource(object):
                     self.location, self.weatherDotGovUrl(), errorString))
             raise ValueError(errorString)
 
-        return self.hoursWithNoGapsFromXml(dwmlElement, rangeDict)
+        hoursNoGaps = self.hoursWithNoGapsFromXml(dwmlElement, rangeDict)
+        
+        # normalize my Hours' timezones b/c weather service sometimes changes tz *within* one <time-layout> - go figure
+        # - and this causes problems: see testHoursAsCalendarRowsIndexOutOfBounds(). we normalize by:
+        # 1) adopting the first/closest Hour's TZ as the standard for the calendar, and
+        # 2) work forward through ea. Hour, adding one hour and saving that as a new Hour's new datetime
+        oneHour = datetime.timedelta(hours=1)
+        closestHour = hoursNoGaps[0]
+        normalizedHours = [closestHour]
+        for index, hour in enumerate(hoursNoGaps[1:]):
+            newHour = Hour(closestHour.datetime + (oneHour * (index + 1)), hour.precip, hour.temp, hour.wind,
+                           hour.clouds)
+            normalizedHours.append(newHour)
+
+        return normalizedHours
 
 
     def weatherDotGovUrl(self):
@@ -78,7 +92,6 @@ class WeatherGovSource(object):
 
 
     # ==== hoursWithNoGapsFromXml() and friends ====
-
 
     @classmethod
     def hoursWithNoGapsFromXml(cls, dwmlElement, rangeDict):

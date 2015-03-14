@@ -111,23 +111,11 @@ class Forecast:
         # since we have my hours, which have no gaps, we need to: 1) create missing Hours from hour 0 of the
         # first day to the first sampled hour - call those the head missing hours, and 2) create missing Hours from the
         # last sampled hour to hour 23 of that last day - call those the tail missing hours
+        from forecast.Hour import Hour
         oneHour = datetime.timedelta(hours=1)
 
-        # normalize my Hours' timezones b/c weather service sometimes changes tz *within* one <time-layout> - go figure
-        # - and this causes problems: see testHoursAsCalendarRowsIndexOutOfBounds(). we normalize by:
-        # 1) adopting the first/closest Hour's TZ as the standard for the calendar, and
-        # 2) work forward through ea. Hour, adding one hour and saving that as a new Hour's new datetime
-        #
-        from forecast.Hour import Hour
-
-        closestHour = self.source.hours[0]
-        normalizedHours = [closestHour]
-        for index, hour in enumerate(self.source.hours[1:]):
-            newHour = Hour(closestHour.datetime + (oneHour * (index + 1)), hour.precip, hour.temp, hour.wind,
-                           hour.clouds)
-            normalizedHours.append(newHour)
-
         # create headMissingHours by working backward from the closest hour until the date goes to the previous day
+        closestHour = self.source.hours[0]
         headMissingHours = []
         closestDay = closestHour.datetime.day
         currDatetime = closestHour.datetime - oneHour
@@ -138,7 +126,7 @@ class Forecast:
 
         # create tailMissingHours by working forward from the farthest hour until the date goes to the next day
         tailMissingHours = []
-        farthestHour = normalizedHours[-1]
+        farthestHour = self.source.hours[-1]
         farthestDay = farthestHour.datetime.day
         currDatetime = farthestHour.datetime + oneHour
         while currDatetime.day == farthestDay:
@@ -147,7 +135,7 @@ class Forecast:
         tailMissingHours.sort()
 
         # rows
-        allHours = headMissingHours + normalizedHours + tailMissingHours
+        allHours = headMissingHours + self.source.hours + tailMissingHours
         numDays = 1 + (farthestHour.datetime - closestHour.datetime).days
         calendarRows = []
         for hourNum in range(24):  # calendar row
