@@ -39,22 +39,20 @@
         <div class="row">
             <h2>Share</h2>
 
-            <p class="help-block">Tools to share PeepWeather</p>
-
-            <p class="h4">1) Facebook & Twitter</p>
+            <p class="help-block">Tools to share the PeepWeather love <span class="glyphicon glyphicon-heart-empty"></span></p>
 
             <p><span id="sharethis">
                 <span class='st_facebook_button'></span>
                 <span class='st_twitter_button'></span>
             </span></p>
 
-            <p class="h4">2) A fun widget for your homepage:</p>
+            <p class="h4">A fun widget for your homepage:</p>
             <a class="btn btn-success" role="button"
                href="{{ url_for('showStickersEditor', zipOrLatLon=zipOrLatLon) }}">Get a Sticker!</a>
 
             <form onsubmit="return false;">
                 <div>
-                    <p class="h4">3) URL for this forecast:</p>
+                    <p class="h4">URL for this forecast:</p>
 
                     <div class="form-group">
                         <label for="full_url_text"></label>
@@ -65,7 +63,7 @@
 
             <form onsubmit="return false;">
                 <div>
-                    <p class="h4">4) HTML to embed the forecast:</p>
+                    <p class="h4">HTML to embed the forecast:</p>
 
                     <div class="form-group">
                         {% set embedUrlAsText = '<iframe src="' + embedUrl + '" width="350" height="300" frameborder="0" style="border:0"></iframe>' %}
