@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 import unittest
 import datetime
 import operator
-
 from unittest.mock import patch
 import functools
 
@@ -144,7 +143,7 @@ class WeatherGovSourceTestCase(unittest.TestCase):
         expHoursWithNoGaps = []  # will not include weather valuess, just the correct on-the-hour datetime
         currDatetime = oldestDatetime
         while currDatetime <= newestDatetime:
-            expHoursWithNoGaps.append(Hour(currDatetime, Forecast.PARAM_RANGE_STEPS_DEFAULT))
+            expHoursWithNoGaps.append(Hour(currDatetime))
             currDatetime += oneHour
         self.assertTrue(len(expHoursWithNoGaps), len(actHoursWithNoGaps))
 
@@ -152,32 +151,32 @@ class WeatherGovSourceTestCase(unittest.TestCase):
             self.assertEqual(expHour.datetime, actHour.datetime)
 
         # spot-check some interpolated weather values
-        h0 = Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 10, 3, -1)
+        h0 = Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 10,
+                  3, -1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
-        h3 = Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 6, 3, -1)
+        h3 = Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 6,
+                  3, -1)
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[:4])
 
-        h0 = Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 19, 3, -1)
+        h0 = Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 19,
+                  3, -1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
-        h3 = Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3, -1)
+        h3 = Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 17,
+                  3, -1)
         exph0Idx = 51
         self.assertEqual([h0, h1, h2, h3], actHoursWithNoGaps[exph0Idx:exph0Idx + 4])
 
-        h0 = Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 28, 1, -1)
+        h0 = Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11,
+                  28, 1, -1)
         h1 = self.copyOfHourPlusOne(h0)
         h2 = self.copyOfHourPlusOne(h1)
         h3 = self.copyOfHourPlusOne(h2)
         h4 = self.copyOfHourPlusOne(h3)
         h5 = self.copyOfHourPlusOne(h4)
-        h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                  Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 23, 1, -1)
+        h6 = Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11,
+                  23, 1, -1)
         exph0Idx = 162
         self.assertEqual([h0, h1, h2, h3, h4, h5, h6], actHoursWithNoGaps[exph0Idx:exph0Idx + 7])
 
@@ -230,22 +229,22 @@ class WeatherGovSourceTestCase(unittest.TestCase):
 
         # spot check a few rows
         expRow1 = [
-            Hour(datetime.datetime(2015, 1, 13, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, None, None, None),
-            Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 3, 2, -1),
-            Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 13, 2, -1),
-            Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17, 3, -1),
-            Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 11, 4, -1),
-            Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 21, 5, -1),
-            Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 28, 4, -1),
-            Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 18, 3, -1)]
+            Hour(datetime.datetime(2015, 1, 13, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), None,
+                 None, None),
+            Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 3, 2,
+                 -1),
+            Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 13,
+                 2, -1),
+            Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 17,
+                 3, -1),
+            Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 3, 11,
+                 4, -1),
+            Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 9, 21,
+                 5, -1),
+            Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 28,
+                 4, -1),
+            Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 18,
+                 3, -1)]
         self.assertEqual(expRow1, actCalendarRows[1])
 
 
@@ -285,134 +284,92 @@ class WeatherGovSourceTestCase(unittest.TestCase):
 
     def copyOfHourPlusOne(self, hour):
         oneHour = datetime.timedelta(hours=1)
-        return Hour(hour.datetime + oneHour, Forecast.PARAM_RANGE_STEPS_DEFAULT, hour.precip, hour.temp, hour.wind,
-                    hour.clouds)
+        return Hour(hour.datetime + oneHour, hour.precip, hour.temp, hour.wind, hour.clouds)
 
 
     def expHoursWithGaps_testHoursWithGapsFromXml(self):
         expHoursWithGaps = [
-            Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 10,
+            Hour(datetime.datetime(2015, 1, 13, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 10,
                  3),
-            Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 6,
+            Hour(datetime.datetime(2015, 1, 13, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 6,
                  3),
-            Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 3,
+            Hour(datetime.datetime(2015, 1, 14, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 3,
                  2),
-            Hour(datetime.datetime(2015, 1, 14, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 0, 2,
+            Hour(datetime.datetime(2015, 1, 14, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 0, 2,
                  2),
-            Hour(datetime.datetime(2015, 1, 14, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 0,
+            Hour(datetime.datetime(2015, 1, 14, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 0,
                  1),
-            Hour(datetime.datetime(2015, 1, 14, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 10,
+            Hour(datetime.datetime(2015, 1, 14, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 10,
                  1),
-            Hour(datetime.datetime(2015, 1, 14, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 22,
+            Hour(datetime.datetime(2015, 1, 14, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 22,
                  1),
-            Hour(datetime.datetime(2015, 1, 14, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 21,
+            Hour(datetime.datetime(2015, 1, 14, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 21,
                  1),
-            Hour(datetime.datetime(2015, 1, 14, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 17,
+            Hour(datetime.datetime(2015, 1, 14, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 17,
                  1),
-            Hour(datetime.datetime(2015, 1, 14, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 15,
+            Hour(datetime.datetime(2015, 1, 14, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 15,
                  2),
-            Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 13,
+            Hour(datetime.datetime(2015, 1, 15, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 13,
                  2),
-            Hour(datetime.datetime(2015, 1, 15, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 11,
+            Hour(datetime.datetime(2015, 1, 15, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 11,
                  2),
-            Hour(datetime.datetime(2015, 1, 15, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 8,
+            Hour(datetime.datetime(2015, 1, 15, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 8, 8,
                  2),
-            Hour(datetime.datetime(2015, 1, 15, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 17,
+            Hour(datetime.datetime(2015, 1, 15, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 8, 17,
                  1),
-            Hour(datetime.datetime(2015, 1, 15, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 26,
+            Hour(datetime.datetime(2015, 1, 15, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 8, 26,
                  1),
-            Hour(datetime.datetime(2015, 1, 15, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 8, 27,
+            Hour(datetime.datetime(2015, 1, 15, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 8, 27,
                  2),
-            Hour(datetime.datetime(2015, 1, 15, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 22,
+            Hour(datetime.datetime(2015, 1, 15, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 22,
                  2),
-            Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 19,
+            Hour(datetime.datetime(2015, 1, 15, 22, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 19,
                  3),
-            Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 17,
+            Hour(datetime.datetime(2015, 1, 16, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 17,
                  3),
-            Hour(datetime.datetime(2015, 1, 16, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 5, 16,
+            Hour(datetime.datetime(2015, 1, 16, 4, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 5, 16,
                  4),
-            Hour(datetime.datetime(2015, 1, 16, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 15,
+            Hour(datetime.datetime(2015, 1, 16, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 15,
                  4),
-            Hour(datetime.datetime(2015, 1, 16, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 21,
+            Hour(datetime.datetime(2015, 1, 16, 10, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 21,
                  6),
-            Hour(datetime.datetime(2015, 1, 16, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 28,
+            Hour(datetime.datetime(2015, 1, 16, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 28,
                  7),
-            Hour(datetime.datetime(2015, 1, 16, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 4, 26,
+            Hour(datetime.datetime(2015, 1, 16, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 4, 26,
                  7),
-            Hour(datetime.datetime(2015, 1, 16, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 19,
+            Hour(datetime.datetime(2015, 1, 16, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 3, 19,
                  6),
-            Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 11,
+            Hour(datetime.datetime(2015, 1, 17, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 3, 11,
                  4),
-            Hour(datetime.datetime(2015, 1, 17, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 6,
+            Hour(datetime.datetime(2015, 1, 17, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 3, 6,
                  3),
-            Hour(datetime.datetime(2015, 1, 17, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 3, 24,
+            Hour(datetime.datetime(2015, 1, 17, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 3, 24,
                  2),
-            Hour(datetime.datetime(2015, 1, 17, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 23,
+            Hour(datetime.datetime(2015, 1, 17, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 9, 23,
                  4),
-            Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 9, 21,
+            Hour(datetime.datetime(2015, 1, 18, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 9, 21,
                  5),
-            Hour(datetime.datetime(2015, 1, 18, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 21,
+            Hour(datetime.datetime(2015, 1, 18, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 21,
                  4),
-            Hour(datetime.datetime(2015, 1, 18, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 38,
+            Hour(datetime.datetime(2015, 1, 18, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 38,
                  4),
-            Hour(datetime.datetime(2015, 1, 18, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 33,
+            Hour(datetime.datetime(2015, 1, 18, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 33,
                  3),
-            Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 20, 28,
+            Hour(datetime.datetime(2015, 1, 19, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 20, 28,
                  4),
-            Hour(datetime.datetime(2015, 1, 19, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 24,
+            Hour(datetime.datetime(2015, 1, 19, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 24,
                  5),
-            Hour(datetime.datetime(2015, 1, 19, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 32,
+            Hour(datetime.datetime(2015, 1, 19, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 32,
                  6),
-            Hour(datetime.datetime(2015, 1, 19, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 24,
+            Hour(datetime.datetime(2015, 1, 19, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 24,
                  4),
-            Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 10, 18,
+            Hour(datetime.datetime(2015, 1, 20, 1, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 10, 18,
                  3),
-            Hour(datetime.datetime(2015, 1, 20, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 14,
+            Hour(datetime.datetime(2015, 1, 20, 7, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 14,
                  2),
-            Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 28,
+            Hour(datetime.datetime(2015, 1, 20, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 28,
                  1),
-            Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))),
-                 Forecast.PARAM_RANGE_STEPS_DEFAULT, 11, 23,
+            Hour(datetime.datetime(2015, 1, 20, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))), 11, 23,
                  1)
         ]
         return expHoursWithGaps

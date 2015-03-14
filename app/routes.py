@@ -80,7 +80,7 @@ def embedForecast(zipOrLatLon):
         rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
             'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or Forecast.PARAM_RANGE_STEPS_DEFAULT
-        forecast = Forecast(zipOrLatLonList, rangeDict)
+        forecast = Forecast(Location(zipOrLatLonList), rangeDict)
 
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
         fullUrl = fullUrlForEndpoint('showForecast', zipOrLatLon, queryParamsDict)
@@ -102,7 +102,7 @@ def showStickersEditor(zipOrLatLon):
         rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
             'p') else None  # check for at least one
         rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
-        forecast = Forecast(zipOrLatLonList, rangeDict)
+        forecast = Forecast(Location(zipOrLatLonList), rangeDict)
         image = Sticker(forecast).image
 
         queryParamsDict = queryParamsDictFromRangeDict(rangeDict)
@@ -131,7 +131,7 @@ def generateStickerImage(zipOrLatLon):
     rangeDictFromQuery = rangesDictFromRequestArgs(request.args) if request.args.get(
         'p') else None  # check for at least one
     rangeDict = rangeDictFromQuery or rangeDictFromCookie or Forecast.PARAM_RANGE_STEPS_DEFAULT
-    forecast = Forecast(zipOrLatLonList, rangeDict)
+    forecast = Forecast(Location(zipOrLatLonList), rangeDict)
     image = Sticker(forecast).image
     bytesIO = BytesIO()
     image.save(bytesIO, format="png")

@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% set zipOrLatLon = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
+{% set zipOrLatLon = forecast.location.zipcode if forecast.location.zipcode else forecast.location.latLonTruncated() %}
 
-{% block title %}Generate Sticker for {{ zipOrLatLon }} {% if forecast.name %}({{ forecast.name }}) {% endif %} {% endblock %}
+{% block title %}Generate Sticker for {{ zipOrLatLon }} {% if forecast.location.name %}({{ forecast.location.name }}) {% endif %} {% endblock %}
 
 {% block content %}
 
     <div class="container">
         <div class="row">
         
-            <h1>Generate Sticker for {{ zipOrLatLon }} {% if forecast.name %}
-                <small>({{ forecast.name }})</small>{% endif %}</h1>
+            <h1>Generate Sticker for {{ zipOrLatLon }} {% if forecast.location.name %}
+                <small>({{ forecast.location.name }})</small>{% endif %}</h1>
             <p>I've cooked up a fun dynamic image for you to put on your homepage. In return, all I ask is that you link
                 the image to this site.
             <ol>

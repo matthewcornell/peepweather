@@ -1,9 +1,12 @@
+import xml.etree.ElementTree as ET
 import unittest
-
 from unittest.mock import patch
 
-from forecast.Forecast import Forecast
+from forecast.WeatherGovSource import WeatherGovSource
+
+from forecast.Sticker import Sticker
 from forecast.Location import Location
+from forecast.Forecast import Forecast
 
 
 class ForecastTestCase(unittest.TestCase):
@@ -13,6 +16,8 @@ class ForecastTestCase(unittest.TestCase):
 
     @patch('forecast.Forecast.WeatherGovSource')
     def testForecastRangeDict(self, MockWeatherGovSource):
+        from forecast.Forecast import Forecast  # avoid circular imports
+
         location = Location('01002')
         rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
         forecast = Forecast(location)
@@ -57,10 +62,22 @@ class ForecastTestCase(unittest.TestCase):
             self.assertEqual(fakeInstance, forecast.source)
 
 
-    # @unittest.skip("tested by WeatherGovSourceTestCase, which has realistic data")
-    # def testCalendarHeaderRow(self):
-    #     pass
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testSticker(self, MockWeatherGovSource):
+        # sanity-check that Sticker() doesn't error and returns an Image
+        location = Location('01002')
+        elementTree = ET.parse('test/test-forecast-data.xml')
+        testWGSource = WeatherGovSource(location, Forecast.PARAM_RANGE_STEPS_DEFAULT, elementTree=elementTree)
+        MockWeatherGovSource.return_value = testWGSource
+        forecast = Forecast(location)
+        image = Sticker(forecast).image
+        self.assertEqual((126, 199), image.size)
 
-    # @unittest.skip("tested by WeatherGovSourceTestCase, which has realistic data")
-    # def testHoursAsCalendarRows(self):
-    #     pass
+
+        # @unittest.skip("tested by WeatherGovSourceTestCase, which has realistic data")
+        # def testCalendarHeaderRow(self):
+        # pass
+
+        # @unittest.skip("tested by WeatherGovSourceTestCase, which has realistic data")
+        # def testHoursAsCalendarRows(self):
+        # pass

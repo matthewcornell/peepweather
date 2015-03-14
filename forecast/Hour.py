@@ -13,12 +13,11 @@ class Hour():
     H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH = 'H_DES_LOW', 'H_DES_MED_LOW', 'H_DES_MED_HIGH', 'H_DES_HIGH'
 
 
-    def __init__(self, datetime, rangeDict, precip=None, temp=None, wind=None, clouds=None):
+    def __init__(self, datetime, precip=None, temp=None, wind=None, clouds=None):
         """
         Pass None for the weather parameters to represent missing data, i.e., a 'missing' hour.
         """
         self.datetime = datetime  # time of forecast. always on the hour, i.e., only the day and hour matter. minutes, etc. are ignored
-        self.rangeDict = rangeDict
         self.precip = precip  # probability of precipitation percent: integers range(101). todo couldn't find docs about range end
         self.temp = temp  # degrees Fahrenheit: integers (negative and possitive)
         self.wind = wind  # MPH: whole numbers (integers from 0 up)
@@ -61,15 +60,16 @@ class Hour():
 
     # ==== daylight methods ====
 
-    def isDaylight(self):
+    def isDaylight(self, forecast):
         """
+        :param forecast provides the lat/lon to location this Hour at
         :return: main method that returns True if I am in daylight hours according to isDaylightDatetime()
         """
-        return Hour.isDaylightDatetime(self.latLon, self.datetime)
+        return Hour.isDaylightDatetime(forecast.source.location, self.datetime)
 
 
     @classmethod
-    def isDaylightDatetime(cls, latLon, dt):
+    def isDaylightDatetime(cls, location, dt):
         """
         internal method
         :param latLon: 2-tuple of strings
@@ -80,8 +80,8 @@ class Hour():
             raise ValueError("datetime has no tzinfo: {!r}".format(dt))  # 'naive' datetime
 
         observer = ephem.Observer()
-        observer.lat = latLon[0]
-        observer.lon = latLon[1]
+        observer.lat = location.latitude
+        observer.lon = location.longitude
 
         # now set observer.date. Note: because forecast times are local to the lat/lon (<time-layout time-coordinate="local" ...">),
         # and because ephem requires all dates in UTC and does not honor time zones, we need to covert to UTC. do so by
@@ -101,27 +101,33 @@ class Hour():
 
     # ==== UI methods ====
 
-    def detailString(self):
+    def detailString(self, rangeDict):
         """
+
+        :param rangeDict:
         :return: 2-tuple of strings for popover display: (title, body)
         """
         dateTimeStr = '{}'.format(self.datetime.strftime('%a %m/%d %I:%M %p'))
         if self.isMissingHour():
             return dateTimeStr, "No data"
         else:
-            titleStr = '{} - {}'.format(dateTimeStr, self.cssClassForDesirability())
+            titleStr = '{} - {}'.format(dateTimeStr, self.cssClassForDesirability(rangeDict))
             paramDesToChar = {Hour.P_DES_HIGH: '&check;', Hour.P_DES_MED: '~', Hour.P_DES_LOW: 'x', }
             bodyStr = '{}&nbsp;<strong>Precip</strong>:&nbsp;{}%, {}&nbsp;<strong>Temp</strong>:&nbsp;{}°F, ' \
                       '{}&nbsp;<strong>Wind</strong>:&nbsp;{}&nbsp;MPH, {}&nbsp;<strong>Clouds</strong>:&nbsp;{}%'.format(
-                paramDesToChar[self.paramDesirabilityForValue('precip', self.precip)], self.precip,
-                paramDesToChar[self.paramDesirabilityForValue('temp', self.temp)], self.temp,
-                paramDesToChar[self.paramDesirabilityForValue('wind', self.wind)], self.wind,
-                paramDesToChar[self.paramDesirabilityForValue('clouds', self.clouds)], self.clouds)
+                paramDesToChar[
+                    self.paramDesirabilityForValue('precip', self.precip, rangeDict)], self.precip,
+                paramDesToChar[self.paramDesirabilityForValue('temp', self.temp, rangeDict)], self.temp,
+                paramDesToChar[self.paramDesirabilityForValue('wind', self.wind, rangeDict)], self.wind,
+                paramDesToChar[
+                    self.paramDesirabilityForValue('clouds', self.clouds, rangeDict)], self.clouds)
             return titleStr, bodyStr
 
 
-    def cssClassForDesirability(self):
+    def cssClassForDesirability(self, rangeDict):
         """
+
+        :param rangeDict:
         :return: a css class from /static/hour-colors.css, factoring in my clouds
         """
         if self.isMissingHour():
@@ -131,11 +137,13 @@ class Hour():
                                    Hour.H_DES_MED_LOW: 'Fair',
                                    Hour.H_DES_MED_HIGH: 'Okay',
                                    Hour.H_DES_HIGH: 'Great'}
-        return hourDesirabilityToClass[self.desirability()]
+        return hourDesirabilityToClass[self.desirability(rangeDict)]
 
 
-    def charIconsForParams(self):
+    def charIconsForParams(self, rangeDict):
         """
+
+        :param rangeDict:
         :return: list of three Weather Icons 'specific icon class' strings, one each for precip, temp, and wind
         respectively, or None if no applicable. 
         """
@@ -145,8 +153,8 @@ class Hour():
             return chars
 
         # add precip or clouds
-        precipDes = self.paramDesirabilityForValue('precip', self.precip)
-        cloudsDes = self.paramDesirabilityForValue('clouds', self.clouds)
+        precipDes = self.paramDesirabilityForValue('precip', self.precip, rangeDict)
+        cloudsDes = self.paramDesirabilityForValue('clouds', self.clouds, rangeDict)
         if precipDes == Hour.P_DES_LOW:
             chars[0] = 'wi-rain'
         elif precipDes == Hour.P_DES_MED:
@@ -157,14 +165,14 @@ class Hour():
             chars[0] = 'wi-cloud'  # single cloud
 
         # add temp
-        tempDes = self.paramDesirabilityForValue('temp', self.temp)
+        tempDes = self.paramDesirabilityForValue('temp', self.temp, rangeDict)
         if tempDes == Hour.P_DES_LOW:
             chars[1] = 'wi-thermometer'
         elif tempDes == Hour.P_DES_MED:
             chars[1] = 'wi-thermometer-exterior'
 
         # add wind
-        windDes = self.paramDesirabilityForValue('wind', self.wind)
+        windDes = self.paramDesirabilityForValue('wind', self.wind, rangeDict)
         if windDes == Hour.P_DES_LOW:
             chars[2] = 'wi-strong-wind'
         elif windDes == Hour.P_DES_MED:
@@ -175,8 +183,10 @@ class Hour():
 
     # ==== analysis methods ====
 
-    def desirability(self):
+    def desirability(self, rangeDict):
         """
+
+        :param rangeDict:
         :return: overall desirability based on my parameters. one of H_DES_LOW, H_DES_MED_LOW, H_DES_MED_HIGH, H_DES_HIGH
         returns None if this is a missing hour. NB: Does not factor in cloudiness.
         """
@@ -186,9 +196,10 @@ class Hour():
         hDesHighCount = 0
         hDesMedCount = 0
         hDesLowCount = 0
-        paramDesirabilities = [self.paramDesirabilityForValue('precip', self.precip),
-                               self.paramDesirabilityForValue('temp', self.temp),
-                               self.paramDesirabilityForValue('wind', self.wind)]
+        paramDesirabilities = [
+            self.paramDesirabilityForValue('precip', self.precip, rangeDict),
+            self.paramDesirabilityForValue('temp', self.temp, rangeDict),
+            self.paramDesirabilityForValue('wind', self.wind, rangeDict)]
         for paramDesirability in paramDesirabilities:
             if paramDesirability == Hour.P_DES_LOW:
                 hDesLowCount += 1
@@ -226,18 +237,19 @@ class Hour():
             return Hour.H_DES_MED_LOW
 
 
-    def paramDesirabilityForValue(self, paramName, value):
+    def paramDesirabilityForValue(self, paramName, value, rangeDict):
         """
         Gives a rating for a particular parameter value using the current ranges.
 
+        :param rangeDict:
         :param paramName: one of ['precip', 'temp', 'wind', 'clouds']
         :param value: the parameter's value
         :return: one of P_DES_LOW, P_DES_MED, P_DES_HIGH based on the passed parameter
         """
-        if paramName not in self.rangeDict.keys():
+        if paramName not in rangeDict.keys():
             raise ValueError("invalid parameter: {}".format(paramName))
 
-        paramStep = self.rangeDict[paramName]
+        paramStep = rangeDict[paramName]
         if len(paramStep) == 2:  # H-M-L
             if value < paramStep[0]:
                 return Hour.P_DES_HIGH

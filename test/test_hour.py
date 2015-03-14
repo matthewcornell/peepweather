@@ -102,7 +102,7 @@ class ForecastTestCase(unittest.TestCase):
         for latLon, startValidTimesIsDaylight in latLonToStartValidTimesIsDaylight.items():
             for startValidTimeText, expIsDaylight in startValidTimesIsDaylight:
                 dt = WeatherGovSource.parseStartValidTime(startValidTimeText)
-                isDaylight = Hour.isDaylightDatetime(latLon, dt)
+                isDaylight = Hour.isDaylightDatetime(Location(latLon), dt)
                 self.assertEqual(expIsDaylight, isDaylight)
 
         with self.assertRaisesRegex(ValueError, "datetime has no tzinfo"):
@@ -152,11 +152,11 @@ class ForecastTestCase(unittest.TestCase):
             ],
         }
         location = Location('01002')
-        forecast = Forecast(location)
         for paramName, expParamValRatings in expParamValRatings.items():
             for paramval, expParamRating in expParamValRatings:
-                hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT)   # todo xx
-                self.assertEqual(expParamRating, hour.paramDesirabilityForValue(paramName, paramval))
+                hour = Hour(None)
+                self.assertEqual(expParamRating, hour.paramDesirabilityForValue(paramName, paramval,
+                                                                                Forecast.PARAM_RANGE_STEPS_DEFAULT))
 
 
     @patch('forecast.Forecast.WeatherGovSource')
@@ -188,9 +188,8 @@ class ForecastTestCase(unittest.TestCase):
                           (0, 65, 0): Hour.H_DES_HIGH,  # all high
         }
         for precipTempWindTuple, expHourDes in paramToHourDes.items():
-            hour = Hour(None, Forecast.PARAM_RANGE_STEPS_DEFAULT,   # todo xx
-                        precipTempWindTuple[0], precipTempWindTuple[1],
-                        precipTempWindTuple[2], 0)  # include no-op cloud so that Hour.isMissingHour() won't return None
-            self.assertEqual(expHourDes, hour.desirability())
+            hour = Hour(None, precipTempWindTuple[0], precipTempWindTuple[1], precipTempWindTuple[2],
+                        0)  # include no-op cloud so that Hour.isMissingHour() won't return None
+            self.assertEqual(expHourDes, hour.desirability(Forecast.PARAM_RANGE_STEPS_DEFAULT))
 
 

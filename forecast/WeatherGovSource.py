@@ -100,8 +100,8 @@ class WeatherGovSource(object):
         while currDatetime <= newestHour.datetime:
             foundHour = WeatherGovSource.findHourForDatetimeFromHoursWithGaps(currDatetime, hoursWithGaps)
             if not foundHour:
-                foundHour = Hour(currDatetime, rangeDict, prevFoundHour.precip,
-                                 prevFoundHour.temp, prevFoundHour.wind, prevFoundHour.clouds)
+                foundHour = Hour(currDatetime, prevFoundHour.precip, prevFoundHour.temp, prevFoundHour.wind,
+                                 prevFoundHour.clouds)
             hoursWithNoGaps.append(foundHour)
             prevFoundHour = foundHour
             currDatetime += oneHour
@@ -136,7 +136,7 @@ class WeatherGovSource(object):
         # 1) build empty Hours with no data based on min and max dates in layoutKeysToStartValidTimes
         timeLayoutDict = cls.timeLayoutDictFromXml(dwmlElement)
         uniqueDatetimes = set(functools.reduce(operator.add, timeLayoutDict.values()))
-        hours = list(map(lambda dt: Hour(dt, rangeDict), sorted(uniqueDatetimes)))
+        hours = list(map(lambda dt: Hour(dt), sorted(uniqueDatetimes)))
 
         # 2) iterate over weather data and plug into corresponding hour. NB: will leave gaps, i.e., some Hours will not
         # have all three values set

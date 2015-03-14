@@ -1,7 +1,6 @@
 import datetime
 import logging
 
-from forecast.Hour import Hour
 from forecast.WeatherGovSource import WeatherGovSource
 
 
@@ -66,8 +65,9 @@ class Forecast:
         return '{cls}({source})'.format(cls=self.__class__.__name__, source=source)
 
 
-    def latLonTruncated(self):
-        return self.source.location.latLonTruncated()
+    @property
+    def location(self):
+        return self.source.location
 
 
     # ==== calendar layout methods ====
@@ -118,11 +118,13 @@ class Forecast:
         # 1) adopting the first/closest Hour's TZ as the standard for the calendar, and
         # 2) work forward through ea. Hour, adding one hour and saving that as a new Hour's new datetime
         #
+        from forecast.Hour import Hour
+
         closestHour = self.source.hours[0]
         normalizedHours = [closestHour]
         for index, hour in enumerate(self.source.hours[1:]):
-            newHour = Hour(closestHour.datetime + (oneHour * (index + 1)), self.rangeDict,
-                           hour.precip, hour.temp, hour.wind, hour.clouds)
+            newHour = Hour(closestHour.datetime + (oneHour * (index + 1)), hour.precip, hour.temp, hour.wind,
+                           hour.clouds)
             normalizedHours.append(newHour)
 
         # create headMissingHours by working backward from the closest hour until the date goes to the previous day
@@ -130,7 +132,7 @@ class Forecast:
         closestDay = closestHour.datetime.day
         currDatetime = closestHour.datetime - oneHour
         while currDatetime.day == closestDay:
-            headMissingHours.append(Hour(currDatetime, self.rangeDict))
+            headMissingHours.append(Hour(currDatetime))
             currDatetime -= oneHour
         headMissingHours.sort()
 
@@ -140,7 +142,7 @@ class Forecast:
         farthestDay = farthestHour.datetime.day
         currDatetime = farthestHour.datetime + oneHour
         while currDatetime.day == farthestDay:
-            tailMissingHours.append(Hour(currDatetime, self.rangeDict))
+            tailMissingHours.append(Hour(currDatetime))
             currDatetime += oneHour
         tailMissingHours.sort()
 

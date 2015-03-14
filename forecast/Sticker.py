@@ -1,8 +1,10 @@
 from PIL import Image, ImageDraw
-from PIL.ImageFont import ImageFont
 
 
 class Sticker:
+    """
+    """
+
     def __init__(self, forecast):
         """
         :return: an instance whose image property is a PIL Image corresponding to forecast to be used for sticker embedding
@@ -14,7 +16,7 @@ class Sticker:
 
         """
         self.forecast = forecast
-        self.tableSize = (126, 187)     # excluding brand but including row and column headers
+        self.tableSize = (126, 187)  # excluding brand but including row and column headers
         self.brandSize = (self.tableSize[0], 12)
         self.imageSize = self.tableSize[0], self.tableSize[1] + self.brandSize[1]
         self.image = Image.new('RGB', self.imageSize, 'white')
@@ -23,7 +25,7 @@ class Sticker:
         self.drawSquaresRowColHeadsGrid()
 
 
-    def drawColumnHeadings(self,squareSize):
+    def drawColumnHeadings(self, squareSize):
         for idx, colHeader in enumerate(self.forecast.calendarHeaderRow()):
             x, y = squareSize[0] + (squareSize[0] * idx), self.brandSize[1]
             draw = ImageDraw.Draw(self.image)
@@ -34,16 +36,18 @@ class Sticker:
         # for now all squares, including row and column headers, are equal sizes
         firstHour, numHours = 8, 13  # 8a to 8p
         hoursAsCalendarRows = self.forecast.hoursAsCalendarRows()
-        numCols = len(hoursAsCalendarRows[0]) + 1   # including row header
+        numCols = len(hoursAsCalendarRows[0]) + 1  # including row header
         # excluding brand and column header
-        squareSize = self.tableSize[0] / numCols, (self.tableSize[1] - self.brandSize[1]) / (numHours + 1)    # including column header
+        squareSize = self.tableSize[0] / numCols, (self.tableSize[1] - self.brandSize[1]) / (
+        numHours + 1)  # including column header
         self.drawColumnHeadings(squareSize)
         for rowNum in range(numHours):  # hour of day rows. excludes column header
             # x, y = upper left corner. y skips brand height and column header row
             x, y = 0, self.brandSize[1] + squareSize[1] + (squareSize[1] * rowNum)
             hourOfDayIndex = rowNum + firstHour
             hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex]
-            rowHeadingColor = 'black' if hourOfDayRow[0].isDaylight() else 'gray'  # todo cleaner if css classes
+            rowHeadingColor = 'black' if hourOfDayRow[0].isDaylight(
+                self.forecast) else 'gray'  # todo cleaner if css classes
             rowHeading = self.forecast.rowHeadingForHour(hourOfDayIndex)  # '8', '12p', etc.
             self.drawRowHeading(x, y, rowHeading, rowHeadingColor)
             for hour in hourOfDayRow:  # day of week columns
@@ -58,7 +62,7 @@ class Sticker:
 
 
     def drawHourSquare(self, x, y, squareSize, hour):
-        cssClass = hour.cssClassForDesirability()
+        cssClass = hour.cssClassForDesirability(self.forecast.rangeDict)
         cssClassToColor = {
             'Poor': '#ff0000',
             'Fair': '#ffaa00',
@@ -84,14 +88,15 @@ class Sticker:
             x1, y1 = squareSize[0] * colNum, self.brandSize[1]
             y2 = self.tableSize[1]
             if colNum == numCols:
-                x1 -= 1     # a hack to keep the rightmost line from being clipped
+                x1 -= 1  # a hack to keep the rightmost line from being clipped
             draw.line([x1, y1, x1, y2], lineColor)
 
 
     def drawLocation(self):
-        x, y = 11 if self.forecast.zipcode else 3, -1    # hack to center. s/b based on font
-        zipOrLatLon = self.forecast.zipcode if self.forecast.zipcode else self.forecast.latLonTruncated()
-        location = ("Forecast for " if self.forecast.zipcode else "Loc: ") + zipOrLatLon
+        location = self.forecast.location
+        x, y = 10 if location.zipcode else 13, -1  # hack to center. s/b based on font
+        zipOrLatLon = location.zipcode if location.zipcode else location.latLonTruncated()
+        location = ("Forecast for " if location.zipcode else "") + zipOrLatLon
         draw = ImageDraw.Draw(self.image)
         draw.text((x, y), location, 'gray')
 

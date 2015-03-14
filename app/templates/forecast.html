@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% set zipOrLatLonForTitle = forecast.zipcode if forecast.zipcode else forecast.latLonTruncated() %}
+{% set zipOrLatLonForTitle = forecast.location.zipcode if forecast.location.zipcode else forecast.location.latLonTruncated() %}
 
-{% block title %}Forecast for {{ zipOrLatLonForTitle }} {% if forecast.name %}({{ forecast.name }})
+{% block title %}Forecast for {{ zipOrLatLonForTitle }} {% if forecast.location.name %}({{ forecast.location.name }})
 {% endif %} {% endblock %}
 
 {% block content %}
@@ -14,12 +14,12 @@
 
         <div class="row">
 
-            {% set location = forecast.zipcode + " (" + forecast.name + ")" if forecast.zipcode else forecast.latLonTruncated() %}
+            {% set location = forecast.location.zipcode + " (" + forecast.location.name + ")" if forecast.location.zipcode else forecast.location.latLonTruncated() %}
 
-            {% set location = forecast.zipcode + " (" + forecast.name + ")" if forecast.zipcode else forecast.latLonTruncated() %}
+            {% set location = forecast.location.zipcode + " (" + forecast.location.name + ")" if forecast.location.zipcode else forecast.location.latLonTruncated() %}
 
-            <h1>Forecast for {{ zipOrLatLonForTitle }} {% if forecast.name %}
-                <small>({{ forecast.name }})</small>{% endif %}</h1>
+            <h1>Forecast for {{ zipOrLatLonForTitle }} {% if forecast.location.name %}
+                <small>({{ forecast.location.name }})</small>{% endif %}</h1>
 
             <div class="col-md-12 help-block">Time: <span id="time-id"></span></div>
 
@@ -91,12 +91,12 @@
         <div class="row">
             <h2>Debuging tools</h2>
 
-            {% set zipOrLatLon = forecast.zipcode or forecast.latLon[0] + '|' + forecast.latLon[1] %}
+            {% set zipOrLatLon = forecast.location.zipcode or forecast.location.latitude + '|' + forecast.location.longitude %}
 
             <ul>
                 <li><a href="{{ url_for('showForecast', zipOrLatLon=zipOrLatLon, list=true) }}">Show list view</a>
                 </li>
-                <li><a href="{{ forecast.weatherDotGovUrl() }}">Download raw data</a></li>
+                <li><a href="{{ forecast.source.weatherDotGovUrl() }}">Download raw data</a></li>
             </ul>
         </div>
     </div>

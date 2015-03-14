@@ -17,6 +17,8 @@ http://stackoverflow.com/questions/14593538/make-heroku-run-non-master-git-branc
 
 
 * bugs
+** ~ make screen shot on main page clickable :-)
+
 ** ~ bottom line of table flashes darker when popover shows
 
 ** ~ 404 not found: http://127.0.0.1:5000/assets/js/ie10-viewport-bug-workaround.js

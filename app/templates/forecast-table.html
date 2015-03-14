@@ -10,14 +10,14 @@
     {% for hourOfDayIndex in range(8, 21) %}
         {% set hourOfDayRow = hoursAsCalendarRows[hourOfDayIndex] %}
         {% set hour0 = hourOfDayRow[0] %}
-        {% set hourHeaderClass = 'daylight-day-of-week-header' if hour0.isDaylight() else 'nighttime-day-of-week-header' %}
-        {% set hourRowOpacityClass = 'daylight-opacity' if hour0.isDaylight() else 'nighttime-opacity' %}
+        {% set hourHeaderClass = 'daylight-day-of-week-header' if hour0.isDaylight(forecast) else 'nighttime-day-of-week-header' %}
+        {% set hourRowOpacityClass = 'daylight-opacity' if hour0.isDaylight(forecast) else 'nighttime-opacity' %}
         <tr>
             <th class="{{ hourHeaderClass }}">{{ forecast.rowHeadingForHour(hourOfDayIndex) }}</th>
             {% for hour in hourOfDayRow %}
-                <td class="{{ hour.cssClassForDesirability() }} {{ hourRowOpacityClass }}"
-                    title="{{ hour.detailString()[0] }}"
-                    data-content="{{ hour.detailString()[1] }}"
+                <td class="{{ hour.cssClassForDesirability(forecast.rangeDict) }} {{ hourRowOpacityClass }}"
+                    title="{{ hour.detailString(forecast.rangeDict)[0] }}"
+                    data-content="{{ hour.detailString(forecast.rangeDict)[1] }}"
                     data-html="true"
                     data-toggle="popover"
                     data-placement="bottom"
@@ -26,7 +26,7 @@
                     data-delay="65"
                     tabindex="0">
                     {% if not hideIcons %}
-                        {% for wiClass in hour.charIconsForParams() %}
+                        {% for wiClass in hour.charIconsForParams(forecast.rangeDict) %}
                             {% if wiClass %} <i class="wi {{ wiClass }}"></i> {% endif %}
                         {% endfor %}
                     {% endif %}

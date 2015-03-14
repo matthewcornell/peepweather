@@ -18,7 +18,7 @@ class Location(object):
             self.latitude = lat
             self.longitude = lon
             self.name = name
-        elif type(zipOrLatLon) == list and len(zipOrLatLon) == 2 \
+        elif (type(zipOrLatLon) == list or type(zipOrLatLon) == tuple) and len(zipOrLatLon) == 2 \
                 and type(zipOrLatLon[0]) == str \
                 and type(zipOrLatLon[1]) == str:
             self.zipcode = None
