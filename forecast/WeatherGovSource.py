@@ -49,7 +49,6 @@ class WeatherGovSource(object):
         """
         :return: a list of Hour instances for location
         """
-        print('yy', forecast, elementTree)
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
             logger.info('Forecast({}) @ {} -> {}: '.format(

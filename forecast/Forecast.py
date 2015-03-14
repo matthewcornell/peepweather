@@ -70,6 +70,7 @@ class Forecast:
     # ==== calendar layout methods ====
 
     def calendarHeaderRow(self):
+        print('yy', self, self.source.hours)
         dayOfWeekNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
         oldestHour = self.source.hours[0]
         newestHour = self.source.hours[-1]

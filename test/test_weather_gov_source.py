@@ -3,10 +3,10 @@ import unittest
 import datetime
 import operator
 
+from mock import patch
 import functools
 
 from forecast.WeatherGovSource import WeatherGovSource
-
 from forecast.Forecast import Forecast
 from forecast.Location import Location
 from forecast.Hour import Hour
@@ -192,11 +192,16 @@ class WeatherGovSourceTestCase(unittest.TestCase):
             self.assertIsNotNone(hour.clouds)
 
 
-    def testColumnHeaderRow(self):
-        elementTree = ET.parse('test/test-forecast-data.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
-        calendarHeader = forecast.calendarHeaderRow()
-        self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
+    def testCalendarHeaderRow(self):
+        print('xx')
+        with patch('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
+            location = Location('42.375370', '-72.519249')
+            forecast = Forecast(location)   # using MockWeatherGovSource at this point
+            elementTree = ET.parse('test/test-forecast-data.xml')
+            testWGSource = WeatherGovSource(location, forecast, elementTree=elementTree)
+            MockWeatherGovSource.hours = testWGSource.hours
+            calendarHeader = forecast.calendarHeaderRow()
+            self.assertEqual(['T', 'W', 'T', 'F', 'S', 'S', 'M', 'T'], calendarHeader)
 
         elementTree = ET.parse('test/test-forecast-only-seven-days.xml')
         forecast = Forecast('01002', elementTree=elementTree)
