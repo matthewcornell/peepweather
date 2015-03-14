@@ -18,7 +18,7 @@
                 <small>({{ forecast.location.name }})</small>{% endif %}</h1>
 
             <table class="table table-condensed table-striped" style="font-family: monospace">
-                {% for hour in forecast.hours %}
+                {% for hour in forecast.source.hours %}
                     <tr>
                         <td>
                             <span class="{{ hour.cssClassForDesirability(forecast.rangeDict) }}">&nbsp;</span> {{ hour }}

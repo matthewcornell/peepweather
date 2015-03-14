@@ -1,7 +1,7 @@
 ;; -*- mode: outline -*-
 
 * refactoring
-** >> refactor Location, Source out!
+** move timezone normalization from Forecast.hoursAsCalendarRows() to WeatherGovSource.makeHours()
 
 ** titles: write Forecast method to help zipOrLatLon. use in stickers.html too
 

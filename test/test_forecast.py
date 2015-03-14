@@ -56,10 +56,9 @@ class ForecastTestCase(unittest.TestCase):
                 Forecast(location)
 
         with patch('forecast.Forecast.WeatherGovSource') as MockWeatherGovSource:
-            fakeInstance = 'fake instance'
-            MockWeatherGovSource.return_value = fakeInstance
+            MockWeatherGovSource.return_value = 'fake instance'
             forecast = Forecast(location)
-            self.assertEqual(fakeInstance, forecast.source)
+            self.assertEqual('fake instance', forecast.source)
 
 
     @patch('forecast.Forecast.WeatherGovSource')

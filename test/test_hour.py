@@ -109,6 +109,7 @@ class ForecastTestCase(unittest.TestCase):
             Hour.isDaylightDatetime(None, datetime.datetime.now())
 
 
+    # todo maybe:
     # def testCharIconsForParams(self):
     #     self.fail()
 
