@@ -1,4 +1,4 @@
-from forecast.ZipcodeUtil import latLonNameForZipcode
+from forecast.ZipCodeUtil import latLonNameForZipcode
 
 
 class Location(object):

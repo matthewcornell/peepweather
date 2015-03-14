@@ -1,101 +1,35 @@
-import functools
 import xml.etree.ElementTree as ET
 import unittest
 import datetime
 import operator
 
+import functools
+
+from forecast.WeatherGovSource import WeatherGovSource
+
 from forecast.Forecast import Forecast
+from forecast.Location import Location
 from forecast.Hour import Hour
 
 
 class WeatherGovSourceTestCase(unittest.TestCase):
     """
-    o xx
     """
-
-    def testForecastConstructorArg(self):
-        elementTree = ET.parse('test/test-forecast-data.xml')
-
-        # zip good: has an entry in the csv file
-        Forecast('01002', elementTree=elementTree)  # does not raise
-
-        # zip bad: not in csv
-        with self.assertRaisesRegex(ValueError, "couldn't find zipcode: 99999"):
-            Forecast('99999', elementTree=elementTree)
-
-        # zip bad: None
-        with self.assertRaisesRegex(ValueError, "location wasn't a zip code or comma-separated lat/lon: None"):
-            Forecast(None, elementTree=elementTree)
-
-        # latLon good: valid format
-        Forecast(['42.375370', '-72.519249'], elementTree=elementTree)  # does not raise
-
-        # latLon bad: invalid formats
-        for zipOrLatLon in [[]], [None], ['42.375370', None], [1, '-72.519249']:
-            with self.assertRaisesRegex(ValueError, "location wasn't a zip code or comma-separated lat/lon"):
-                Forecast(zipOrLatLon, elementTree=elementTree)
-
-        # default rangeDict:
-        forecast = Forecast('01002', elementTree=elementTree)
-        self.assertEqual(Forecast.PARAM_RANGE_STEPS_DEFAULT, forecast.rangeDict)
-
-        # custom rangeDict:
-        rangeDict = {'precip': [0, 1],  # H-M-L
-                     'temp': [2, 3, 4, 5],  # L-M-H-M-L
-                     'wind': [6, 7],  # H-M-L
-        }
-        forecast = Forecast('01002', rangeDict=rangeDict, elementTree=elementTree)
-        self.assertEqual(rangeDict, forecast.rangeDict)
 
 
     def testErrorResponseFromAPI(self):
         elementTree = ET.parse('test/test-forecast-error-response.xml')
         expErrorXml = '<pre>\n        <problem>No data were found using the following input:</problem>\n        <product>time-series</product>\n        <startTime>2015-01-14T18:13:00</startTime>\n        <endTime>2017-01-15T18:13:00</endTime>\n        <Unit>e</Unit>\n        <latitudeLongitudes>\n            24.859832,-168.021815\n        </latitudeLongitudes>\n        <NDFDparameters>\n            temp pop12 wspd\n        </NDFDparameters>\n    </pre>\n'
         with self.assertRaisesRegex(ValueError, expErrorXml):
-            Forecast('01002', elementTree=elementTree)
-
-
-    def testForecastInstantiateLatLonName(self):
-        zipToLatLonName = {"01002": ("42.377651", "-72.50323", "Amherst, MA"),
-                           "92105": ("32.741256", "-117.0951", "San Diego, CA")}
-        elementTree = ET.parse('test/test-forecast-data.xml')
-        for zipcode, (lat, lon, name) in zipToLatLonName.items():
-            forecast = Forecast(zipcode, elementTree=elementTree)
-            self.assertEqual(zipcode, forecast.zipcode)
-            self.assertEqual((lat, lon), forecast.latLon)
-            self.assertEqual(name, forecast.name)
-
-
-    def testWeatherDotGovUrl(self):
-        # test zipcode constructor
-        elementTree = ET.parse('test/test-forecast-data.xml')
-        zipToLatLon = {"01002": ("42.377651", "-72.50323"),
-                       "92105": ("32.741256", "-117.0951")}
-        for zipcode, (lat, lon) in zipToLatLon.items():
-            expURL = 'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php' \
-                     '?whichClient=NDFDgen' \
-                     '&lat={lat}' \
-                     '&lon={lon}' \
-                     '&product=time-series' \
-                     '&Unit=e' \
-                     '&pop12=pop12' \
-                     '&appt=appt' \
-                     '&wspd=wspd' \
-                     '&sky=sky' \
-                     '&Submit=Submit'.format(lat=lat, lon=lon)
-            # test passing zipcode to constructor
-            forecast = Forecast(zipcode, elementTree=elementTree)
-            self.assertEqual(expURL, forecast.weatherDotGovUrl())
-
-            # test passing latLon to constructor
-            forecast = Forecast([lat, lon], elementTree=elementTree)
-            self.assertEqual(expURL, forecast.weatherDotGovUrl())
+            location = Location('42.375370', '-72.519249')
+            forecast = Forecast(location)
+            WeatherGovSource(location, forecast, elementTree=elementTree)
 
 
     def testXmlToTimeLayoutDict(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
-        timeLayoutDict = Forecast.timeLayoutDictFromXml(dwmlElement)
+        timeLayoutDict = WeatherGovSource.timeLayoutDictFromXml(dwmlElement)
         self.assertEqual(2, len(timeLayoutDict))
         self.assertIn("k-p12h-n15-1", timeLayoutDict)
         self.assertIn("k-p3h-n41-2", timeLayoutDict)
@@ -126,7 +60,7 @@ class WeatherGovSourceTestCase(unittest.TestCase):
                            [3, 3, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 3, 3, 4, 4, 6, 7, 7, 6, 4, 3, 2, 4, 5, 4,
                             4, 3, 4, 5, 6, 4, 3, 2, 1, 1])
         }
-        paramDict = Forecast.parameterDictFromXml(dwmlElement)
+        paramDict = WeatherGovSource.parameterDictFromXml(dwmlElement)
         self.assertEqual(expDict, paramDict)
 
 
@@ -134,7 +68,7 @@ class WeatherGovSourceTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
         expDict = self.expDict_testXmlToParamSamples()
-        paramSamplesDict = Forecast.parameterSamplesDictFromXml(dwmlElement)
+        paramSamplesDict = WeatherGovSource.parameterSamplesDictFromXml(dwmlElement)
         self.assertEqual(expDict, paramSamplesDict)
 
 
@@ -142,13 +76,15 @@ class WeatherGovSourceTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data-sky-cover.xml')
         dwmlElement = elementTree.getroot()
         expDict = self.expDict_testXmlToParamSamplesSkyCover()
-        paramSamplesDict = Forecast.parameterSamplesDictFromXml(dwmlElement)
+        paramSamplesDict = WeatherGovSource.parameterSamplesDictFromXml(dwmlElement)
         self.assertEqual(expDict, paramSamplesDict)
 
 
     def testHourInstanceVariablesInclCloudiness(self):
         elementTree = ET.parse('test/test-forecast-data-sky-cover.xml')
-        forecast = Forecast('01002', elementTree=elementTree)
+        location = Location('42.375370', '-72.519249')
+        forecast = Forecast(location)
+        wgSource = WeatherGovSource(location, forecast, elementTree=elementTree)
         expCloudsDatetime = [
             (100, datetime.datetime(2015, 1, 27, 16, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
             (99, datetime.datetime(2015, 1, 27, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
@@ -185,7 +121,7 @@ class WeatherGovSourceTestCase(unittest.TestCase):
             (48, datetime.datetime(2015, 2, 2, 13, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400)))),
             (63, datetime.datetime(2015, 2, 2, 19, 0, tzinfo=datetime.timezone(datetime.timedelta(-1, 68400))))]
         for expClouds, expDatetime in expCloudsDatetime:
-            foundHour = forecast.findHourForDatetime(expDatetime)
+            foundHour = wgSource.findHourForDatetime(expDatetime)
             self.assertEqual(expClouds, foundHour.clouds)
 
 
@@ -193,14 +129,14 @@ class WeatherGovSourceTestCase(unittest.TestCase):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
         expHoursWithGaps = self.expHoursWithGaps_testHoursWithGapsFromXml()
-        actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
+        actHoursWithGaps = WeatherGovSource.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
         self.assertEqual(expHoursWithGaps, actHoursWithGaps)
 
 
     def testHoursWithNoGaps(self):
         elementTree = ET.parse('test/test-forecast-data.xml')
         dwmlElement = elementTree.getroot()
-        actHoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
+        actHoursWithNoGaps = WeatherGovSource.hoursWithNoGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
 
         # test every hour is represented from oldest to newest with no gaps, ignoring weather values
         oneHour = datetime.timedelta(hours=1)
@@ -248,19 +184,10 @@ class WeatherGovSourceTestCase(unittest.TestCase):
         self.assertEqual([h0, h1, h2, h3, h4, h5, h6], actHoursWithNoGaps[exph0Idx:exph0Idx + 7])
 
 
-    def testHours(self):
-        # make sure hours with no gaps is saved in constructor
-        elementTree = ET.parse('test/test-forecast-data.xml')
-        dwmlElement = elementTree.getroot()
-        hoursWithNoGaps = Forecast.hoursWithNoGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
-        forecast = Forecast('01002', elementTree=elementTree)
-        self.assertEqual(hoursWithNoGaps, forecast.hours)
-
-
     def testCloudsNone(self):
         elementTree = ET.parse('test/test-clouds-none.xml')
         dwmlElement = elementTree.getroot()
-        actHoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
+        actHoursWithGaps = WeatherGovSource.hoursWithGapsFromXml(dwmlElement, Forecast.PARAM_RANGE_STEPS_DEFAULT)
         for hour in actHoursWithGaps:
             self.assertIsNotNone(hour.clouds)
 
@@ -344,7 +271,8 @@ class WeatherGovSourceTestCase(unittest.TestCase):
 
     def copyOfHourPlusOne(self, hour):
         oneHour = datetime.timedelta(hours=1)
-        return Hour(hour.datetime + oneHour, Forecast.PARAM_RANGE_STEPS_DEFAULT, hour.precip, hour.temp, hour.wind, hour.clouds)
+        return Hour(hour.datetime + oneHour, Forecast.PARAM_RANGE_STEPS_DEFAULT, hour.precip, hour.temp, hour.wind,
+                    hour.clouds)
 
 
     def expHoursWithGaps_testHoursWithGapsFromXml(self):

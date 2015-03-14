@@ -1,6 +1,11 @@
 import datetime
+import functools
 import logging
-import urllib
+import urllib.request
+import xml.etree.ElementTree as ET
+import operator
+
+from forecast.Hour import Hour
 
 from forecast.Location import Location
 
@@ -26,6 +31,7 @@ class WeatherGovSource(object):
         """
         :param location: a Location
         :param forecast: a Forecast. passed through to Hour instantiation
+        :param elementTree: optional ElementTree to use for testing to bypass urlopen() call
         """
         if not isinstance(location, Location):
             raise ValueError("location is not a Location instance: {}".format(location))
@@ -35,29 +41,31 @@ class WeatherGovSource(object):
         if not isinstance(forecast, Forecast):
             raise ValueError("forecast is not a Forecast instance: {}".format(forecast))
 
-        self.hours = self.makeHours(location, forecast, elementTree)
         self.location = location
+        self.hours = self.makeHours(forecast, elementTree)
 
 
-    def makeHours(self, location, forecast, elementTree):
+    def makeHours(self, forecast, elementTree):
         """
         :return: a list of Hour instances for location
         """
+        print('yy', forecast, elementTree)
         if not elementTree:
             httpResponse = urllib.request.urlopen(self.weatherDotGovUrl())
-            logger.info('Forecast({}) @ {}: {}, {} -> {}: '.format(
-                self.zipcode, datetime.datetime.now(), self.latLon, self.name, self.weatherDotGovUrl()))
+            logger.info('Forecast({}) @ {} -> {}: '.format(
+                self.location, datetime.datetime.now(), self.weatherDotGovUrl()))
             elementTree = ET.parse(httpResponse)
+
         dwmlElement = elementTree.getroot()
         if dwmlElement.tag == 'error':
             errorString = ET.tostring(dwmlElement.find('pre'),
                                       encoding='unicode')  # "xml", "html" or "text" (default xml)
             logger.error(
                 "error getting data for zipOrLatLon {}\nurl: \t{}\nerror: {}".format(
-                    zipOrLatLon, self.weatherDotGovUrl(), errorString))
+                    self.location, self.weatherDotGovUrl(), errorString))
             raise ValueError(errorString)
 
-        self.hours = Forecast.hoursWithNoGapsFromXml(dwmlElement, self.rangeDict)
+        self.hours = self.hoursWithNoGapsFromXml(dwmlElement, forecast)
 
 
     def weatherDotGovUrl(self):
@@ -71,7 +79,7 @@ class WeatherGovSource(object):
               '&appt=appt' \
               '&wspd=wspd' \
               '&sky=sky' \
-              '&Submit=Submit'.format(lat=self.latLon[0], lon=self.latLon[1])
+              '&Submit=Submit'.format(lat=self.location.latitude, lon=self.location.longitude)
         return url
 
 
@@ -79,7 +87,7 @@ class WeatherGovSource(object):
 
 
     @classmethod
-    def hoursWithNoGapsFromXml(cls, dwmlElement, rangeDict):
+    def hoursWithNoGapsFromXml(cls, dwmlElement, forecast):
         """
         Takes the output from hoursWithGapsFromXml() and interpolates missing hoursWithGaps to create a finished list
         of Hours that starts at the first hour in hoursWithGapsFromXml() and finishes with the last.
@@ -88,7 +96,7 @@ class WeatherGovSource(object):
         where all even hoursWithGaps are represented 
         """
         oneHour = datetime.timedelta(hours=1)
-        hoursWithGaps = Forecast.hoursWithGapsFromXml(dwmlElement, rangeDict)
+        hoursWithGaps = WeatherGovSource.hoursWithGapsFromXml(dwmlElement, forecast)
         oldestHour = hoursWithGaps[0]
         newestHour = hoursWithGaps[-1]
 
@@ -96,9 +104,9 @@ class WeatherGovSource(object):
         currDatetime = oldestHour.datetime
         prevFoundHour = oldestHour
         while currDatetime <= newestHour.datetime:
-            foundHour = Forecast.findHourForDatetimeFromHoursWithGaps(currDatetime, hoursWithGaps)
+            foundHour = WeatherGovSource.findHourForDatetimeFromHoursWithGaps(currDatetime, hoursWithGaps)
             if not foundHour:
-                foundHour = Hour(currDatetime, rangeDict, prevFoundHour.precip,
+                foundHour = Hour(forecast, currDatetime, prevFoundHour.precip,
                                  prevFoundHour.temp, prevFoundHour.wind, prevFoundHour.clouds)
             hoursWithNoGaps.append(foundHour)
             prevFoundHour = foundHour
@@ -122,7 +130,7 @@ class WeatherGovSource(object):
 
 
     @classmethod
-    def hoursWithGapsFromXml(cls, dwmlElement, rangeDict):
+    def hoursWithGapsFromXml(cls, dwmlElement, forecast):
         """
         :param dwmlElement:
         :return: a sequence of Hour instances corresponding to the passed DWML document element. 
@@ -134,7 +142,7 @@ class WeatherGovSource(object):
         # 1) build empty Hours with no data based on min and max dates in layoutKeysToStartValidTimes
         timeLayoutDict = cls.timeLayoutDictFromXml(dwmlElement)
         uniqueDatetimes = set(functools.reduce(operator.add, timeLayoutDict.values()))
-        hours = list(map(lambda dt: Hour(dt, rangeDict), sorted(uniqueDatetimes)))
+        hours = list(map(lambda dt: Hour(forecast, dt), sorted(uniqueDatetimes)))
 
         # 2) iterate over weather data and plug into corresponding hour. NB: will leave gaps, i.e., some Hours will not
         # have all three values set
@@ -182,7 +190,7 @@ class WeatherGovSource(object):
             layoutKey = timeLayoutEle.find('layout-key')
             startValidTimes = []
             for startValidTimeEle in timeLayoutEle.findall('start-valid-time'):
-                dt = Forecast.parseStartValidTime(startValidTimeEle.text)
+                dt = WeatherGovSource.parseStartValidTime(startValidTimeEle.text)
                 startValidTimes.append(dt)
             timeLayoutDict[layoutKey.text] = startValidTimes
         return timeLayoutDict

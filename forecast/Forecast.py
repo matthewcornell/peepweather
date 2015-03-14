@@ -2,8 +2,6 @@ import datetime
 import logging
 
 from forecast.Hour import Hour
-
-from forecast.Location import Location
 from forecast.WeatherGovSource import WeatherGovSource
 
 
@@ -58,12 +56,15 @@ class Forecast:
         else:
             self.rangeDict = Forecast.PARAM_RANGE_STEPS_DEFAULT
 
-        # instantiate the weather source
         self.source = WeatherGovSource(location, self)
 
 
     def __repr__(self):
-        return '{cls}({source})'.format(cls=self.__class__.__name__, source=self.source)
+        try:
+            source = self.source
+        except AttributeError:
+            source = '<no source>'
+        return '{cls}({source})'.format(cls=self.__class__.__name__, source=source)
 
 
     # ==== calendar layout methods ====

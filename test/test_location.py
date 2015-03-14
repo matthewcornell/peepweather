@@ -1,8 +1,7 @@
 import unittest
 
 from forecast.Location import Location, ZipCodeLocation
-from forecast.ZipcodeUtil import latLonNameForZipcode
-from forecast.ZipcodeUtil import searchZipcodes
+from forecast.ZipCodeUtil import latLonNameForZipcode, searchZipcodes
 
 
 class LocationTestCase(unittest.TestCase):

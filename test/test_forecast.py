@@ -58,6 +58,7 @@ class ForecastTestCase(unittest.TestCase):
 
 
     def testCalendarHeaderRow_TODO(self):
+        # todo see testColumnHeaderRow()
         self.fail()
 
 
@@ -66,4 +67,5 @@ class ForecastTestCase(unittest.TestCase):
 
 
     def testHoursAsCalendarRows_TODO(self):
+        # todo see testHoursAsCalendarRows(), testHoursAsCalendarRowsStructure(), testHoursAsCalendarRowsIndexOutOfBounds()
         self.fail()

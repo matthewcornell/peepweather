@@ -1,6 +1,7 @@
 import unittest
 import datetime
-from mock import Mock
+
+from mock import patch
 
 from forecast.Location import Location
 from forecast.Forecast import Forecast
@@ -11,87 +12,6 @@ from forecast.WeatherGovSource import WeatherGovSource
 class ForecastTestCase(unittest.TestCase):
     """
     """
-
-
-    def testCharIconsForParams(self):
-        # mockHour = Mock()   # todo paramDesirabilityForValue()
-        self.fail()
-
-
-    def testHourDesirabilities(self):
-        # check individual parameter ratings
-        expParamValRatings = {
-            'precip': [(0, Hour.P_DES_HIGH),
-                       (9, Hour.P_DES_HIGH),
-                       (10, Hour.P_DES_MED),
-                       (29, Hour.P_DES_MED),
-                       (30, Hour.P_DES_LOW),
-                       (100, Hour.P_DES_LOW),
-            ],
-            'temp': [(-100, Hour.P_DES_LOW),
-                     (34, Hour.P_DES_LOW),
-                     (35, Hour.P_DES_MED),
-                     (58, Hour.P_DES_MED),
-                     (59, Hour.P_DES_HIGH),
-                     (88, Hour.P_DES_HIGH),
-                     (89, Hour.P_DES_MED),
-                     (99, Hour.P_DES_MED),
-                     (100, Hour.P_DES_LOW),
-                     (101, Hour.P_DES_LOW),
-            ],
-            'wind': [(0, Hour.P_DES_HIGH),
-                     (7, Hour.P_DES_HIGH),
-                     (8, Hour.P_DES_MED),
-                     (11, Hour.P_DES_MED),
-                     (12, Hour.P_DES_LOW),
-                     (100, Hour.P_DES_LOW),
-            ],
-            'clouds': [(0, Hour.P_DES_HIGH),
-                       (32, Hour.P_DES_HIGH),
-                       (33, Hour.P_DES_MED),
-                       (65, Hour.P_DES_MED),
-                       (66, Hour.P_DES_LOW),
-                       (100, Hour.P_DES_LOW),
-            ],
-        }
-        location = Location('42.375370', '-72.519249')
-        forecast = Forecast(location, 'weather.gov')
-        for paramName, expParamValRatings in expParamValRatings.items():
-            for paramval, expParamRating in expParamValRatings:
-                hour = Hour(forecast, None)
-                self.assertEqual(expParamRating, hour.paramDesirabilityForValue(paramName, paramval))
-
-        # check overall hour desirability. counts: Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH
-        pDesCountsDict = {(0, 1, 2): Hour.H_DES_LOW,
-                          (2, 0, 1): Hour.H_DES_LOW,
-                          (3, 0, 0): Hour.H_DES_LOW,
-                          (0, 0, 3): Hour.H_DES_HIGH,
-                          (0, 1, 2): Hour.H_DES_MED_HIGH,
-                          (0, 2, 1): Hour.H_DES_MED_LOW,
-        }
-        for paramDesireTuple, expHourDesire in pDesCountsDict.items():
-            self.assertEqual(expHourDesire, Hour.hourDesirabilityForParamDesCounts(*paramDesireTuple))
-
-        with self.assertRaisesRegex(ValueError, "counts weren't all numbers"):
-            Hour.hourDesirabilityForParamDesCounts(None, 0, 0)
-
-        with self.assertRaisesRegex(ValueError, "counts didn't add to 3"):
-            Hour.hourDesirabilityForParamDesCounts(2, 2, 2)
-
-
-    def testHourDesirability(self):
-        # tuple: (precip, temp, wind)
-        paramToHourDes = {(100, 65, 0): Hour.H_DES_LOW,  # precip low
-                          (20, 40, 0): Hour.H_DES_MED_LOW,  # precip med, temp med, wind high
-                          (20, 65, 0): Hour.H_DES_MED_HIGH,  # precip med, temp high, wind high
-                          (0, 65, 0): Hour.H_DES_HIGH,  # all high
-        }
-        location = Location('42.375370', '-72.519249')
-        forecast = Forecast(location, 'weather.gov')
-        for precipTempWindTuple, expHourDes in paramToHourDes.items():
-            hour = Hour(forecast, None, precipTempWindTuple[0], precipTempWindTuple[1],
-                        precipTempWindTuple[2], 0)  # include no-op cloud so that Hour.isMissingHour() won't return None
-            self.assertEqual(expHourDes, hour.desirability())
 
 
     def testIsDaylight(self):
@@ -187,3 +107,95 @@ class ForecastTestCase(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "datetime has no tzinfo"):
             Hour.isDaylightDatetime(None, datetime.datetime.now())
+
+
+    def testCssClassForDesirability_TODO(self):
+        self.fail()
+
+
+    def testCharIconsForParams_TODO(self):
+        # mockHour = Mock()   # todo paramDesirabilityForValue()
+        self.fail()
+
+
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testParamDesirabilityForValue(self, MockWeatherGovSource):
+        # check individual parameter ratings
+        expParamValRatings = {
+            'precip': [(0, Hour.P_DES_HIGH),
+                       (9, Hour.P_DES_HIGH),
+                       (10, Hour.P_DES_MED),
+                       (29, Hour.P_DES_MED),
+                       (30, Hour.P_DES_LOW),
+                       (100, Hour.P_DES_LOW),
+            ],
+            'temp': [(-100, Hour.P_DES_LOW),
+                     (34, Hour.P_DES_LOW),
+                     (35, Hour.P_DES_MED),
+                     (58, Hour.P_DES_MED),
+                     (59, Hour.P_DES_HIGH),
+                     (88, Hour.P_DES_HIGH),
+                     (89, Hour.P_DES_MED),
+                     (99, Hour.P_DES_MED),
+                     (100, Hour.P_DES_LOW),
+                     (101, Hour.P_DES_LOW),
+            ],
+            'wind': [(0, Hour.P_DES_HIGH),
+                     (7, Hour.P_DES_HIGH),
+                     (8, Hour.P_DES_MED),
+                     (11, Hour.P_DES_MED),
+                     (12, Hour.P_DES_LOW),
+                     (100, Hour.P_DES_LOW),
+            ],
+            'clouds': [(0, Hour.P_DES_HIGH),
+                       (32, Hour.P_DES_HIGH),
+                       (33, Hour.P_DES_MED),
+                       (65, Hour.P_DES_MED),
+                       (66, Hour.P_DES_LOW),
+                       (100, Hour.P_DES_LOW),
+            ],
+        }
+        location = Location('42.375370', '-72.519249')
+        forecast = Forecast(location)
+        for paramName, expParamValRatings in expParamValRatings.items():
+            for paramval, expParamRating in expParamValRatings:
+                hour = Hour(forecast, None)
+                self.assertEqual(expParamRating, hour.paramDesirabilityForValue(paramName, paramval))
+
+
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testHourDesirabilityForParamDesCounts(self, MockWeatherGovSource):
+        # check overall hour desirability. counts: Hour.P_DES_LOW, Hour.P_DES_MED, Hour.P_DES_HIGH
+        pDesCountsDict = {(0, 1, 2): Hour.H_DES_LOW,
+                          (2, 0, 1): Hour.H_DES_LOW,
+                          (3, 0, 0): Hour.H_DES_LOW,
+                          (0, 0, 3): Hour.H_DES_HIGH,
+                          (0, 1, 2): Hour.H_DES_MED_HIGH,
+                          (0, 2, 1): Hour.H_DES_MED_LOW,
+        }
+        for paramDesireTuple, expHourDesire in pDesCountsDict.items():
+            self.assertEqual(expHourDesire, Hour.hourDesirabilityForParamDesCounts(*paramDesireTuple))
+
+        with self.assertRaisesRegex(ValueError, "counts weren't all numbers"):
+            Hour.hourDesirabilityForParamDesCounts(None, 0, 0)
+
+        with self.assertRaisesRegex(ValueError, "counts didn't add to 3"):
+            Hour.hourDesirabilityForParamDesCounts(2, 2, 2)
+
+
+    @patch('forecast.Forecast.WeatherGovSource')
+    def testDesirability(self, MockWeatherGovSource):
+        # tuple: (precip, temp, wind)
+        paramToHourDes = {(100, 65, 0): Hour.H_DES_LOW,  # precip low
+                          (20, 40, 0): Hour.H_DES_MED_LOW,  # precip med, temp med, wind high
+                          (20, 65, 0): Hour.H_DES_MED_HIGH,  # precip med, temp high, wind high
+                          (0, 65, 0): Hour.H_DES_HIGH,  # all high
+        }
+        location = Location('42.375370', '-72.519249')
+        forecast = Forecast(location)
+        for precipTempWindTuple, expHourDes in paramToHourDes.items():
+            hour = Hour(forecast, None, precipTempWindTuple[0], precipTempWindTuple[1],
+                        precipTempWindTuple[2], 0)  # include no-op cloud so that Hour.isMissingHour() won't return None
+            self.assertEqual(expHourDes, hour.desirability())
+
+
